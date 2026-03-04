@@ -100,11 +100,14 @@ export const useVerifyEmail = () => {
   });
 };
 
-export const useRegisterUser = () => {
+export const useRegisterUser = (locale: string = "bg") => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newUser: UserCreate) => {
-      const { data } = await apiClient.post<UserPublic>("/users/", newUser);
+      const { data } = await apiClient.post<UserPublic>(
+        `/users/?locale=${encodeURIComponent(locale)}`,
+        newUser,
+      );
       return data;
     },
     onSuccess: () => {

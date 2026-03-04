@@ -17,12 +17,14 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useRef } from "react";
 import { useRegisterUser, useGoogleLogin } from "../api/hooks";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import { useParams } from "@tanstack/react-router";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const registerMutation = useRegisterUser();
+  const { locale } = useParams({ strict: false }) as { locale?: string };
+  const registerMutation = useRegisterUser(locale || "bg");
   const googleLoginMutation = useGoogleLogin();
   const navigate = useLocalizedNavigate();
   const content = useIntlayer("signup");
