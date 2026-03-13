@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
-import { useVenue } from "@/features/Venues/api/hooks";
+import { useProperty } from "@/features/Properties/api/hooks";
 import { BookingForm } from "@/features/Bookings/components/booking-form";
 
-function BookVenuePage() {
-  const { venueId } = Route.useParams();
-  const { data: venue, isLoading, isError } = useVenue(venueId);
+function BookPropertyPage() {
+  const { propertyId } = Route.useParams();
+  const { data: property, isLoading, isError } = useProperty(propertyId);
 
   if (isLoading) {
     return (
@@ -15,21 +15,21 @@ function BookVenuePage() {
     );
   }
 
-  if (isError || !venue) {
+  if (isError || !property) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Venue not found</h1>
+          <h1 className="text-2xl font-bold mb-2">Property not found</h1>
         </div>
       </div>
     );
   }
 
-  return <BookingForm venue={venue} />;
+  return <BookingForm property={property} />;
 }
 
-export const Route = createFileRoute("/{-$locale}/venues/$venueId/book")({
-  component: BookVenuePage,
+export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")({
+  component: BookPropertyPage,
   beforeLoad: ({ location }) => {
     if (
       typeof window !== "undefined" &&

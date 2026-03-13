@@ -1,6 +1,6 @@
-# ploshtadka-frontend
+# brighter-frontend
 
-Public-facing venue booking portal. Supports venue browsing, booking grid, and Stripe payment flow.
+Public-facing property booking portal. Supports property browsing, booking grid, and Stripe payment flow.
 
 **Runtime:** Vite + Bun | **Port (dev):** `3000`
 
@@ -29,7 +29,7 @@ src/
   features/
     Auth/              # login, signup, token storage
     Bookings/          # 7-day grid, my-bookings list, details sheet
-    Venues/            # listing, filters, detail page
+    Properties/            # listing, filters, detail page
   lib/
     api-client.ts      # shared axios → http://localhost:80, injects Bearer token
 ```

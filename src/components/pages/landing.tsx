@@ -70,13 +70,13 @@ export function Landing() {
             <Button
               size="lg"
               className="gap-2 px-8 shadow-lg shadow-primary/20"
-              onClick={() => navigate("/venues")}
+              onClick={() => navigate("/properties")}
             >
               <Search className="size-4" />
               {content.hero.ctaPrimary}
             </Button>
             <Button size="lg" variant="outline" className="gap-2 px-8" asChild>
-              <Link to="/about-us" hash="list-your-venue">
+              <Link to="/about-us" hash="list-your-property">
                 {content.hero.ctaSecondary}
                 <ArrowRight className="size-4" />
               </Link>
@@ -183,7 +183,7 @@ export function Landing() {
             {content.categories.list.map((sport, index) => (
               <button
                 key={index}
-                onClick={() => navigate("/venues")}
+                onClick={() => navigate("/properties")}
                 className="group flex cursor-pointer flex-col items-center gap-3 rounded-2xl border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
               >
                 <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">

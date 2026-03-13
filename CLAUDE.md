@@ -1,6 +1,6 @@
-# CLAUDE.md — ploshtadka-frontend
+# CLAUDE.md — brighter-frontend
 
-React SSR-capable app (TanStack Start) serving the public-facing venue booking experience (part of PloshtadkaBG).
+React SSR-capable app (TanStack Start) serving the public-facing property booking experience (part of BrighterProject).
 
 ## Running
 
@@ -35,11 +35,11 @@ src/
       auth/
         login.tsx
         signup.tsx
-      venues/
-        index.tsx         # /venues listing
-        $venueId/
-          index.tsx       # /venues/$venueId detail
-          book.tsx        # /venues/$venueId/book — booking form
+      properties/
+        index.tsx         # /properties listing
+        $propertyId/
+          index.tsx       # /properties/$propertyId detail
+          book.tsx        # /properties/$propertyId/book — booking form
       bookings/
         index.tsx         # /bookings — my bookings
       404.tsx
@@ -81,7 +81,7 @@ The `{-$locale}` segment captures the locale (`en`, `bg`). **intlayer is configu
 
 To add a new route, create a file under `src/routes/{-$locale}/` following the file-naming convention.
 
-**Nested routes**: if a route needs children (e.g. `$venueId/book`), convert the flat `$venueId.tsx` into a directory `$venueId/index.tsx` + `$venueId/book.tsx`. Having both `$venueId.tsx` AND a `$venueId/` directory makes the `.tsx` file a layout that wraps children — only do this intentionally.
+**Nested routes**: if a route needs children (e.g. `$propertyId/book`), convert the flat `$propertyId.tsx` into a directory `$propertyId/index.tsx` + `$propertyId/book.tsx`. Having both `$propertyId.tsx` AND a `$propertyId/` directory makes the `.tsx` file a layout that wraps children — only do this intentionally.
 
 ### i18n (intlayer)
 

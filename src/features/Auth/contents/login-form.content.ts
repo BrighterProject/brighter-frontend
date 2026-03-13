@@ -73,7 +73,7 @@ const loginFormContent = {
         bg: "Резервирай следващата си игра.",
       }),
       subtitle: t({
-        en: "Find and reserve sports venues across Bulgaria in seconds.",
+        en: "Find and reserve sports properties across Bulgaria in seconds.",
         bg: "Намерете и резервирайте спортни обекти в цяла България за секунди.",
       }),
     },

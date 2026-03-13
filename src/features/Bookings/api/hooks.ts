@@ -8,17 +8,17 @@ import type {
   PaymentResponse,
 } from "./types";
 
-export const useOccupiedSlots = (venueId: string) =>
+export const useOccupiedSlots = (propertyId: string) =>
   useQuery({
-    queryKey: ["bookings", "slots", venueId],
+    queryKey: ["bookings", "slots", propertyId],
     queryFn: async () => {
       const { data } = await apiClient.get<OccupiedSlot[]>("/bookings/slots", {
-        params: { venue_id: venueId },
+        params: { property_id: propertyId },
       });
       return data;
     },
     enabled:
-      !!venueId &&
+      !!propertyId &&
       typeof window !== "undefined" &&
       !!localStorage.getItem("access_token"),
   });

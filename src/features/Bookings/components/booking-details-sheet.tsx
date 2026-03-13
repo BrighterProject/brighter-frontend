@@ -132,7 +132,7 @@ export function BookingDetailsSheet({
   const status = booking?.status as BookingStatus | undefined;
   const isPending = status === "pending";
   const needsPayment = isPending && !payment;
-  const venueHref = `/${locale ? `${locale}/` : ""}venues/${booking?.venue_id}`;
+  const propertyHref = `/${locale ? `${locale}/` : ""}properties/${booking?.property_id}`;
 
   return (
     <AnimatePresence>
@@ -283,13 +283,13 @@ export function BookingDetailsSheet({
                     {booking.id}
                   </span>
                 </Row>
-                <Row label={c.venue as unknown as string}>
+                <Row label={c.property as unknown as string}>
                   <a
-                    href={venueHref}
+                    href={propertyHref}
                     className="inline-flex items-center gap-1 text-primary hover:underline"
                   >
                     <span className="font-mono text-xs">
-                      {booking.venue_id.slice(0, 8)}…
+                      {booking.property_id.slice(0, 8)}…
                     </span>
                     <ExternalLink className="size-3" />
                   </a>

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { MapPin, Star, Users } from "lucide-react";
 import { useIntlayer } from "react-intlayer";
-import type { VenueListItem } from "../api/types";
+import type { PropertyListItem } from "../api/types";
 
 const SPORT_COLORS: Record<string, string> = {
   football: "bg-green-500",
@@ -15,15 +15,15 @@ const SPORT_COLORS: Record<string, string> = {
   other: "bg-muted",
 };
 
-interface VenueCardProps {
-  venue: VenueListItem;
+interface PropertyCardProps {
+  property: PropertyListItem;
   onClick?: () => void;
 }
 
-export function VenueCard({ venue, onClick }: VenueCardProps) {
-  const c = useIntlayer("venues-list");
-  const primarySport = venue.sport_types[0];
-  const extraSports = venue.sport_types.length - 2;
+export function PropertyCard({ property, onClick }: PropertyCardProps) {
+  const c = useIntlayer("properties-list");
+  const primarySport = property.sport_types[0];
+  const extraSports = property.sport_types.length - 2;
 
   return (
     <article
@@ -32,10 +32,10 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
     >
       {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-        {venue.thumbnail ? (
+        {property.thumbnail ? (
           <img
-            src={venue.thumbnail}
-            alt={venue.name}
+            src={property.thumbnail}
+            alt={property.name}
             className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -46,7 +46,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
             )}
           >
             <span className="select-none text-6xl font-black text-white/20">
-              {venue.name[0]}
+              {property.name[0]}
             </span>
           </div>
         )}
@@ -56,7 +56,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
 
         {/* Top badges */}
         <div className="absolute left-3 top-3 flex gap-2">
-          {venue.is_indoor && (
+          {property.is_indoor && (
             <Badge
               variant="secondary"
               className="bg-background/90 text-xs backdrop-blur-sm"
@@ -69,15 +69,15 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
         {/* Rating */}
         <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold backdrop-blur-sm">
           <Star className="size-3 fill-yellow-500 text-yellow-500" />
-          {Number(venue.rating).toFixed(1)}
+          {Number(property.rating).toFixed(1)}
         </div>
 
         {/* Price overlay */}
         <div className="absolute bottom-3 right-3">
           <span className="font-display text-xl font-bold text-white drop-shadow-md">
-            {Number(venue.price_per_hour).toFixed(0)}{" "}
+            {Number(property.price_per_hour).toFixed(0)}{" "}
             <span className="text-sm font-normal text-white/80">
-              {venue.currency}
+              {property.currency}
               {c.card.perHour}
             </span>
           </span>
@@ -87,18 +87,18 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
       {/* Body */}
       <div className="p-4">
         <h3 className="truncate font-display text-lg font-semibold text-foreground">
-          {venue.name}
+          {property.name}
         </h3>
 
         <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3" />
-          {venue.city}
+          {property.city}
         </div>
 
         {/* Sport badges + capacity */}
         <div className="mt-3 flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
-            {venue.sport_types.slice(0, 2).map((s) => (
+            {property.sport_types.slice(0, 2).map((s) => (
               <Badge
                 key={s}
                 variant="secondary"
@@ -116,7 +116,7 @@ export function VenueCard({ venue, onClick }: VenueCardProps) {
 
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Users className="size-3" />
-            {venue.capacity}
+            {property.capacity}
           </div>
         </div>
       </div>

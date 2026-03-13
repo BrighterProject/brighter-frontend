@@ -1,26 +1,26 @@
 import { t, type Dictionary } from "intlayer";
 
-const venueDetailContent = {
-  key: "venue-detail",
+const propertyDetailContent = {
+  key: "property-detail",
   content: {
     meta: {
       title: t({
-        en: "Venue | Ploshtadka.BG",
-        bg: "База | Ploshtadka.BG",
+        en: "Property | Brighter.BG",
+        bg: "База | Brighter.BG",
       }),
       description: t({
-        en: "View venue details, working hours, amenities and book your slot.",
+        en: "View property details, working hours, amenities and book your slot.",
         bg: "Вижте детайли за базата, работно време, удобства и резервирайте своя час.",
       }),
     },
-    back: t({ en: "Browse venues", bg: "Разгледайте бази" }),
+    back: t({ en: "Browse properties", bg: "Разгледайте бази" }),
     noImages: t({ en: "No images", bg: "Няма снимки" }),
     indoor: t({ en: "Indoor", bg: "На закрито" }),
     outdoor: t({ en: "Outdoor", bg: "На открито" }),
     upTo: t({ en: "Up to", bg: "До" }),
     people: t({ en: "people", bg: "човека" }),
     sections: {
-      about: t({ en: "About this venue", bg: "За тази база" }),
+      about: t({ en: "About this property", bg: "За тази база" }),
       amenities: t({ en: "Amenities", bg: "Удобства" }),
       workingHours: t({ en: "Working hours", bg: "Работно време" }),
       unavailableToday: t({
@@ -67,11 +67,11 @@ const venueDetailContent = {
       bookNow: t({ en: "Book Now", bg: "Резервирай" }),
       unavailable: t({ en: "Unavailable", bg: "Недостъпна" }),
       statusNote: t({
-        en: "This venue is currently",
+        en: "This property is currently",
         bg: "Тази база в момента е",
       }),
     },
   },
 } satisfies Dictionary;
 
-export default venueDetailContent;
+export default propertyDetailContent;

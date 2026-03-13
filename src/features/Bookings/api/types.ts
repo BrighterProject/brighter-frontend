@@ -4,7 +4,7 @@ export interface PaymentResponse {
   id: string;
   booking_id: string;
   user_id: string;
-  venue_owner_id: string;
+  property_owner_id: string;
   stripe_session_id: string;
   stripe_payment_intent_id: string | null;
   amount: string;
@@ -32,7 +32,7 @@ export interface OccupiedSlot {
 }
 
 export interface BookingCreate {
-  venue_id: string;
+  property_id: string;
   start_datetime: string; // ISO 8601
   end_datetime: string; // ISO 8601
   notes?: string | null;
@@ -40,8 +40,8 @@ export interface BookingCreate {
 
 export interface BookingResponse {
   id: string;
-  venue_id: string;
-  venue_owner_id: string;
+  property_id: string;
+  property_owner_id: string;
   user_id: string;
   start_datetime: string;
   end_datetime: string;

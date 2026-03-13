@@ -5,8 +5,8 @@ const landingContent = {
   content: {
     meta: {
       title: t({
-        en: "Ploshtadka.BG | Rent Sports Facilities Instantly",
-        bg: "Ploshtadka.BG | Наемете спортни съоръжения моментално",
+        en: "Brighter.BG | Rent Sports Facilities Instantly",
+        bg: "Brighter.BG | Наемете спортни съоръжения моментално",
       }),
       description: t({
         en: "The easiest way to book football pitches, tennis courts, and gyms near you.",
@@ -32,7 +32,7 @@ const landingContent = {
         bg: "Добави своята база",
       }),
       stats: {
-        venues: t({ en: "50+ Venues", bg: "50+ обекта" }),
+        properties: t({ en: "50+ Properties", bg: "50+ обекта" }),
         cities: t({ en: "10+ Cities", bg: "10+ града" }),
         bookings: t({ en: "1K+ Bookings", bg: "1000+ резервации" }),
       },
@@ -52,7 +52,7 @@ const landingContent = {
           }),
         },
         {
-          title: t({ en: "Verified Venues", bg: "Проверени бази" }),
+          title: t({ en: "Verified Properties", bg: "Проверени бази" }),
           description: t({
             en: "Every facility is personally verified for quality. See photos, reviews, and amenities before you book.",
             bg: "Всяко съоръжение е лично проверено за качество. Вижте снимки, отзиви и удобства.",
@@ -78,7 +78,7 @@ const landingContent = {
           step: "01",
           title: t({ en: "Search", bg: "Търсете" }),
           description: t({
-            en: "Browse venues by sport, location, or availability. Filter by price, amenities, and ratings.",
+            en: "Browse properties by sport, location, or availability. Filter by price, amenities, and ratings.",
             bg: "Разгледайте обекти по спорт, локация или наличност. Филтрирайте по цена и удобства.",
           }),
         },
@@ -94,7 +94,7 @@ const landingContent = {
           step: "03",
           title: t({ en: "Play", bg: "Играйте" }),
           description: t({
-            en: "Show up and enjoy. Your booking is confirmed instantly — the venue is expecting you.",
+            en: "Show up and enjoy. Your booking is confirmed instantly — the property is expecting you.",
             bg: "Елате и се забавлявайте. Резервацията ви е потвърдена — обектът ви очаква.",
           }),
         },
@@ -103,7 +103,7 @@ const landingContent = {
     categories: {
       title: t({ en: "Popular Sports", bg: "Популярни спортове" }),
       subtitle: t({
-        en: "Find the perfect venue for your game",
+        en: "Find the perfect property for your game",
         bg: "Намерете перфектния обект за вашата игра",
       }),
       list: [
@@ -121,8 +121,8 @@ const landingContent = {
         bg: "Готови ли сте да играете?",
       }),
       subtitle: t({
-        en: "Join thousands of athletes who book their venues through Ploshtadka.BG",
-        bg: "Присъединете се към хиляди спортисти, които резервират чрез Ploshtadka.BG",
+        en: "Join thousands of athletes who book their properties through Brighter.BG",
+        bg: "Присъединете се към хиляди спортисти, които резервират чрез Brighter.BG",
       }),
       button: t({
         en: "Get Started — It's Free",

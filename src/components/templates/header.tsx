@@ -55,7 +55,7 @@ const Header: FC = () => {
             {/* Desktop actions */}
             <div className="hidden items-center gap-2.5 md:flex">
               <Button asChild size="sm" className="gap-1.5 shadow-sm">
-                <LocalizedLink to="/venues">
+                <LocalizedLink to="/properties">
                   <Search className="size-3.5" />
                   {content.cta}
                 </LocalizedLink>
@@ -105,7 +105,7 @@ const Header: FC = () => {
                     className="w-full gap-1.5 shadow-sm"
                   >
                     <LocalizedLink
-                      to="/venues"
+                      to="/properties"
                       onClick={() => setOpen(false)}
                     >
                       <Search className="size-3.5" />

@@ -1,6 +1,6 @@
-# Frontend Redesign Plan — PloshtadkaBG
+# Frontend Redesign Plan — BrighterProject
 
-Sports venue booking platform. Bold, energetic, athletic aesthetic.
+Sports property booking platform. Bold, energetic, athletic aesthetic.
 Bulgarian/English i18n preserved throughout (Intlayer).
 
 ---
@@ -90,7 +90,7 @@ body {
 - Replace `GalleryVerticalEnd` icon with a sport-appropriate icon (`Zap` or `Trophy`)
 - Brand name: add `font-display` class (Barlow Condensed), slightly larger
 - Nav links: `font-medium` weight, tighter letter-spacing
-- Add accent CTA button "Резервирай" → `/venues` in header right area
+- Add accent CTA button "Резервирай" → `/properties` in header right area
 - Sticky backdrop: keep `backdrop-blur-sm`, switch to `bg-background/80`
 - Mobile menu: use `bg-card` instead of `bg-background/90`
 - Keep all `useIntlayer` calls — classNames only
@@ -98,7 +98,7 @@ body {
 ### Footer changes
 - Remove `builtWith` credit text
 - Remove dead links (`/about-us`, `/features`, `/pricing` — pages don't exist)
-- Replace with real links: `/venues`, `/bookings`
+- Replace with real links: `/properties`, `/bookings`
 - Replace `GalleryVerticalEnd` with `Trophy` or `Dumbbell` icon
 - Keep copyright
 
@@ -112,7 +112,7 @@ Three bold sections. Current is 97 lines — new version ~200 lines.
 ### Section 1: Hero
 - Full-bleed dark section (`bg-foreground text-background`)
 - Massive heading: `font-display text-6xl md:text-8xl font-extrabold uppercase tracking-tight leading-none`
-- Two CTAs: primary green "Намери обект" → `/venues`, ghost outline "Как работи?" → `#how-it-works` anchor
+- Two CTAs: primary green "Намери обект" → `/properties`, ghost outline "Как работи?" → `#how-it-works` anchor
 - Decorative diagonal stripe overlay (CSS `bg-[repeating-linear-gradient(...)]`, opacity 5%)
 - Sport category pills using Lucide icons (no emojis): `Dumbbell`, `Trophy`, `Waves`, `Circle`
 
@@ -144,31 +144,31 @@ Three bold sections. Current is 97 lines — new version ~200 lines.
 - Replace emoji icons with Lucide SVG sport icons
 - Cards: 2×4 grid, dark card bg with green hover
 - Category name in `font-display bold`
-- Click → `/venues?sport={type}`
+- Click → `/properties?sport={type}`
 
 ### i18n additions:
 - `src/contents/landing.content.ts`: add `howItWorks: { title, steps: [{ number, title, description }] }`
 
 ---
 
-## Phase 4 — Venue List Page
+## Phase 4 — Property List Page
 **Files:**
-- `src/features/Venues/components/venue-card.tsx`
-- `src/features/Venues/components/venues-list.tsx`
+- `src/features/Properties/components/property-card.tsx`
+- `src/features/Properties/components/properties-list.tsx`
 
-### VenueCard redesign
+### PropertyCard redesign
 Current: white card + border + text below image.
 
 New — image-first with overlay:
 - `aspect-[16/10]` image container with `rounded-xl overflow-hidden`
 - Gradient overlay: `bg-gradient-to-t from-black/80 via-black/20 to-transparent`
-- **Venue name + city rendered on the image** (bottom-left, white `font-display`)
+- **Property name + city rendered on the image** (bottom-left, white `font-display`)
 - Price badge: absolute top-right, `bg-accent text-accent-foreground rounded-full px-3 py-1`
 - Sport type tags: bottom-right, small primary green pills
 - Rating: bottom-left next to name, `⭐ 4.8` → replace star emoji with `Star` icon filled
 - Hover: `group-hover:scale-[1.03]` on image, card shadow increase
 
-### VenuesList redesign
+### PropertiesList redesign
 - Search bar: full-width, `rounded-xl`, left-aligned magnifier icon (`Search` from Lucide)
 - Filters row: horizontal pills — Sport type, City, Indoor/Outdoor, Price range
   - Active pill: `bg-primary text-primary-foreground`
@@ -178,10 +178,10 @@ New — image-first with overlay:
 
 ---
 
-## Phase 5 — Venue Detail Page
-**File:** `src/features/Venues/components/venue-detail.tsx`
+## Phase 5 — Property Detail Page
+**File:** `src/features/Properties/components/property-detail.tsx`
 
-- Hero: full-width `aspect-[21/9]` image with dark overlay, venue name in `font-display text-5xl`
+- Hero: full-width `aspect-[21/9]` image with dark overlay, property name in `font-display text-5xl`
 - Gallery: horizontal scrollable thumbnail strip below hero (click to swap main image)
 - Layout: 2-col on desktop — left (60%): info + working hours + amenities; right (40%): sticky booking card
 - Booking card (sticky): price in `font-display text-3xl font-bold`, date/time pickers, green CTA
@@ -205,13 +205,13 @@ New — image-first with overlay:
 
 ### My Bookings
 - Replace table with card list
-- Booking card: venue name (`font-display`), date range, status badge, price, action buttons
+- Booking card: property name (`font-display`), date range, status badge, price, action buttons
 - Status badge colours: PENDING=amber, CONFIRMED=green, CANCELLED=destructive, COMPLETED=muted
 - Tabs: Всички / Активни / Минали (search param `?tab=active`)
 - Empty state per tab with sport icon + helpful CTA
 
 ### Booking Details Sheet
-- Header: venue name in `font-display`, sport type tag
+- Header: property name in `font-display`, sport type tag
 - Status timeline (linear progress: Pending → Confirmed → Completed)
 - Actions: Cancel (destructive variant), Pay (accent orange)
 
@@ -228,7 +228,7 @@ New — image-first with overlay:
   - `bg-foreground` background (deep navy)
   - Decorative diagonal stripe (same CSS pattern as hero)
   - Large `font-display` tagline: "Намери своя обект. Резервирай. Играй."
-  - `Ploshtadka.BG` brand at bottom in muted white
+  - `Brighter.BG` brand at bottom in muted white
 
 ### Login / Signup forms
 - Brand logo + name (`font-display`) at top of left panel
@@ -246,8 +246,8 @@ New — image-first with overlay:
 | 1 | CSS variables + fonts | `styles.css` | ~20min |
 | 2 | Header + Footer | `header.tsx`, `footer.tsx` | ~30min |
 | 3 | Landing page | `landing.tsx`, `landing.content.ts` | ~60min |
-| 4 | Venue list + cards | `venue-card.tsx`, `venues-list.tsx` | ~45min |
-| 5 | Venue detail | `venue-detail.tsx` | ~45min |
+| 4 | Property list + cards | `property-card.tsx`, `properties-list.tsx` | ~45min |
+| 5 | Property detail | `property-detail.tsx` | ~45min |
 | 6 | Booking flow | `booking-form.tsx`, `my-bookings.tsx`, `booking-details-sheet.tsx` | ~45min |
 | 7 | Auth pages | `form-wrapper.tsx`, `login-form.tsx`, `signup-form.tsx` | ~30min |
 
@@ -268,7 +268,7 @@ Each phase is independently deployable. Phase 1 must go first (colours/fonts unb
 | File | New keys | Phase |
 |------|----------|-------|
 | `src/contents/landing.content.ts` | `howItWorks.title`, `howItWorks.steps[3]` | 3 |
-| `src/features/Venues/contents/venues.content.ts` | `filters.sport`, `filters.city`, `filters.indoor`, `filters.price` | 4 |
+| `src/features/Properties/contents/properties.content.ts` | `filters.sport`, `filters.city`, `filters.indoor`, `filters.price` | 4 |
 
 ---
 

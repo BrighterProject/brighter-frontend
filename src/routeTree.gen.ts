@@ -15,12 +15,12 @@ import { Route as Char123LocaleChar125ContactsRouteImport } from './routes/{-$lo
 import { Route as Char123LocaleChar125AboutUsRouteImport } from './routes/{-$locale}/about-us'
 import { Route as Char123LocaleChar125404RouteImport } from './routes/{-$locale}/404'
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
-import { Route as Char123LocaleChar125VenuesIndexRouteImport } from './routes/{-$locale}/venues/index'
+import { Route as Char123LocaleChar125PropertiesIndexRouteImport } from './routes/{-$locale}/properties/index'
 import { Route as Char123LocaleChar125BookingsIndexRouteImport } from './routes/{-$locale}/bookings/index'
 import { Route as Char123LocaleChar125AuthSignupRouteImport } from './routes/{-$locale}/auth/signup'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/auth/login'
-import { Route as Char123LocaleChar125VenuesVenueIdIndexRouteImport } from './routes/{-$locale}/venues/$venueId/index'
-import { Route as Char123LocaleChar125VenuesVenueIdBookRouteImport } from './routes/{-$locale}/venues/$venueId/book'
+import { Route as Char123LocaleChar125PropertiesPropertyIdIndexRouteImport } from './routes/{-$locale}/properties/$propertyId/index'
+import { Route as Char123LocaleChar125PropertiesPropertyIdBookRouteImport } from './routes/{-$locale}/properties/$propertyId/book'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -57,10 +57,10 @@ const Char123LocaleChar125SplatRoute =
     path: '/$',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125VenuesIndexRoute =
-  Char123LocaleChar125VenuesIndexRouteImport.update({
-    id: '/venues/',
-    path: '/venues/',
+const Char123LocaleChar125PropertiesIndexRoute =
+  Char123LocaleChar125PropertiesIndexRouteImport.update({
+    id: '/properties/',
+    path: '/properties/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125BookingsIndexRoute =
@@ -81,16 +81,16 @@ const Char123LocaleChar125AuthLoginRoute =
     path: '/auth/login',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125VenuesVenueIdIndexRoute =
-  Char123LocaleChar125VenuesVenueIdIndexRouteImport.update({
-    id: '/venues/$venueId/',
-    path: '/venues/$venueId/',
+const Char123LocaleChar125PropertiesPropertyIdIndexRoute =
+  Char123LocaleChar125PropertiesPropertyIdIndexRouteImport.update({
+    id: '/properties/$propertyId/',
+    path: '/properties/$propertyId/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125VenuesVenueIdBookRoute =
-  Char123LocaleChar125VenuesVenueIdBookRouteImport.update({
-    id: '/venues/$venueId/book',
-    path: '/venues/$venueId/book',
+const Char123LocaleChar125PropertiesPropertyIdBookRoute =
+  Char123LocaleChar125PropertiesPropertyIdBookRouteImport.update({
+    id: '/properties/$propertyId/book',
+    path: '/properties/$propertyId/book',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 
@@ -104,9 +104,9 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
-  '/{-$locale}/venues/': typeof Char123LocaleChar125VenuesIndexRoute
-  '/{-$locale}/venues/$venueId/book': typeof Char123LocaleChar125VenuesVenueIdBookRoute
-  '/{-$locale}/venues/$venueId/': typeof Char123LocaleChar125VenuesVenueIdIndexRoute
+  '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
+  '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
+  '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
@@ -117,9 +117,9 @@ export interface FileRoutesByTo {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/bookings': typeof Char123LocaleChar125BookingsIndexRoute
-  '/{-$locale}/venues': typeof Char123LocaleChar125VenuesIndexRoute
-  '/{-$locale}/venues/$venueId/book': typeof Char123LocaleChar125VenuesVenueIdBookRoute
-  '/{-$locale}/venues/$venueId': typeof Char123LocaleChar125VenuesVenueIdIndexRoute
+  '/{-$locale}/properties': typeof Char123LocaleChar125PropertiesIndexRoute
+  '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
+  '/{-$locale}/properties/$propertyId': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,9 +132,9 @@ export interface FileRoutesById {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
-  '/{-$locale}/venues/': typeof Char123LocaleChar125VenuesIndexRoute
-  '/{-$locale}/venues/$venueId/book': typeof Char123LocaleChar125VenuesVenueIdBookRoute
-  '/{-$locale}/venues/$venueId/': typeof Char123LocaleChar125VenuesVenueIdIndexRoute
+  '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
+  '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
+  '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -148,9 +148,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/bookings/'
-    | '/{-$locale}/venues/'
-    | '/{-$locale}/venues/$venueId/book'
-    | '/{-$locale}/venues/$venueId/'
+    | '/{-$locale}/properties/'
+    | '/{-$locale}/properties/$propertyId/book'
+    | '/{-$locale}/properties/$propertyId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}/$'
@@ -161,9 +161,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/bookings'
-    | '/{-$locale}/venues'
-    | '/{-$locale}/venues/$venueId/book'
-    | '/{-$locale}/venues/$venueId'
+    | '/{-$locale}/properties'
+    | '/{-$locale}/properties/$propertyId/book'
+    | '/{-$locale}/properties/$propertyId'
   id:
     | '__root__'
     | '/{-$locale}'
@@ -175,9 +175,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/bookings/'
-    | '/{-$locale}/venues/'
-    | '/{-$locale}/venues/$venueId/book'
-    | '/{-$locale}/venues/$venueId/'
+    | '/{-$locale}/properties/'
+    | '/{-$locale}/properties/$propertyId/book'
+    | '/{-$locale}/properties/$propertyId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,11 +228,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125SplatRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/venues/': {
-      id: '/{-$locale}/venues/'
-      path: '/venues'
-      fullPath: '/{-$locale}/venues/'
-      preLoaderRoute: typeof Char123LocaleChar125VenuesIndexRouteImport
+    '/{-$locale}/properties/': {
+      id: '/{-$locale}/properties/'
+      path: '/properties'
+      fullPath: '/{-$locale}/properties/'
+      preLoaderRoute: typeof Char123LocaleChar125PropertiesIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/bookings/': {
@@ -256,18 +256,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125AuthLoginRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/venues/$venueId/': {
-      id: '/{-$locale}/venues/$venueId/'
-      path: '/venues/$venueId'
-      fullPath: '/{-$locale}/venues/$venueId/'
-      preLoaderRoute: typeof Char123LocaleChar125VenuesVenueIdIndexRouteImport
+    '/{-$locale}/properties/$propertyId/': {
+      id: '/{-$locale}/properties/$propertyId/'
+      path: '/properties/$propertyId'
+      fullPath: '/{-$locale}/properties/$propertyId/'
+      preLoaderRoute: typeof Char123LocaleChar125PropertiesPropertyIdIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/venues/$venueId/book': {
-      id: '/{-$locale}/venues/$venueId/book'
-      path: '/venues/$venueId/book'
-      fullPath: '/{-$locale}/venues/$venueId/book'
-      preLoaderRoute: typeof Char123LocaleChar125VenuesVenueIdBookRouteImport
+    '/{-$locale}/properties/$propertyId/book': {
+      id: '/{-$locale}/properties/$propertyId/book'
+      path: '/properties/$propertyId/book'
+      fullPath: '/{-$locale}/properties/$propertyId/book'
+      preLoaderRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
   }
@@ -282,9 +282,9 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
   Char123LocaleChar125AuthSignupRoute: typeof Char123LocaleChar125AuthSignupRoute
   Char123LocaleChar125BookingsIndexRoute: typeof Char123LocaleChar125BookingsIndexRoute
-  Char123LocaleChar125VenuesIndexRoute: typeof Char123LocaleChar125VenuesIndexRoute
-  Char123LocaleChar125VenuesVenueIdBookRoute: typeof Char123LocaleChar125VenuesVenueIdBookRoute
-  Char123LocaleChar125VenuesVenueIdIndexRoute: typeof Char123LocaleChar125VenuesVenueIdIndexRoute
+  Char123LocaleChar125PropertiesIndexRoute: typeof Char123LocaleChar125PropertiesIndexRoute
+  Char123LocaleChar125PropertiesPropertyIdBookRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
+  Char123LocaleChar125PropertiesPropertyIdIndexRoute: typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
@@ -298,11 +298,11 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125AuthSignupRoute: Char123LocaleChar125AuthSignupRoute,
     Char123LocaleChar125BookingsIndexRoute:
       Char123LocaleChar125BookingsIndexRoute,
-    Char123LocaleChar125VenuesIndexRoute: Char123LocaleChar125VenuesIndexRoute,
-    Char123LocaleChar125VenuesVenueIdBookRoute:
-      Char123LocaleChar125VenuesVenueIdBookRoute,
-    Char123LocaleChar125VenuesVenueIdIndexRoute:
-      Char123LocaleChar125VenuesVenueIdIndexRoute,
+    Char123LocaleChar125PropertiesIndexRoute: Char123LocaleChar125PropertiesIndexRoute,
+    Char123LocaleChar125PropertiesPropertyIdBookRoute:
+      Char123LocaleChar125PropertiesPropertyIdBookRoute,
+    Char123LocaleChar125PropertiesPropertyIdIndexRoute:
+      Char123LocaleChar125PropertiesPropertyIdIndexRoute,
   }
 
 const Char123LocaleChar125RouteRouteWithChildren =

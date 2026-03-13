@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE: ghcr.io/ploshtadkabg/ploshtadka-frontend
+  IMAGE: ghcr.io/brighterbg/brighter-frontend
 
 jobs:
   test:

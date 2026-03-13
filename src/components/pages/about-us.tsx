@@ -85,20 +85,20 @@ export function AboutUs() {
         </div>
       </section>
 
-      {/* List Your Venue */}
-      <section id="list-your-venue" className="py-14 lg:py-20">
+      {/* List Your Property */}
+      <section id="list-your-property" className="py-14 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 text-center">
             <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {content.listVenue.title}
+              {content.listProperty.title}
             </h2>
             <p className="mt-2 text-lg text-muted-foreground">
-              {content.listVenue.subtitle}
+              {content.listProperty.subtitle}
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            {content.listVenue.steps.map((step, index) => (
+            {content.listProperty.steps.map((step, index) => (
               <div key={index} className="relative text-center">
                 {index < 2 && (
                   <div className="absolute left-[calc(50%+3rem)] top-8 hidden h-px w-[calc(100%-6rem)] bg-border md:block" />
@@ -122,7 +122,7 @@ export function AboutUs() {
           <div className="mt-10 text-center">
             <Button size="lg" className="gap-2 px-8 shadow-lg shadow-primary/20" asChild>
               <Link to="/contacts">
-                {content.listVenue.cta}
+                {content.listProperty.cta}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>

@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
-  VenueListItem,
-  VenueResponse,
-  VenueUnavailabilityResponse,
+  PropertyListItem,
+  PropertyResponse,
+  PropertyUnavailabilityResponse,
 } from "./types";
 
-export const useVenues = (params?: Record<string, any>) => {
+export const useProperties = (params?: Record<string, any>) => {
   return useQuery({
-    queryKey: ["venues", params],
+    queryKey: ["properties", params],
     queryFn: async () => {
-      const { data } = await apiClient.get<VenueListItem[]>("/venues/", {
+      const { data } = await apiClient.get<PropertyListItem[]>("/properties/", {
         params,
       });
       return data;
@@ -18,97 +18,97 @@ export const useVenues = (params?: Record<string, any>) => {
   });
 };
 
-export const useVenue = (venueId: string) => {
+export const useProperty = (propertyId: string) => {
   return useQuery({
-    queryKey: ["venues", venueId],
+    queryKey: ["properties", propertyId],
     queryFn: async () => {
-      const { data } = await apiClient.get<VenueResponse>(`/venues/${venueId}`);
+      const { data } = await apiClient.get<PropertyResponse>(`/properties/${propertyId}`);
       return data;
     },
-    enabled: !!venueId,
+    enabled: !!propertyId,
   });
 };
 
-// export const useCreateVenue = () => {
+// export const useCreateProperty = () => {
 //   const queryClient = useQueryClient();
 //   return useMutation({
-//     mutationFn: async (newVenue: VenueCreate) => {
-//       const { data } = await apiClient.post<VenueResponse>(
-//         "/venues/",
-//         newVenue,
+//     mutationFn: async (newProperty: PropertyCreate) => {
+//       const { data } = await apiClient.post<PropertyResponse>(
+//         "/properties/",
+//         newProperty,
 //       );
 //       return data;
 //     },
 //     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["venues"] });
+//       queryClient.invalidateQueries({ queryKey: ["properties"] });
 //     },
 //   });
 // };
 //
-// export const useUpdateVenue = (venueId: string) => {
+// export const useUpdateProperty = (propertyId: string) => {
 //   const queryClient = useQueryClient();
 //   return useMutation({
-//     mutationFn: async (updateData: Partial<VenueCreate>) => {
-//       const { data } = await apiClient.patch<VenueResponse>(
-//         `/venues/${venueId}`,
+//     mutationFn: async (updateData: Partial<PropertyCreate>) => {
+//       const { data } = await apiClient.patch<PropertyResponse>(
+//         `/properties/${propertyId}`,
 //         updateData,
 //       );
 //       return data;
 //     },
 //     onSuccess: (data) => {
-//       queryClient.invalidateQueries({ queryKey: ["venues"] });
-//       queryClient.setQueryData(["venues", venueId], data);
+//       queryClient.invalidateQueries({ queryKey: ["properties"] });
+//       queryClient.setQueryData(["properties", propertyId], data);
 //     },
 //   });
 // };
 //
-// // --- VENUE IMAGES ---
+// // --- PROPERTY IMAGES ---
 //
-// export const useVenueImages = (venueId: string) => {
+// export const usePropertyImages = (propertyId: string) => {
 //   return useQuery({
-//     queryKey: ["venues", venueId, "images"],
+//     queryKey: ["properties", propertyId, "images"],
 //     queryFn: async () => {
-//       const { data } = await apiClient.get<VenueImageResponse[]>(
-//         `/venues/${venueId}/images`,
+//       const { data } = await apiClient.get<PropertyImageResponse[]>(
+//         `/properties/${propertyId}/images`,
 //       );
 //       return data;
 //     },
-//     enabled: !!venueId,
+//     enabled: !!propertyId,
 //   });
 // };
 //
-// export const useReorderImages = (venueId: string) => {
+// export const useReorderImages = (propertyId: string) => {
 //   const queryClient = useQueryClient();
 //   return useMutation({
 //     mutationFn: async (orderedIds: string[]) => {
-//       const { data } = await apiClient.put<VenueImageResponse[]>(
-//         `/venues/${venueId}/images/reorder`,
+//       const { data } = await apiClient.put<PropertyImageResponse[]>(
+//         `/properties/${propertyId}/images/reorder`,
 //         orderedIds,
 //       );
 //       return data;
 //     },
 //     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["venues", venueId] });
+//       queryClient.invalidateQueries({ queryKey: ["properties", propertyId] });
 //     },
 //   });
 // };
 //
 // // --- UNAVAILABILITIES ---
 
-export const useVenueUnavailabilities = (venueId: string) => {
+export const usePropertyUnavailabilities = (propertyId: string) => {
   return useQuery({
-    queryKey: ["venues", venueId, "unavailabilities"],
+    queryKey: ["properties", propertyId, "unavailabilities"],
     queryFn: async () => {
-      const { data } = await apiClient.get<VenueUnavailabilityResponse[]>(
-        `/venues/${venueId}/unavailabilities`,
+      const { data } = await apiClient.get<PropertyUnavailabilityResponse[]>(
+        `/properties/${propertyId}/unavailabilities`,
       );
       return data;
     },
-    enabled: !!venueId,
+    enabled: !!propertyId,
   });
 };
 
-// export const useCreateUnavailability = (venueId: string) => {
+// export const useCreateUnavailability = (propertyId: string) => {
 //   const queryClient = useQueryClient();
 //   return useMutation({
 //     mutationFn: async (payload: {
@@ -117,13 +117,13 @@ export const useVenueUnavailabilities = (venueId: string) => {
 //       reason?: string;
 //     }) => {
 //       const { data } = await apiClient.post(
-//         `/venues/${venueId}/unavailabilities`,
+//         `/properties/${propertyId}/unavailabilities`,
 //         payload,
 //       );
 //       return data;
 //     },
 //     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["venues", venueId] });
+//       queryClient.invalidateQueries({ queryKey: ["properties", propertyId] });
 //     },
 //   });
 // };

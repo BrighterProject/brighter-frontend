@@ -5,15 +5,15 @@ const bookingFormContent = {
   content: {
     meta: {
       title: t({
-        en: "Book Venue | Ploshtadka.BG",
-        bg: "Резервирай база | Ploshtadka.BG",
+        en: "Book Property | Brighter.BG",
+        bg: "Резервирай база | Brighter.BG",
       }),
       description: t({
-        en: "Book your slot at this venue.",
+        en: "Book your slot at this property.",
         bg: "Резервирайте своя час в тази база.",
       }),
     },
-    back: t({ en: "Back to venue", bg: "Към базата" }),
+    back: t({ en: "Back to property", bg: "Към базата" }),
     title: t({ en: "Book", bg: "Резервирай" }),
     grid: {
       instruction: t({

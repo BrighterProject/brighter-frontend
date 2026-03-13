@@ -1,16 +1,16 @@
 import { MapPin, Users, Star, Trophy } from "lucide-react"; // Assuming Lucide icons
-import type { VenueListItem, VenueStatus } from "../api/types";
+import type { PropertyListItem, PropertyStatus } from "../api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 
-interface VenueCardProps {
-  venue: VenueListItem;
+interface PropertyCardProps {
+  property: PropertyListItem;
 }
 
-export const VenueCard = ({ venue }: VenueCardProps) => {
+export const PropertyCard = ({ property }: PropertyCardProps) => {
   // Map status to badge colors
-  const statusColors: Record<VenueStatus, string> = {
+  const statusColors: Record<PropertyStatus, string> = {
     active: "#22c55e", // green
     inactive: "#ef4444", // red
     maintenance: "#f59e0b", // amber
@@ -19,25 +19,25 @@ export const VenueCard = ({ venue }: VenueCardProps) => {
 
   return (
     <a
-      href={`/venues/${venue.id}`}
+      href={`/properties/${property.id}`}
       className="block h-full w-full max-w-md transition-all hover:translate-y-[-4px]"
     >
       <Card className="h-full overflow-hidden p-0">
         <CardHeader className="relative block p-0">
           <AspectRatio ratio={1.268115942} className="overflow-hidden">
             <img
-              src={venue.thumbnail || "/placeholder-venue.jpg"}
-              alt={venue.name}
+              src={property.thumbnail || "/placeholder-property.jpg"}
+              alt={property.name}
               className="block size-full object-cover object-center"
             />
           </AspectRatio>
 
           {/* Status Badge */}
           <Badge
-            style={{ backgroundColor: statusColors[venue.status] }}
+            style={{ backgroundColor: statusColors[property.status] }}
             className="absolute start-4 top-4 capitalize"
           >
-            {venue.status.replace("_", " ")}
+            {property.status.replace("_", " ")}
           </Badge>
 
           {/* Indoor/Outdoor Badge */}
@@ -45,7 +45,7 @@ export const VenueCard = ({ venue }: VenueCardProps) => {
             variant="secondary"
             className="absolute end-4 top-4 bg-white/90 text-black"
           >
-            {venue.is_indoor ? "Indoor" : "Outdoor"}
+            {property.is_indoor ? "Indoor" : "Outdoor"}
           </Badge>
         </CardHeader>
 
@@ -54,24 +54,24 @@ export const VenueCard = ({ venue }: VenueCardProps) => {
           <div className="flex items-start justify-between gap-2">
             <div>
               <CardTitle className="line-clamp-1 text-xl font-bold">
-                {venue.name}
+                {property.name}
               </CardTitle>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <MapPin className="size-3" />
-                <span>{venue.city}</span>
+                <span>{property.city}</span>
               </div>
             </div>
-            {venue.total_reviews > 0 && (
+            {property.total_reviews > 0 && (
               <div className="flex items-center gap-1 rounded-md bg-yellow-50 px-2 py-1 text-xs font-bold text-yellow-700">
                 <Star className="size-3 fill-yellow-700" />
-                {venue.rating}
+                {property.rating}
               </div>
             )}
           </div>
 
           {/* Sport Types Tags */}
           <div className="flex flex-wrap gap-1">
-            {venue.sport_types.map((sport) => (
+            {property.sport_types.map((sport) => (
               <span
                 key={sport}
                 className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
@@ -89,14 +89,14 @@ export const VenueCard = ({ venue }: VenueCardProps) => {
                 Hourly Rate
               </span>
               <div className="text-lg font-bold text-primary">
-                {venue.price_per_hour} {venue.currency}
+                {property.price_per_hour} {property.currency}
               </div>
             </div>
 
             {/* Capacity */}
             <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
               <Users className="size-4" />
-              <span>Up to {venue.capacity}</span>
+              <span>Up to {property.capacity}</span>
             </div>
           </div>
         </CardContent>

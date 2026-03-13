@@ -82,7 +82,7 @@ export function UserNav({ onAction }: { onAction?: () => void }) {
           </LocalizedLink>
         </DropdownMenuItem>
         {user.scopes?.some(
-          (s: string) => s.startsWith("admin:") || s === "venues:me",
+          (s: string) => s.startsWith("admin:") || s === "properties:me",
         ) && (
           <DropdownMenuItem asChild>
             <a href="/admin" onClick={onAction} className="gap-1.5">

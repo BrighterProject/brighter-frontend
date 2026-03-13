@@ -5,27 +5,27 @@ const contactsContent = {
   content: {
     meta: {
       title: t({
-        en: "Contact Us | Ploshtadka.BG",
-        bg: "Контакти | Ploshtadka.BG",
+        en: "Contact Us | Brighter.BG",
+        bg: "Контакти | Brighter.BG",
       }),
       description: t({
-        en: "Get in touch with the Ploshtadka.BG team. We'd love to hear from you.",
-        bg: "Свържете се с екипа на Ploshtadka.BG. Ще се радваме да чуем от вас.",
+        en: "Get in touch with the Brighter.BG team. We'd love to hear from you.",
+        bg: "Свържете се с екипа на Brighter.BG. Ще се радваме да чуем от вас.",
       }),
     },
     title: t({ en: "Contact Us", bg: "Свържете се с нас" }),
     subtitle: t({
-      en: "Have a question, want to list your venue, or just want to say hi? We'd love to hear from you.",
+      en: "Have a question, want to list your property, or just want to say hi? We'd love to hear from you.",
       bg: "Имате въпрос, искате да добавите обект или просто искате да кажете здравей? Ще се радваме да чуем от вас.",
     }),
     channels: {
       email: {
         label: t({ en: "Email", bg: "Имейл" }),
         description: t({
-          en: "For general inquiries and venue listings",
+          en: "For general inquiries and property listings",
           bg: "За общи запитвания и добавяне на обекти",
         }),
-        value: "contact@ploshtadka.bg",
+        value: "contact@brighter.bg",
       },
       github: {
         label: t({ en: "GitHub", bg: "GitHub" }),
@@ -33,7 +33,7 @@ const contactsContent = {
           en: "Report bugs, request features, or contribute",
           bg: "Докладвайте бъгове, предложете функции или допринесете",
         }),
-        value: "github.com/PloshtadkaBG",
+        value: "github.com/BrighterProject",
       },
       location: {
         label: t({ en: "Location", bg: "Местоположение" }),

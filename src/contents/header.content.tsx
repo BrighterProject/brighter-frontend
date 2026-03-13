@@ -4,13 +4,13 @@ const headerContent = {
   key: "header",
   content: {
     brand: t({
-      en: "Ploshtadka.BG",
-      bg: "Ploshtadka.BG",
+      en: "Brighter.BG",
+      bg: "Brighter.BG",
     }),
     navLinks: [
       {
-        href: "/venues",
-        label: t({ en: "Venues", bg: "Обекти" }),
+        href: "/properties",
+        label: t({ en: "Properties", bg: "Обекти" }),
       },
       {
         href: "/about-us",
@@ -22,7 +22,7 @@ const headerContent = {
       },
     ],
     cta: t({
-      en: "Find Venues",
+      en: "Find Properties",
       bg: "Намери обект",
     }),
     aria: {

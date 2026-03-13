@@ -147,10 +147,10 @@ export function MyBookings() {
             <Button
               variant="outline"
               onClick={() =>
-                navigate({ to: "/{-$locale}/venues" as any } as any)
+                navigate({ to: "/{-$locale}/properties" as any } as any)
               }
             >
-              {c.browseVenues}
+              {c.browseProperties}
             </Button>
           </div>
         ) : (
@@ -173,7 +173,7 @@ export function MyBookings() {
                     <div className="min-w-0 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-mono text-xs text-muted-foreground">
-                          {c.venue}: {booking.venue_id.slice(0, 8)}…
+                          {c.property}: {booking.property_id.slice(0, 8)}…
                         </span>
                         <span
                           className={cn(

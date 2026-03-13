@@ -1,20 +1,20 @@
 import { t, type Dictionary } from "intlayer";
 
-const venuesListContent = {
-  key: "venues-list",
+const propertiesListContent = {
+  key: "properties-list",
   content: {
     meta: {
       title: t({
-        en: "Browse Venues | Ploshtadka.BG",
-        bg: "Разгледайте бази | Ploshtadka.BG",
+        en: "Browse Properties | Brighter.BG",
+        bg: "Разгледайте бази | Brighter.BG",
       }),
       description: t({
-        en: "Find and book sports venues near you — football, tennis, basketball and more.",
+        en: "Find and book sports properties near you — football, tennis, basketball and more.",
         bg: "Намерете и резервирайте спортни бази близо до вас — футбол, тенис, баскетбол и още.",
       }),
     },
     title: t({
-      en: "Browse venues",
+      en: "Browse properties",
       bg: "Разгледайте бази",
     }),
     subtitle: t({
@@ -44,19 +44,19 @@ const venuesListContent = {
       clear: t({ en: "Clear", bg: "Изчисти" }),
     },
     results: {
-      venue: t({ en: "venue", bg: "база" }),
-      venues: t({ en: "venues", bg: "бази" }),
+      property: t({ en: "property", bg: "база" }),
+      properties: t({ en: "properties", bg: "бази" }),
       found: t({ en: "found", bg: "намерени" }),
     },
     empty: {
-      title: t({ en: "No venues found", bg: "Няма намерени бази" }),
+      title: t({ en: "No properties found", bg: "Няма намерени бази" }),
       subtitle: t({
         en: "Try adjusting your filters.",
         bg: "Опитайте да промените филтрите.",
       }),
     },
     error: t({
-      en: "Failed to load venues. Please try again.",
+      en: "Failed to load properties. Please try again.",
       bg: "Неуспешно зареждане на бази. Моля, опитайте отново.",
     }),
     card: {
@@ -76,4 +76,4 @@ const venuesListContent = {
   },
 } satisfies Dictionary;
 
-export default venuesListContent;
+export default propertiesListContent;

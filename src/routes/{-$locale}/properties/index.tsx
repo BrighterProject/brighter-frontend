@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
-import { VenuesList } from "@/features/Venues/components/venues-list";
+import { PropertiesList } from "@/features/Properties/components/properties-list";
 
-export const Route = createFileRoute("/{-$locale}/venues/")({
-  component: VenuesList,
+export const Route = createFileRoute("/{-$locale}/properties/")({
+  component: PropertiesList,
   head: ({ params }) => {
     const { locale } = params;
-    const meta = getIntlayer("venues-list", locale).meta;
+    const meta = getIntlayer("properties-list", locale).meta;
     return {
       meta: [
         { title: meta.title },

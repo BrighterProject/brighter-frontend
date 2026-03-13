@@ -11,14 +11,14 @@ import {
   useMyBookings,
   useOccupiedSlots,
 } from "../api/hooks";
-import type { VenueResponse } from "@/features/Venues/api/types";
+import type { PropertyResponse } from "@/features/Properties/api/types";
 
 interface BookingFormProps {
-  venue: VenueResponse;
+  property: PropertyResponse;
 }
 
 // JS getDay() 0=Sun…6=Sat → Python weekday 0=Mon…6=Sun
-function jsDateToVenueKey(d: Date): string {
+function jsDateToPropertyKey(d: Date): string {
   return String((d.getDay() + 6) % 7);
 }
 
@@ -68,14 +68,14 @@ const LEGEND: { key: CellState; labelKey: string }[] = [
   { key: "outside", labelKey: "closed" },
 ];
 
-export function BookingForm({ venue }: BookingFormProps) {
+export function BookingForm({ property }: BookingFormProps) {
   const c = useIntlayer("booking-form");
   const navigate = useNavigate();
   const { getLocale } = useLocaleStorage();
   const createBooking = useCreateBooking();
   const createCheckout = useCreateCheckout(getLocale());
   const { data: myBookings = [] } = useMyBookings();
-  const { data: occupiedSlots = [] } = useOccupiedSlots(venue.id);
+  const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
 
   const [weekOffset, setWeekOffset] = useState(0);
   const [selDate, setSelDate] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export function BookingForm({ venue }: BookingFormProps) {
   const [minHour, maxHour] = useMemo(() => {
     let min = 8,
       max = 22;
-    for (const v of Object.values(venue.working_hours)) {
+    for (const v of Object.values(property.working_hours)) {
       if (!v) continue;
       const o = parseInt(v.open);
       const c = parseInt(v.close);
@@ -103,22 +103,22 @@ export function BookingForm({ venue }: BookingFormProps) {
       if (c > max) max = c;
     }
     return [min, max];
-  }, [venue.working_hours]);
+  }, [property.working_hours]);
 
   const hours = useMemo(
     () => Array.from({ length: maxHour - minHour }, (_, i) => minHour + i),
     [minHour, maxHour],
   );
 
-  const myVenueBookings = useMemo(
+  const myPropertyBookings = useMemo(
     () =>
       myBookings.filter(
         (b) =>
-          b.venue_id === venue.id &&
+          b.property_id === property.id &&
           b.status !== "cancelled" &&
           b.status !== "no_show",
       ),
-    [myBookings, venue.id],
+    [myBookings, property.id],
   );
 
   function getCellState(
@@ -132,8 +132,8 @@ export function BookingForm({ venue }: BookingFormProps) {
       return "past";
     }
 
-    const key = jsDateToVenueKey(dateObj);
-    const wh = venue.working_hours[key] ?? venue.working_hours["default"];
+    const key = jsDateToPropertyKey(dateObj);
+    const wh = property.working_hours[key] ?? property.working_hours["default"];
     if (!wh || hour < parseInt(wh.open) || hour >= parseInt(wh.close)) {
       return "outside";
     }
@@ -144,7 +144,7 @@ export function BookingForm({ venue }: BookingFormProps) {
     const cellEnd = new Date(
       `${dateStr}T${String(hour + 1).padStart(2, "0")}:00:00`,
     );
-    for (const u of venue.unavailabilities) {
+    for (const u of property.unavailabilities) {
       const us = new Date(u.start_datetime);
       const ue = new Date(u.end_datetime);
       if (cellStart < ue && cellEnd > us) return "unavailable";
@@ -156,7 +156,7 @@ export function BookingForm({ venue }: BookingFormProps) {
       if (cellStart < be && cellEnd > bs) return "booked";
     }
 
-    for (const b of myVenueBookings) {
+    for (const b of myPropertyBookings) {
       const bs = new Date(b.start_datetime);
       const be = new Date(b.end_datetime);
       if (cellStart < be && cellEnd > bs) return "mine";
@@ -210,7 +210,7 @@ export function BookingForm({ venue }: BookingFormProps) {
         ? 1
         : 0;
   const totalPrice =
-    duration > 0 ? (Number(venue.price_per_hour) * duration).toFixed(2) : null;
+    duration > 0 ? (Number(property.price_per_hour) * duration).toFixed(2) : null;
 
   const formattedSel = useMemo(() => {
     if (!selDate || selStart === null) return null;
@@ -235,7 +235,7 @@ export function BookingForm({ venue }: BookingFormProps) {
     let booking;
     try {
       booking = await createBooking.mutateAsync({
-        venue_id: venue.id,
+        property_id: property.id,
         start_datetime: offsetAwareISO(selDate, selStart),
         end_datetime: offsetAwareISO(selDate, endH + 1),
         notes: notes.trim() || null,
@@ -276,8 +276,8 @@ export function BookingForm({ venue }: BookingFormProps) {
           type="button"
           onClick={() =>
             navigate({
-              to: "/{-$locale}/venues/$venueId" as any,
-              params: { venueId: venue.id } as any,
+              to: "/{-$locale}/properties/$propertyId" as any,
+              params: { propertyId: property.id } as any,
             })
           }
           className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -287,7 +287,7 @@ export function BookingForm({ venue }: BookingFormProps) {
         </button>
 
         <h1 className="mb-6 font-display text-2xl font-bold tracking-tight text-foreground">
-          {c.title} <span className="text-primary">{venue.name}</span>
+          {c.title} <span className="text-primary">{property.name}</span>
         </h1>
 
         <form onSubmit={handleSubmit}>
@@ -428,14 +428,14 @@ export function BookingForm({ venue }: BookingFormProps) {
               <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
                 <div>
                   <p className="truncate font-display font-semibold text-foreground">
-                    {venue.name}
+                    {property.name}
                   </p>
                   <div className="mt-1 flex items-baseline gap-1">
                     <span className="font-display text-2xl font-bold text-foreground">
-                      {Number(venue.price_per_hour).toFixed(0)}
+                      {Number(property.price_per_hour).toFixed(0)}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {venue.currency} {c.summary.perHour}
+                      {property.currency} {c.summary.perHour}
                     </span>
                   </div>
                 </div>
@@ -456,7 +456,7 @@ export function BookingForm({ venue }: BookingFormProps) {
                       <div className="flex justify-between border-t pt-1 text-base font-semibold text-foreground">
                         <span>{c.summary.total}</span>
                         <span>
-                          {totalPrice} {venue.currency}
+                          {totalPrice} {property.currency}
                         </span>
                       </div>
                     </>

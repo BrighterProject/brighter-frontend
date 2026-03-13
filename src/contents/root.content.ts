@@ -5,8 +5,8 @@ const rootContent = {
   content: {
     meta: {
       title: t({
-        en: "Book Sports Venues in Bulgaria | Ploshtadka.BG",
-        bg: "Резервирай спортни игрища в България | Ploshtadka.BG",
+        en: "Book Sports Properties in Bulgaria | Brighter.BG",
+        bg: "Резервирай спортни игрища в България | Brighter.BG",
       }),
       description: t({
         en: "The easiest way to find and book football, basketball, and tennis courts. Join the community of athletes in Bulgaria.",

@@ -7,7 +7,7 @@ export type SportType =
   | "gym"
   | "padel"
   | "other";
-export type VenueStatus =
+export type PropertyStatus =
   | "active"
   | "inactive"
   | "maintenance"
@@ -18,12 +18,12 @@ export interface DayHours {
   close: string;
 }
 
-export interface VenueListItem {
+export interface PropertyListItem {
   id: string;
   name: string;
   city: string;
   sport_types: SportType[];
-  status: VenueStatus;
+  status: PropertyStatus;
   price_per_hour: string;
   currency: string;
   capacity: number;
@@ -33,7 +33,7 @@ export interface VenueListItem {
   thumbnail?: string | null;
 }
 
-export interface VenueResponse extends Omit<VenueListItem, "thumbnail"> {
+export interface PropertyResponse extends Omit<PropertyListItem, "thumbnail"> {
   description: string;
   address: string;
   latitude?: string | null;
@@ -43,11 +43,11 @@ export interface VenueResponse extends Omit<VenueListItem, "thumbnail"> {
   updated_at: string;
   amenities: string[];
   working_hours: Record<string, DayHours>;
-  images: VenueImageResponse[];
-  unavailabilities: VenueUnavailabilityResponse[];
+  images: PropertyImageResponse[];
+  unavailabilities: PropertyUnavailabilityResponse[];
 }
 
-export interface VenueCreate {
+export interface PropertyCreate {
   name: string;
   description: string;
   sport_types: SportType[];
@@ -61,17 +61,17 @@ export interface VenueCreate {
   // ... other optional fields
 }
 
-export interface VenueImageResponse {
+export interface PropertyImageResponse {
   id: string;
-  venue_id: string;
+  property_id: string;
   url: string;
   is_thumbnail: boolean;
   order: number;
 }
 
-export interface VenueUnavailabilityResponse {
+export interface PropertyUnavailabilityResponse {
   id: string;
-  venue_id: string;
+  property_id: string;
   start_datetime: string;
   end_datetime: string;
   reason?: string | null;

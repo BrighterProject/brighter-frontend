@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
-import { useVenues } from "../api/hooks";
-import { VenueCard } from "./venue-card";
+import { useProperties } from "../api/hooks";
+import { PropertyCard } from "./property-card";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,10 +45,10 @@ function buildParams(filters: Filters) {
   return params;
 }
 
-export function VenuesList() {
+export function PropertiesList() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const navigate = useNavigate();
-  const c = useIntlayer("venues-list");
+  const c = useIntlayer("properties-list");
 
   const debouncedCity = useDebounce(filters.city, 400);
   const debouncedMinPrice = useDebounce(filters.min_price, 400);
@@ -62,10 +62,10 @@ export function VenuesList() {
   };
 
   const {
-    data: venues,
+    data: properties,
     isLoading,
     isError,
-  } = useVenues(buildParams(queryFilters));
+  } = useProperties(buildParams(queryFilters));
 
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -216,7 +216,7 @@ export function VenuesList() {
           </div>
         )}
 
-        {!isLoading && !isError && venues?.length === 0 && (
+        {!isLoading && !isError && properties?.length === 0 && (
           <div className="py-20 text-center">
             <SlidersHorizontal className="mx-auto mb-4 size-10 text-muted-foreground/40" />
             <p className="text-lg font-semibold text-foreground">
@@ -226,22 +226,22 @@ export function VenuesList() {
           </div>
         )}
 
-        {!isLoading && !isError && venues && venues.length > 0 && (
+        {!isLoading && !isError && properties && properties.length > 0 && (
           <>
             <p className="mb-4 text-sm text-muted-foreground">
-              {venues.length}{" "}
-              {venues.length === 1 ? c.results.venue : c.results.venues}{" "}
+              {properties.length}{" "}
+              {properties.length === 1 ? c.results.property : c.results.properties}{" "}
               {c.results.found}
             </p>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {venues.map((venue) => (
-                <VenueCard
-                  key={venue.id}
-                  venue={venue}
+              {properties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
                   onClick={() =>
                     navigate({
-                      to: "/{-$locale}/venues/$venueId" as any,
-                      params: { venueId: venue.id } as any,
+                      to: "/{-$locale}/properties/$propertyId" as any,
+                      params: { propertyId: property.id } as any,
                     })
                   }
                 />

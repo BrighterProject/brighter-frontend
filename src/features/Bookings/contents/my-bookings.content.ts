@@ -5,25 +5,25 @@ const myBookingsContent = {
   content: {
     meta: {
       title: t({
-        en: "My Bookings | Ploshtadka.BG",
-        bg: "Моите резервации | Ploshtadka.BG",
+        en: "My Bookings | Brighter.BG",
+        bg: "Моите резервации | Brighter.BG",
       }),
       description: t({
-        en: "View and manage your venue bookings.",
+        en: "View and manage your property bookings.",
         bg: "Преглед и управление на вашите резервации.",
       }),
     },
     title: t({ en: "My Bookings", bg: "Моите резервации" }),
     empty: t({
-      en: "No bookings yet. Browse venues to get started.",
+      en: "No bookings yet. Browse properties to get started.",
       bg: "Нямате резервации. Разгледайте базите, за да започнете.",
     }),
-    browseVenues: t({ en: "Browse venues", bg: "Разгледайте бази" }),
+    browseProperties: t({ en: "Browse properties", bg: "Разгледайте бази" }),
     cancel: t({ en: "Cancel", bg: "Откажи" }),
     cancelling: t({ en: "Cancelling...", bg: "Отказване..." }),
     payNow: t({ en: "Pay Now", bg: "Плати" }),
     paying: t({ en: "Loading...", bg: "Зарежда..." }),
-    venue: t({ en: "Venue", bg: "База" }),
+    property: t({ en: "Property", bg: "База" }),
     total: t({ en: "Total", bg: "Общо" }),
     toasts: {
       paymentSuccess: t({
@@ -60,7 +60,7 @@ const myBookingsContent = {
       notes: t({ en: "Notes", bg: "Бележки" }),
       references: t({ en: "References", bg: "Референции" }),
       bookingId: t({ en: "Booking ID", bg: "ID на резервация" }),
-      viewVenue: t({ en: "View venue →", bg: "Вижте базата →" }),
+      viewProperty: t({ en: "View property →", bg: "Вижте базата →" }),
       close: t({ en: "Close", bg: "Затвори" }),
       updatedAt: t({ en: "Last updated", bg: "Последна промяна" }),
     },

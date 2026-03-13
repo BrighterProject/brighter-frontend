@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import type { VenueResponse } from "../api/types";
+import type { PropertyResponse } from "../api/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -41,14 +41,14 @@ function getDistance(t1: React.Touch, t2: React.Touch) {
 function LightboxOverlay({
   images,
   index,
-  venueName,
+  propertyName,
   onClose,
   onPrev,
   onNext,
 }: {
   images: { id: string; url: string }[];
   index: number;
-  venueName: string;
+  propertyName: string;
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -198,7 +198,7 @@ function LightboxOverlay({
       >
         <img
           src={images[index].url}
-          alt={venueName}
+          alt={propertyName}
           className="max-h-[85vh] max-w-[95vw] select-none object-contain"
           draggable={false}
           style={{
@@ -228,25 +228,25 @@ function LightboxOverlay({
   );
 }
 
-interface VenueDetailProps {
-  venue: VenueResponse;
+interface PropertyDetailProps {
+  property: PropertyResponse;
 }
 
-export function VenueDetail({ venue }: VenueDetailProps) {
+export function PropertyDetail({ property }: PropertyDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const navigate = useNavigate();
   const localizedNavigate = useLocalizedNavigate();
-  const c = useIntlayer("venue-detail");
+  const c = useIntlayer("property-detail");
 
-  const images = venue.images.length > 0 ? venue.images : [];
+  const images = property.images.length > 0 ? property.images : [];
   const mainImage = images[selectedImage];
 
   const todayKey = String((new Date().getDay() + 6) % 7);
   const todayHours =
-    venue.working_hours[todayKey] ?? venue.working_hours["default"];
+    property.working_hours[todayKey] ?? property.working_hours["default"];
 
   const todayStr = new Date().toISOString().split("T")[0];
-  const todayUnavailabilities = venue.unavailabilities.filter((u) => {
+  const todayUnavailabilities = property.unavailabilities.filter((u) => {
     const start = u.start_datetime.split("T")[0];
     const end = u.end_datetime.split("T")[0];
     return start <= todayStr && end >= todayStr;
@@ -254,8 +254,8 @@ export function VenueDetail({ venue }: VenueDetailProps) {
 
   const handleBook = () => {
     navigate({
-      to: "/{-$locale}/venues/$venueId/book" as any,
-      params: { venueId: venue.id } as any,
+      to: "/{-$locale}/properties/$propertyId/book" as any,
+      params: { propertyId: property.id } as any,
     });
   };
 
@@ -298,7 +298,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
         <LightboxOverlay
           images={images}
           index={lightboxIndex}
-          venueName={venue.name}
+          propertyName={property.name}
           onClose={closeLightbox}
           onPrev={lightboxPrev}
           onNext={lightboxNext}
@@ -308,7 +308,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           {/* Back */}
           <button
-            onClick={() => navigate({ to: "/{-$locale}/venues" as any } as any)}
+            onClick={() => navigate({ to: "/{-$locale}/properties" as any } as any)}
             className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ChevronLeft className="size-4" />
@@ -326,7 +326,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                 >
                   <img
                     src={mainImage.url}
-                    alt={venue.name}
+                    alt={property.name}
                     className="size-full object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
@@ -376,38 +376,38 @@ export function VenueDetail({ venue }: VenueDetailProps) {
               {/* Header */}
               <div>
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  {venue.sport_types.map((s) => (
+                  {property.sport_types.map((s) => (
                     <Badge key={s} variant="secondary" className="font-medium">
                       {c.sports[s] ?? s}
                     </Badge>
                   ))}
-                  <Badge variant={STATUS_VARIANT[venue.status] ?? "outline"}>
-                    {c.status[venue.status] ?? venue.status}
+                  <Badge variant={STATUS_VARIANT[property.status] ?? "outline"}>
+                    {c.status[property.status] ?? property.status}
                   </Badge>
                   <Badge variant="outline">
-                    {venue.is_indoor ? c.indoor : c.outdoor}
+                    {property.is_indoor ? c.indoor : c.outdoor}
                   </Badge>
                 </div>
 
                 <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  {venue.name}
+                  {property.name}
                 </h1>
 
                 <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <MapPin className="size-3.5" />
-                    {venue.address}, {venue.city}
+                    {property.address}, {property.city}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Star className="size-3.5 fill-yellow-500 text-yellow-500" />
-                    {Number(venue.rating).toFixed(1)}
+                    {Number(property.rating).toFixed(1)}
                     <span className="text-muted-foreground/60">
-                      ({venue.total_reviews})
+                      ({property.total_reviews})
                     </span>
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Users className="size-3.5" />
-                    {c.upTo} {venue.capacity} {c.people}
+                    {c.upTo} {property.capacity} {c.people}
                   </span>
                 </div>
               </div>
@@ -420,12 +420,12 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                   {c.sections.about}
                 </h2>
                 <p className="mt-2 leading-relaxed text-muted-foreground">
-                  {venue.description}
+                  {property.description}
                 </p>
               </div>
 
               {/* Amenities */}
-              {venue.amenities.length > 0 && (
+              {property.amenities.length > 0 && (
                 <>
                   <hr className="border-border" />
                   <div>
@@ -433,7 +433,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                       {c.sections.amenities}
                     </h2>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {venue.amenities.map((a) => (
+                      {property.amenities.map((a) => (
                         <Badge
                           key={a}
                           variant="outline"
@@ -458,8 +458,8 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                 <div className="mt-3 grid gap-x-12 sm:grid-cols-2">
                   {DAY_KEYS.map((day) => {
                     const hours =
-                      venue.working_hours[day] ??
-                      venue.working_hours["default"];
+                      property.working_hours[day] ??
+                      property.working_hours["default"];
                     const isToday = day === todayKey;
                     return (
                       <div
@@ -570,10 +570,10 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                 {/* Price */}
                 <div className="flex items-baseline gap-1.5">
                   <span className="font-display text-3xl font-bold text-foreground">
-                    {Number(venue.price_per_hour).toFixed(0)}
+                    {Number(property.price_per_hour).toFixed(0)}
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {venue.currency} {c.bookingCard.perHour}
+                    {property.currency} {c.bookingCard.perHour}
                   </span>
                 </div>
 
@@ -596,7 +596,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                       {c.bookingCard.capacity}
                     </span>
                     <span className="font-medium text-foreground">
-                      {venue.capacity} {c.bookingCard.people}
+                      {property.capacity} {c.bookingCard.people}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -604,7 +604,7 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                       {c.bookingCard.type}
                     </span>
                     <span className="font-medium text-foreground">
-                      {venue.is_indoor ? c.indoor : c.outdoor}
+                      {property.is_indoor ? c.indoor : c.outdoor}
                     </span>
                   </div>
                 </div>
@@ -612,20 +612,20 @@ export function VenueDetail({ venue }: VenueDetailProps) {
                 <Button
                   size="lg"
                   className="w-full gap-2 rounded-xl shadow-lg shadow-primary/20"
-                  disabled={venue.status !== "active"}
+                  disabled={property.status !== "active"}
                   onClick={handleBook}
                 >
                   <CalendarCheck className="size-4" />
-                  {venue.status === "active"
+                  {property.status === "active"
                     ? c.bookingCard.bookNow
                     : c.bookingCard.unavailable}
                 </Button>
 
-                {venue.status !== "active" && (
+                {property.status !== "active" && (
                   <p className="text-center text-xs text-muted-foreground">
                     {c.bookingCard.statusNote}{" "}
                     <span className="lowercase">
-                      {c.status[venue.status] ?? venue.status}
+                      {c.status[property.status] ?? property.status}
                     </span>
                     .
                   </p>

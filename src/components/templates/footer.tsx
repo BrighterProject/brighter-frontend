@@ -67,10 +67,10 @@ const Footer: FC = () => {
             <ul className="mt-4 space-y-2.5">
               <li>
                 <LocalizedLink
-                  to="/venues"
+                  to="/properties"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  {content.sections.quickLinks.venues}
+                  {content.sections.quickLinks.properties}
                 </LocalizedLink>
               </li>
               <li>
@@ -92,7 +92,7 @@ const Footer: FC = () => {
             </ul>
           </div>
 
-          {/* For Venue Owners */}
+          {/* For Property Owners */}
           <div>
             <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
               {content.sections.forOwners.title}
@@ -103,7 +103,7 @@ const Footer: FC = () => {
                   to="/about-us"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  {content.sections.forOwners.listVenue}
+                  {content.sections.forOwners.listProperty}
                 </LocalizedLink>
               </li>
               <li>
