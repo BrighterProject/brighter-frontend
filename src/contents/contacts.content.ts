@@ -16,14 +16,14 @@ const contactsContent = {
     title: t({ en: "Contact Us", bg: "Свържете се с нас" }),
     subtitle: t({
       en: "Have a question, want to list your property, or just want to say hi? We'd love to hear from you.",
-      bg: "Имате въпрос, искате да добавите обект или просто искате да кажете здравей? Ще се радваме да чуем от вас.",
+      bg: "Имате въпрос, искате да добавите имот или просто искате да кажете здравей? Ще се радваме да чуем от вас.",
     }),
     channels: {
       email: {
         label: t({ en: "Email", bg: "Имейл" }),
         description: t({
           en: "For general inquiries and property listings",
-          bg: "За общи запитвания и добавяне на обекти",
+          bg: "За общи запитвания и добавяне на имоти",
         }),
         value: "contact@brighter.bg",
       },

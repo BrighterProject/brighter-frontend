@@ -1,12 +1,3 @@
-export type SportType =
-  | "football"
-  | "basketball"
-  | "tennis"
-  | "volleyball"
-  | "swimming"
-  | "gym"
-  | "padel"
-  | "other";
 export type PropertyStatus =
   | "active"
   | "inactive"
@@ -22,12 +13,10 @@ export interface PropertyListItem {
   id: string;
   name: string;
   city: string;
-  sport_types: SportType[];
   status: PropertyStatus;
   price_per_hour: string;
   currency: string;
   capacity: number;
-  is_indoor: boolean;
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;
@@ -50,15 +39,12 @@ export interface PropertyResponse extends Omit<PropertyListItem, "thumbnail"> {
 export interface PropertyCreate {
   name: string;
   description: string;
-  sport_types: SportType[];
   address: string;
   city: string;
   price_per_hour: number | string;
   currency?: string;
   capacity?: number;
-  is_indoor?: boolean;
   working_hours?: Record<string, DayHours>;
-  // ... other optional fields
 }
 
 export interface PropertyImageResponse {

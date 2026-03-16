@@ -6,22 +6,22 @@ const bookingFormContent = {
     meta: {
       title: t({
         en: "Book Property | Brighter.BG",
-        bg: "Резервирай база | Brighter.BG",
+        bg: "Резервирай имот | Brighter.BG",
       }),
       description: t({
         en: "Book your slot at this property.",
-        bg: "Резервирайте своя час в тази база.",
+        bg: "Резервирайте своя час в този имот.",
       }),
     },
-    back: t({ en: "Back to property", bg: "Към базата" }),
+    back: t({ en: "Back to property", bg: "Към имота" }),
     title: t({ en: "Book", bg: "Резервирай" }),
     grid: {
       instruction: t({
         en: "Click a slot to start, click another to set the end",
         bg: "Кликни за начало, кликни отново за края",
       }),
-      prev: t({ en: "← Prev", bg: "← Назад" }),
-      next: t({ en: "Next →", bg: "Напред →" }),
+      prev: t({ en: "\u2190 Prev", bg: "\u2190 Назад" }),
+      next: t({ en: "Next \u2192", bg: "Напред \u2192" }),
       legend: {
         available: t({ en: "Available", bg: "Свободно" }),
         closed: t({ en: "Closed", bg: "Затворено" }),

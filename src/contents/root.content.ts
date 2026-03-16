@@ -5,12 +5,12 @@ const rootContent = {
   content: {
     meta: {
       title: t({
-        en: "Book Sports Properties in Bulgaria | Brighter.BG",
-        bg: "Резервирай спортни игрища в България | Brighter.BG",
+        en: "Book Properties in Bulgaria | Brighter.BG",
+        bg: "Резервирай имоти в България | Brighter.BG",
       }),
       description: t({
-        en: "The easiest way to find and book football, basketball, and tennis courts. Join the community of athletes in Bulgaria.",
-        bg: "Най-лесният начин да намерите и резервирате футболни, баскетболни и тенис игрища. Присъединете се към спортната общност в България.",
+        en: "The easiest way to find and book apartments, houses, and venues. Discover great places across Bulgaria.",
+        bg: "Най-лесният начин да намерите и резервирате апартаменти, къщи и обекти. Открийте страхотни места из България.",
       }),
     },
   },

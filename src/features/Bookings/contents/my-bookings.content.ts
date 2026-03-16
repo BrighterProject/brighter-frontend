@@ -16,14 +16,14 @@ const myBookingsContent = {
     title: t({ en: "My Bookings", bg: "Моите резервации" }),
     empty: t({
       en: "No bookings yet. Browse properties to get started.",
-      bg: "Нямате резервации. Разгледайте базите, за да започнете.",
+      bg: "Нямате резервации. Разгледайте имотите, за да започнете.",
     }),
-    browseProperties: t({ en: "Browse properties", bg: "Разгледайте бази" }),
+    browseProperties: t({ en: "Browse properties", bg: "Разгледайте имоти" }),
     cancel: t({ en: "Cancel", bg: "Откажи" }),
     cancelling: t({ en: "Cancelling...", bg: "Отказване..." }),
     payNow: t({ en: "Pay Now", bg: "Плати" }),
     paying: t({ en: "Loading...", bg: "Зарежда..." }),
-    property: t({ en: "Property", bg: "База" }),
+    property: t({ en: "Property", bg: "Имот" }),
     total: t({ en: "Total", bg: "Общо" }),
     toasts: {
       paymentSuccess: t({
@@ -31,8 +31,8 @@ const myBookingsContent = {
         bg: "Плащането е успешно! Резервацията ви ще бъде потвърдена скоро.",
       }),
       paymentCancelled: t({
-        en: "Payment cancelled. Your booking has been released — please rebook.",
-        bg: "Плащането е отказано. Резервацията ви е освободена — моля резервирайте отново.",
+        en: "Payment cancelled. Your booking has been released \u2014 please rebook.",
+        bg: "Плащането е отказано. Резервацията ви е освободена \u2014 моля резервирайте отново.",
       }),
     },
     paymentStatus: {
@@ -60,7 +60,7 @@ const myBookingsContent = {
       notes: t({ en: "Notes", bg: "Бележки" }),
       references: t({ en: "References", bg: "Референции" }),
       bookingId: t({ en: "Booking ID", bg: "ID на резервация" }),
-      viewProperty: t({ en: "View property →", bg: "Вижте базата →" }),
+      viewProperty: t({ en: "View property \u2192", bg: "Вижте имота \u2192" }),
       close: t({ en: "Close", bg: "Затвори" }),
       updatedAt: t({ en: "Last updated", bg: "Последна промяна" }),
     },

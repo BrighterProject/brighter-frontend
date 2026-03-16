@@ -4,30 +4,15 @@ const headerContent = {
   key: "header",
   content: {
     brand: t({
-      en: "Brighter.BG",
-      bg: "Brighter.BG",
+      en: "BrighterProject",
+      bg: "BrighterProject",
     }),
-    navLinks: [
-      {
-        href: "/properties",
-        label: t({ en: "Properties", bg: "Обекти" }),
-      },
-      {
-        href: "/about-us",
-        label: t({ en: "About", bg: "За нас" }),
-      },
-      {
-        href: "/contacts",
-        label: t({ en: "Contacts", bg: "Контакти" }),
-      },
-    ],
-    cta: t({
-      en: "Find Properties",
-      bg: "Намери обект",
-    }),
+    signIn: t({ en: "Sign in", bg: "Вход" }),
+    createAccount: t({ en: "Create account", bg: "Регистрация" }),
     aria: {
       nav: t({ en: "Primary", bg: "Основна навигация" }),
       toggle: t({ en: "Toggle menu", bg: "Превключване на менюто" }),
+      help: t({ en: "Help", bg: "Помощ" }),
     },
   },
 } satisfies Dictionary;

@@ -17,8 +17,10 @@ import { Route as Char123LocaleChar125404RouteImport } from './routes/{-$locale}
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
 import { Route as Char123LocaleChar125PropertiesIndexRouteImport } from './routes/{-$locale}/properties/index'
 import { Route as Char123LocaleChar125BookingsIndexRouteImport } from './routes/{-$locale}/bookings/index'
+import { Route as Char123LocaleChar125AuthVerifyEmailRouteImport } from './routes/{-$locale}/auth/verify-email'
 import { Route as Char123LocaleChar125AuthSignupRouteImport } from './routes/{-$locale}/auth/signup'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/auth/login'
+import { Route as Char123LocaleChar125AuthCheckEmailRouteImport } from './routes/{-$locale}/auth/check-email'
 import { Route as Char123LocaleChar125PropertiesPropertyIdIndexRouteImport } from './routes/{-$locale}/properties/$propertyId/index'
 import { Route as Char123LocaleChar125PropertiesPropertyIdBookRouteImport } from './routes/{-$locale}/properties/$propertyId/book'
 
@@ -69,6 +71,12 @@ const Char123LocaleChar125BookingsIndexRoute =
     path: '/bookings/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125AuthVerifyEmailRoute =
+  Char123LocaleChar125AuthVerifyEmailRouteImport.update({
+    id: '/auth/verify-email',
+    path: '/auth/verify-email',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125AuthSignupRoute =
   Char123LocaleChar125AuthSignupRouteImport.update({
     id: '/auth/signup',
@@ -79,6 +87,12 @@ const Char123LocaleChar125AuthLoginRoute =
   Char123LocaleChar125AuthLoginRouteImport.update({
     id: '/auth/login',
     path: '/auth/login',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125AuthCheckEmailRoute =
+  Char123LocaleChar125AuthCheckEmailRouteImport.update({
+    id: '/auth/check-email',
+    path: '/auth/check-email',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125PropertiesPropertyIdIndexRoute =
@@ -101,8 +115,10 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
+  '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
@@ -114,8 +130,10 @@ export interface FileRoutesByTo {
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
+  '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
   '/{-$locale}/bookings': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
@@ -129,8 +147,10 @@ export interface FileRoutesById {
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
+  '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
@@ -145,8 +165,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/about-us'
     | '/{-$locale}/contacts'
     | '/{-$locale}/'
+    | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
+    | '/{-$locale}/auth/verify-email'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
@@ -158,8 +180,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/about-us'
     | '/{-$locale}/contacts'
     | '/{-$locale}'
+    | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
+    | '/{-$locale}/auth/verify-email'
     | '/{-$locale}/bookings'
     | '/{-$locale}/properties'
     | '/{-$locale}/properties/$propertyId/book'
@@ -172,8 +196,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/about-us'
     | '/{-$locale}/contacts'
     | '/{-$locale}/'
+    | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
+    | '/{-$locale}/auth/verify-email'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
@@ -242,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125BookingsIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/auth/verify-email': {
+      id: '/{-$locale}/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/{-$locale}/auth/verify-email'
+      preLoaderRoute: typeof Char123LocaleChar125AuthVerifyEmailRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/auth/signup': {
       id: '/{-$locale}/auth/signup'
       path: '/auth/signup'
@@ -254,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/login'
       fullPath: '/{-$locale}/auth/login'
       preLoaderRoute: typeof Char123LocaleChar125AuthLoginRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/auth/check-email': {
+      id: '/{-$locale}/auth/check-email'
+      path: '/auth/check-email'
+      fullPath: '/{-$locale}/auth/check-email'
+      preLoaderRoute: typeof Char123LocaleChar125AuthCheckEmailRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/properties/$propertyId/': {
@@ -279,8 +319,10 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125AboutUsRoute: typeof Char123LocaleChar125AboutUsRoute
   Char123LocaleChar125ContactsRoute: typeof Char123LocaleChar125ContactsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
+  Char123LocaleChar125AuthCheckEmailRoute: typeof Char123LocaleChar125AuthCheckEmailRoute
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
   Char123LocaleChar125AuthSignupRoute: typeof Char123LocaleChar125AuthSignupRoute
+  Char123LocaleChar125AuthVerifyEmailRoute: typeof Char123LocaleChar125AuthVerifyEmailRoute
   Char123LocaleChar125BookingsIndexRoute: typeof Char123LocaleChar125BookingsIndexRoute
   Char123LocaleChar125PropertiesIndexRoute: typeof Char123LocaleChar125PropertiesIndexRoute
   Char123LocaleChar125PropertiesPropertyIdBookRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
@@ -294,11 +336,16 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125AboutUsRoute: Char123LocaleChar125AboutUsRoute,
     Char123LocaleChar125ContactsRoute: Char123LocaleChar125ContactsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
+    Char123LocaleChar125AuthCheckEmailRoute:
+      Char123LocaleChar125AuthCheckEmailRoute,
     Char123LocaleChar125AuthLoginRoute: Char123LocaleChar125AuthLoginRoute,
     Char123LocaleChar125AuthSignupRoute: Char123LocaleChar125AuthSignupRoute,
+    Char123LocaleChar125AuthVerifyEmailRoute:
+      Char123LocaleChar125AuthVerifyEmailRoute,
     Char123LocaleChar125BookingsIndexRoute:
       Char123LocaleChar125BookingsIndexRoute,
-    Char123LocaleChar125PropertiesIndexRoute: Char123LocaleChar125PropertiesIndexRoute,
+    Char123LocaleChar125PropertiesIndexRoute:
+      Char123LocaleChar125PropertiesIndexRoute,
     Char123LocaleChar125PropertiesPropertyIdBookRoute:
       Char123LocaleChar125PropertiesPropertyIdBookRoute,
     Char123LocaleChar125PropertiesPropertyIdIndexRoute:

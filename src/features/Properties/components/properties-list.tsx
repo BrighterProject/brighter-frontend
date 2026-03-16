@@ -6,40 +6,22 @@ import { PropertyCard } from "./property-card";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { SportType } from "../api/types";
-
-const SPORT_VALUES: SportType[] = [
-  "football",
-  "basketball",
-  "tennis",
-  "volleyball",
-  "swimming",
-  "gym",
-  "padel",
-  "other",
-];
 
 interface Filters {
-  sport_type: SportType | "";
   city: string;
-  is_indoor: boolean | undefined;
   min_price: string;
   max_price: string;
 }
 
 const INITIAL_FILTERS: Filters = {
-  sport_type: "",
   city: "",
-  is_indoor: undefined,
   min_price: "",
   max_price: "",
 };
 
 function buildParams(filters: Filters) {
   const params: Record<string, unknown> = {};
-  if (filters.sport_type) params.sport_type = filters.sport_type;
   if (filters.city.trim()) params.city = filters.city.trim();
-  if (filters.is_indoor !== undefined) params.is_indoor = filters.is_indoor;
   if (filters.min_price) params.min_price = filters.min_price;
   if (filters.max_price) params.max_price = filters.max_price;
   return params;
@@ -71,17 +53,9 @@ export function PropertiesList() {
     setFilters((prev) => ({ ...prev, [key]: value }));
 
   const hasActiveFilters =
-    filters.sport_type ||
     filters.city ||
-    filters.is_indoor !== undefined ||
     filters.min_price ||
     filters.max_price;
-
-  const typeOptions = [
-    { label: c.filters.type.all, value: undefined },
-    { label: c.filters.type.indoor, value: true },
-    { label: c.filters.type.outdoor, value: false },
-  ] as const;
 
   return (
     <div className="min-h-screen">
@@ -97,27 +71,6 @@ export function PropertiesList() {
         {/* Filter bar */}
         <div className="mb-8 rounded-2xl border bg-card p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
-            {/* Sport type */}
-            <div className="flex min-w-36 flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">
-                {c.filters.sport.label}
-              </label>
-              <select
-                value={filters.sport_type}
-                onChange={(e) =>
-                  set("sport_type", e.target.value as SportType | "")
-                }
-                className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">{c.filters.sport.all}</option>
-                {SPORT_VALUES.map((v) => (
-                  <option key={v} value={v}>
-                    {c.sports[v]}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* City */}
             <div className="flex min-w-36 flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">
@@ -149,7 +102,7 @@ export function PropertiesList() {
                   onChange={(e) => set("min_price", e.target.value)}
                   className="h-9 w-20 rounded-lg border border-input bg-transparent px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
                 />
-                <span className="text-sm text-muted-foreground">–</span>
+                <span className="text-sm text-muted-foreground">&ndash;</span>
                 <input
                   type="number"
                   placeholder={c.filters.price.max.value as string}
@@ -158,28 +111,6 @@ export function PropertiesList() {
                   onChange={(e) => set("max_price", e.target.value)}
                   className="h-9 w-20 rounded-lg border border-input bg-transparent px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
                 />
-              </div>
-            </div>
-
-            {/* Indoor toggle */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">
-                {c.filters.type.label}
-              </label>
-              <div className="flex h-9 overflow-hidden rounded-lg border border-input text-sm">
-                {typeOptions.map(({ label, value }) => (
-                  <button
-                    key={String(label.value)}
-                    onClick={() => set("is_indoor", value)}
-                    className={
-                      filters.is_indoor === value
-                        ? "bg-primary px-3 font-medium text-primary-foreground"
-                        : "px-3 text-muted-foreground transition-colors hover:bg-muted/40"
-                    }
-                  >
-                    {label}
-                  </button>
-                ))}
               </div>
             </div>
 

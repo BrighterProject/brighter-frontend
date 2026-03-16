@@ -1,230 +1,233 @@
 import { useIntlayer } from "react-intlayer";
-import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import {
-  CalendarCheck,
-  CreditCard,
-  ShieldCheck,
   Search,
   CalendarDays,
-  Trophy,
-  Dribbble,
-  Waves,
-  CircleDot,
-  Volleyball,
-  ArrowRight,
+  Users,
+  ChevronDown,
   MapPin,
+  UtensilsCrossed,
+  ArrowRight,
 } from "lucide-react";
-import { LocalizedLink as Link } from "@/components/ui/localized-link";
-import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 
-const SPORT_ICONS = [
-  <CircleDot className="size-7" />,
-  <Dribbble className="size-7" />,
-  <Trophy className="size-7" />,
-  <Waves className="size-7" />,
-  <Volleyball className="size-7" />,
-  <Dribbble className="size-7" />,
-];
+const HOTEL_IMAGE =
+  "https://www.figma.com/api/mcp/asset/49762a67-8913-4fe4-b6e7-a8ca4864032c";
 
-const FEATURE_ICONS = [
-  <CalendarCheck className="size-6" />,
-  <ShieldCheck className="size-6" />,
-  <CreditCard className="size-6" />,
-];
-
-const STEP_ICONS = [
-  <Search className="size-6" />,
-  <CalendarDays className="size-6" />,
-  <Trophy className="size-6" />,
-];
-
-export function Landing() {
-  const content = useIntlayer("landing-page");
-  const navigate = useLocalizedNavigate();
-
+function OfferCard({
+  content,
+}: {
+  content: ReturnType<typeof useIntlayer<"landing-page">>["offerCard"];
+}) {
   return (
-    <div className="flex flex-col">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 pb-12 pt-10 lg:pb-16 lg:pt-14">
-        <div className="pointer-events-none absolute -right-32 top-0 size-[500px] rounded-full bg-primary/5 blur-3xl" />
+    <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+      <div className="flex flex-col sm:h-[268px] sm:flex-row">
+        {/* Image */}
+        <div className="relative h-48 w-full sm:h-full sm:w-[268px] sm:shrink-0">
+          <img
+            src={HOTEL_IMAGE}
+            alt=""
+            className="absolute inset-0 size-full object-cover sm:p-2.5"
+          />
+        </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Badge
-            variant="outline"
-            className="mb-4 border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary"
-          >
-            <MapPin className="mr-1.5 size-3.5" />
-            {content.hero.badge}
-          </Badge>
-
-          <h1 className="max-w-2xl font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem] lg:leading-[1.1]">
-            {content.hero.title}
-          </h1>
-
-          <p className="mt-4 max-w-lg text-lg leading-relaxed text-muted-foreground">
-            {content.hero.subtitle}
-          </p>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              className="gap-2 px-8 shadow-lg shadow-primary/20"
-              onClick={() => navigate("/properties")}
-            >
-              <Search className="size-4" />
-              {content.hero.ctaPrimary}
-            </Button>
-            <Button size="lg" variant="outline" className="gap-2 px-8" asChild>
-              <Link to="/about-us" hash="list-your-property">
-                {content.hero.ctaSecondary}
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-8 flex gap-8">
-            {Object.values(content.hero.stats).map((stat, i) => (
-              <p
-                key={i}
-                className="font-display text-sm font-bold text-foreground sm:text-base"
-              >
-                {stat}
+        {/* Body */}
+        <div className="flex flex-1 flex-col gap-1.5 overflow-hidden p-4 sm:flex-row sm:gap-1.5 sm:px-2.5 sm:py-2.5">
+          {/* Main content */}
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            {/* Header */}
+            <div className="flex flex-col gap-0.5">
+              <p className="text-lg font-medium leading-normal text-primary sm:text-base">
+                {content.title}
               </p>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-14 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {content.features.tagline}
-            </h2>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {content.features.subtitle}
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {content.features.items.map((item, index) => (
-              <div
-                key={index}
-                className="group rounded-2xl border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-              >
-                <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  {FEATURE_ICONS[index]}
-                </div>
-                <h3 className="font-display text-lg font-semibold text-foreground">
-                  {item.title}
-                </h3>
-                <p className="mt-1.5 leading-relaxed text-muted-foreground">
-                  {item.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="bg-muted/30 py-14 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {content.howItWorks.title}
-            </h2>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {content.howItWorks.subtitle}
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {content.howItWorks.steps.map((step, index) => (
-              <div key={index} className="relative text-center">
-                {index < 2 && (
-                  <div className="absolute left-[calc(50%+3rem)] top-8 hidden h-px w-[calc(100%-6rem)] bg-border md:block" />
-                )}
-
-                <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                  {STEP_ICONS[index]}
-                </div>
-                <span className="font-display text-xs font-bold uppercase tracking-widest text-primary">
-                  {step.step}
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 text-sm text-primary underline sm:text-xs">
+                  <MapPin className="size-3 sm:size-2.5" />
+                  {content.location}
                 </span>
-                <h3 className="mt-1.5 font-display text-xl font-semibold text-foreground">
-                  {step.title}
-                </h3>
-                <p className="mt-1.5 leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Categories / Sports */}
-      <section className="py-14 lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {content.categories.title}
-            </h2>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {content.categories.subtitle}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-            {content.categories.list.map((sport, index) => (
-              <button
-                key={index}
-                onClick={() => navigate("/properties")}
-                className="group flex cursor-pointer flex-col items-center gap-3 rounded-2xl border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-              >
-                <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  {SPORT_ICONS[index]}
-                </div>
-                <span className="text-sm font-semibold text-foreground">
-                  {sport.name}
+                <span className="inline-flex items-center gap-1 text-sm text-primary underline sm:text-xs">
+                  <UtensilsCrossed className="size-3 sm:size-2.5" />
+                  {content.amenity}
                 </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+              </div>
+            </div>
 
-      {/* Bottom CTA */}
-      <section className="pb-14 lg:pb-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-12 text-center text-primary-foreground shadow-2xl shadow-primary/30 sm:px-16">
-            <div className="pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-white/10 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-8 -left-8 size-36 rounded-full bg-white/10 blur-2xl" />
-
-            <div className="relative z-10">
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                {content.cta.title}
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-lg text-primary-foreground/80">
-                {content.cta.subtitle}
+            {/* Details */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <div className="h-10 w-px rotate-90 border-t border-border" />
+                <div className="flex flex-col pb-0.5">
+                  <p className="text-sm font-medium leading-normal tracking-wide text-foreground sm:text-xs">
+                    {content.roomType}
+                  </p>
+                  <p className="text-sm leading-normal tracking-wide text-foreground sm:text-xs">
+                    {content.roomDetails}
+                  </p>
+                  <p className="text-sm leading-normal tracking-wide text-foreground sm:text-xs">
+                    {content.bedInfo}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm leading-normal tracking-wide text-destructive sm:text-xs">
+                {content.scarcity}
               </p>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="mt-6 gap-2 px-8 shadow-lg"
-                onClick={() => navigate("/auth/signup")}
-              >
-                {content.cta.button}
-                <ArrowRight className="size-4" />
+              <p className="text-sm leading-normal tracking-wide text-chart-4 sm:text-xs">
+                {content.perk}
+              </p>
+            </div>
+
+            {/* Description with fade */}
+            <div className="relative pr-8">
+              <p className="text-sm leading-normal tracking-wide text-foreground sm:text-xs">
+                {content.description}
+              </p>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-[79%] to-card to-[93%]" />
+            </div>
+          </div>
+
+          {/* Side: rating + price — stacked below on mobile, side column on desktop */}
+          <div className="flex items-center justify-between pt-3 sm:mt-0 sm:flex-col sm:items-end sm:justify-between sm:border-0 sm:pt-0">
+            {/* Rating */}
+            <div className="flex items-center gap-1">
+              <span className="text-sm leading-normal tracking-tight text-foreground">
+                {content.rating}
+              </span>
+              <span className="flex size-8 items-center justify-center rounded-sm bg-primary text-sm text-primary-foreground">
+                {content.ratingScore}
+              </span>
+            </div>
+
+            {/* Price + CTA */}
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="flex flex-col items-end text-right leading-none">
+                <span className="text-sm leading-normal tracking-wide text-muted-foreground sm:text-xs">
+                  {content.priceLabel}
+                </span>
+                <span className="text-2xl font-semibold leading-[1.2] tracking-tight text-foreground sm:text-xl">
+                  {content.price}
+                </span>
+                <span className="text-sm leading-normal tracking-wide text-muted-foreground sm:text-xs">
+                  {content.priceNote}
+                </span>
+              </div>
+              <Button size="default" className="gap-2 rounded-sm">
+                {content.cta}
+                <ArrowRight className="size-3.5" />
               </Button>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
+
+export function Landing() {
+  const content = useIntlayer("landing-page");
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* Hero + Search */}
+      <div className="mt-6 flex w-full max-w-1/2 flex-col gap-2 px-3 md:gap-6 md:mt-20 md:px-4 lg:mt-24">
+        {/* Title */}
+        <div className="flex flex-col text-left">
+          <h1 className="text-lg font-normal leading-normal text-foreground md:text-3xl md:font-semibold md:leading-none md:tracking-tight">
+            {content.hero.titlePrefix}
+            <span className="underline decoration-primary decoration-wavy decoration-[8%]">
+              {content.hero.titleHighlight}
+            </span>
+            {content.hero.titleSuffix}
+          </h1>
+          <p className="mt-1 hidden text-base leading-normal text-muted-foreground md:block">
+            {content.hero.subtitle}
+          </p>
+        </div>
+
+        {/* Search Card */}
+        <div className="relative flex flex-col gap-2 md:rounded-lg md:border md:border-border md:px-6 md:pb-12 md:pt-6 md:shadow-sm">
+          {/* Destination input */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={content.search.destination.value as string}
+              className="h-[50px] pl-10 text-sm shadow-xs"
+            />
+          </div>
+
+          {/* Date & Guest row */}
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+            <div className="relative">
+              <CalendarDays className="absolute left-2 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={content.search.checkIn.value as string}
+                className="h-[50px] pl-9 text-sm shadow-xs"
+                type="text"
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+              />
+            </div>
+            <div className="relative">
+              <CalendarDays className="absolute left-2 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={content.search.checkOut.value as string}
+                className="h-[50px] pl-9 text-sm shadow-xs"
+                type="text"
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+              />
+            </div>
+            {/* Guests — 3rd col on desktop */}
+            <div className="hidden h-[50px] items-center rounded-lg border border-border bg-background px-3 shadow-xs md:flex">
+              <Users className="mr-2 size-5 text-muted-foreground" />
+              <span className="flex-1 text-sm text-foreground">
+                {content.search.guests}
+              </span>
+              <ChevronDown className="size-4 text-foreground" />
+            </div>
+          </div>
+
+          {/* Guests — mobile only */}
+          <div className="flex h-[50px] items-center rounded-lg border border-border bg-background px-3 shadow-xs md:hidden">
+            <Users className="mr-2 size-5 text-muted-foreground" />
+            <span className="flex-1 text-sm text-foreground">
+              {content.search.guests}
+            </span>
+            <ChevronDown className="size-4 text-foreground" />
+          </div>
+
+          {/* Search button */}
+          <Button
+            size="lg"
+            className="mt-2 h-12 w-full text-base md:absolute md:-bottom-6 md:left-1/2 md:mt-0 md:w-[300px] md:-translate-x-1/2"
+          >
+            {content.search.button}
+          </Button>
+        </div>
+      </div>
+
+      {/* Offers */}
+      <div className="mt-12 flex w-full max-w-1/2 flex-col items-center gap-4 px-3 md:mt-20 md:px-4">
+        <div className="flex flex-col items-center pb-0.5">
+          <h2 className="text-xl font-semibold leading-[1.2] tracking-tight text-foreground">
+            {content.offers.title}
+          </h2>
+          <p className="text-xs leading-normal text-muted-foreground md:text-sm md:tracking-tight">
+            {content.offers.subtitle}
+          </p>
+        </div>
+
+        <div className="flex w-full flex-col gap-4">
+          <OfferCard content={content.offerCard} />
+          <OfferCard content={content.offerCard} />
+        </div>
+      </div>
+
+      {/* Bottom spacer */}
+      <div className="h-20" />
     </div>
   );
 }

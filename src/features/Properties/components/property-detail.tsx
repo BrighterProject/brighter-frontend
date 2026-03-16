@@ -32,7 +32,7 @@ const STATUS_VARIANT: Record<
 
 const DAY_KEYS = ["0", "1", "2", "3", "4", "5", "6"] as const;
 
-/* ── Lightbox with pinch-to-zoom + pan ── */
+/* -- Lightbox with pinch-to-zoom + pan -- */
 
 function getDistance(t1: React.Touch, t2: React.Touch) {
   return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
@@ -334,7 +334,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                   </div>
                 </button>
 
-                {/* Thumbnails — horizontal on mobile, vertical on desktop */}
+                {/* Thumbnails */}
                 {images.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-1 md:max-h-[calc(56.25vw-4rem)] md:w-20 md:flex-col md:overflow-y-auto md:overflow-x-hidden md:pb-0 lg:max-h-96">
                     {images.map((img, i) => (
@@ -376,16 +376,8 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
               {/* Header */}
               <div>
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  {property.sport_types.map((s) => (
-                    <Badge key={s} variant="secondary" className="font-medium">
-                      {c.sports[s] ?? s}
-                    </Badge>
-                  ))}
                   <Badge variant={STATUS_VARIANT[property.status] ?? "outline"}>
                     {c.status[property.status] ?? property.status}
-                  </Badge>
-                  <Badge variant="outline">
-                    {property.is_indoor ? c.indoor : c.outdoor}
                   </Badge>
                 </div>
 
@@ -479,7 +471,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                                 : "text-muted-foreground",
                             )}
                           >
-                            {hours.open} – {hours.close}
+                            {hours.open} &ndash; {hours.close}
                           </span>
                         ) : (
                           <span className="text-muted-foreground/50">
@@ -540,7 +532,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                               <span className="text-muted-foreground">
                                 , {startTime}
                               </span>
-                              <span className="mx-1.5 text-orange-300">—</span>
+                              <span className="mx-1.5 text-orange-300">&mdash;</span>
                               {!isSameDay && (
                                 <span className="font-semibold text-orange-900 dark:text-orange-200">
                                   {endDate},{" "}
@@ -587,7 +579,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                     </span>
                     <span className="font-medium text-foreground">
                       {todayHours
-                        ? `${todayHours.open} – ${todayHours.close}`
+                        ? `${todayHours.open} \u2013 ${todayHours.close}`
                         : c.bookingCard.closed}
                     </span>
                   </div>
@@ -597,14 +589,6 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                     </span>
                     <span className="font-medium text-foreground">
                       {property.capacity} {c.bookingCard.people}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      {c.bookingCard.type}
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {property.is_indoor ? c.indoor : c.outdoor}
                     </span>
                   </div>
                 </div>

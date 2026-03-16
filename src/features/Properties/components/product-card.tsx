@@ -1,4 +1,4 @@
-import { MapPin, Users, Star, Trophy } from "lucide-react"; // Assuming Lucide icons
+import { MapPin, Users, Star } from "lucide-react";
 import type { PropertyListItem, PropertyStatus } from "../api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -9,12 +9,11 @@ interface PropertyCardProps {
 }
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
-  // Map status to badge colors
   const statusColors: Record<PropertyStatus, string> = {
-    active: "#22c55e", // green
-    inactive: "#ef4444", // red
-    maintenance: "#f59e0b", // amber
-    pending_approval: "#6b7280", // gray
+    active: "#22c55e",
+    inactive: "#ef4444",
+    maintenance: "#f59e0b",
+    pending_approval: "#6b7280",
   };
 
   return (
@@ -39,14 +38,6 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           >
             {property.status.replace("_", " ")}
           </Badge>
-
-          {/* Indoor/Outdoor Badge */}
-          <Badge
-            variant="secondary"
-            className="absolute end-4 top-4 bg-white/90 text-black"
-          >
-            {property.is_indoor ? "Indoor" : "Outdoor"}
-          </Badge>
         </CardHeader>
 
         <CardContent className="flex h-full flex-col gap-3 p-5">
@@ -69,23 +60,10 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             )}
           </div>
 
-          {/* Sport Types Tags */}
-          <div className="flex flex-wrap gap-1">
-            {property.sport_types.map((sport) => (
-              <span
-                key={sport}
-                className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground"
-              >
-                <Trophy className="size-2.5" />
-                {sport}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-auto pt-2 flex items-center justify-between border-t">
+          <div className="mt-auto flex items-center justify-between border-t pt-2">
             {/* Price */}
             <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground leading-none">
+              <span className="text-xs leading-none text-muted-foreground">
                 Hourly Rate
               </span>
               <div className="text-lg font-bold text-primary">
