@@ -7,7 +7,6 @@ interface SearchCardContent {
   destination: { value: string };
   checkIn: { value: string };
   checkOut: { value: string };
-  guests: React.ReactNode;
   button: React.ReactNode;
 }
 
@@ -35,12 +34,12 @@ export function SearchCard({ content }: SearchCardProps) {
           type="date"
         />
         <div className="hidden md:block">
-          <GuestsSelect label={content.guests} />
+          <GuestsSelect />
         </div>
       </div>
 
       <div className="md:hidden">
-        <GuestsSelect label={content.guests} />
+        <GuestsSelect />
       </div>
 
       <Button

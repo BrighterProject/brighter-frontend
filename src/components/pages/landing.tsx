@@ -28,7 +28,7 @@ export function Landing() {
       {/* Offers */}
       <div className="mt-6 flex w-full flex-col items-center gap-3 px-3 md:mt-20 md:max-w-1/2 md:gap-4 md:px-4">
         <div className="flex flex-col items-center pb-0.5 pt-3">
-          <h2 className="text-xl font-semibold leading-tight tracking-tight text-foreground">
+          <h2 className="text-xl font-display font-semibold leading-tight tracking-tight text-foreground">
             {content.offers.title}
           </h2>
           <p className="text-xs leading-normal text-muted-foreground md:text-sm md:tracking-tight">

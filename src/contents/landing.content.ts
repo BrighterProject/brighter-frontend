@@ -29,7 +29,6 @@ const landingContent = {
       }),
       checkIn: t({ en: "Check-in date", bg: "Дата на настаняване" }),
       checkOut: t({ en: "Check-out date", bg: "Дата на напускане" }),
-      guests: t({ en: "2 adults", bg: "2 възрастни" }),
       button: t({ en: "Search", bg: "Търсене" }),
     },
     offers: {
