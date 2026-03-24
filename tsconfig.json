@@ -19,7 +19,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@Auth/*": ["./src/features/Auth/*"]
+      "@Auth/*": ["./src/features/Auth/*"],
+      "@Properties/*": ["./src/features/Properties/*"]
     }
   }
 }

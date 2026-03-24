@@ -17,7 +17,7 @@ const Header: FC = () => {
   return (
     <header className="sticky top-0 z-40">
       <div className="border-b bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-2/3 items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex items-center justify-between px-4 py-3 md:max-w-2/3 md:px-6 lg:px-8">
           {/* Brand */}
           <LocalizedLink to="/" className="transition-opacity hover:opacity-80">
             <span className="font-display text-2xl tracking-tight text-foreground">

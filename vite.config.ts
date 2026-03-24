@@ -13,6 +13,9 @@ const config = defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@Auth": fileURLToPath(new URL("./src/features/Auth", import.meta.url)),
+      "@Properties": fileURLToPath(
+        new URL("./src/features/Properties", import.meta.url),
+      ),
     },
   },
   plugins: [
