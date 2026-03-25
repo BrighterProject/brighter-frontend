@@ -66,7 +66,7 @@ const landingContent = {
       rating: t({ en: "Excellent", bg: "Отлично" }),
       ratingScore: "8.6",
       priceLabel: t({ en: "1 night, 2 adults", bg: "1 нощувка, 2 възрастни" }),
-      price: "BGN 165",
+      price: "EUR 165",
       priceNote: t({
         en: "Includes taxes and fees",
         bg: "Включва данъци и такси",

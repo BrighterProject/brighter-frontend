@@ -4,47 +4,82 @@ export type PropertyStatus =
   | "maintenance"
   | "pending_approval";
 
-export interface DayHours {
-  open: string;
-  close: string;
+export type PropertyType =
+  | "apartment"
+  | "house"
+  | "villa"
+  | "hotel"
+  | "hostel"
+  | "guesthouse"
+  | "room"
+  | "other";
+
+export type CancellationPolicy = "free" | "moderate" | "strict";
+
+export interface TranslationResponse {
+  id: string;
+  property_id: string;
+  locale: string;
+  name: string;
+  description: string;
+  address: string;
+  house_rules?: string | null;
 }
 
 export interface PropertyListItem {
   id: string;
   name: string;
   city: string;
+  property_type: PropertyType;
   status: PropertyStatus;
-  price_per_hour: string;
+  price_per_night: string;
   currency: string;
-  capacity: number;
+  max_guests: number;
+  bedrooms: number;
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;
 }
 
-export interface PropertyResponse extends Omit<PropertyListItem, "thumbnail"> {
-  description: string;
-  address: string;
+export interface PropertyResponse {
+  id: string;
+  owner_id: string;
+  property_type: PropertyType;
+  status: PropertyStatus;
+  city: string;
   latitude?: string | null;
   longitude?: string | null;
-  owner_id: string;
-  total_bookings: number;
-  updated_at: string;
+  price_per_night: string;
+  currency: string;
+  max_guests: number;
+  bedrooms: number;
+  bathrooms: number;
+  beds: number;
+  has_parking: boolean;
   amenities: string[];
-  working_hours: Record<string, DayHours>;
+  check_in_time?: string | null;
+  check_out_time?: string | null;
+  min_nights: number;
+  max_nights: number;
+  cancellation_policy: CancellationPolicy;
+  rating: string;
+  total_reviews: number;
+  updated_at: string;
+  translations: TranslationResponse[];
   images: PropertyImageResponse[];
   unavailabilities: PropertyUnavailabilityResponse[];
 }
 
-export interface PropertyCreate {
-  name: string;
-  description: string;
-  address: string;
-  city: string;
-  price_per_hour: number | string;
-  currency?: string;
-  capacity?: number;
-  working_hours?: Record<string, DayHours>;
+/**
+ * Resolve a translation for the given locale from a PropertyResponse.
+ * Fallback: requested locale -> "bg" -> first available.
+ */
+export function resolveTranslation(
+  translations: TranslationResponse[],
+  locale: string,
+): TranslationResponse | undefined {
+  const byLocale = Object.fromEntries(translations.map((t) => [t.locale, t]));
+  return byLocale[locale] ?? byLocale["bg"] ?? translations[0];
 }
 
 export interface PropertyImageResponse {

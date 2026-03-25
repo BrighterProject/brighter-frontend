@@ -43,10 +43,10 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
         {/* Price overlay */}
         <div className="absolute bottom-3 right-3">
           <span className="font-display text-xl font-bold text-white drop-shadow-md">
-            {Number(property.price_per_hour).toFixed(0)}{" "}
+            {Number(property.price_per_night).toFixed(0)}{" "}
             <span className="text-sm font-normal text-white/80">
               {property.currency}
-              {c.card.perHour}
+              {c.card.perNight}
             </span>
           </span>
         </div>
@@ -65,7 +65,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
           </span>
           <span className="flex items-center gap-1">
             <Users className="size-3" />
-            {property.capacity}
+            {property.max_guests}
           </span>
         </div>
       </div>

@@ -64,17 +64,17 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
             {/* Price */}
             <div className="flex flex-col">
               <span className="text-xs leading-none text-muted-foreground">
-                Hourly Rate
+                Per Night
               </span>
               <div className="text-lg font-bold text-primary">
-                {property.price_per_hour} {property.currency}
+                {property.price_per_night} {property.currency}
               </div>
             </div>
 
-            {/* Capacity */}
+            {/* Guests */}
             <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
               <Users className="size-4" />
-              <span>Up to {property.capacity}</span>
+              <span>Up to {property.max_guests}</span>
             </div>
           </div>
         </CardContent>

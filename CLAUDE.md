@@ -54,11 +54,11 @@ src/
   features/
     Properties/
       api/hooks.ts        # useProperties, useProperty, usePropertyUnavailabilities
-      api/types.ts        # PropertyListItem, PropertyResponse, PropertyStatus
+      api/types.ts        # PropertyListItem, PropertyResponse, PropertyType, CancellationPolicy, TranslationResponse, resolveTranslation()
       components/
-        properties-list.tsx   # Browse/listing with city & price filters
-        property-card.tsx     # Card: thumbnail, rating, price, capacity
-        property-detail.tsx   # Full detail: gallery (lightbox), amenities, hours, booking card
+        properties-list.tsx   # Browse/listing with city, price, property type, amenity filters
+        property-card.tsx     # Card: thumbnail, rating, price_per_night, max_guests
+        property-detail.tsx   # Full detail: gallery (lightbox), amenities, check-in/out, booking card
         product-card.tsx      # Alternative card layout
         offer-card.tsx        # Mobile + desktop offer card (used on landing, reusable in listings)
       contents/           # properties-list.content.ts, property-detail.content.ts
@@ -66,7 +66,7 @@ src/
       api/hooks.ts        # useMyBookings, useCreateBooking, useCancelBooking, useOccupiedSlots
       api/types.ts        # BookingResponse, BookingCreate, OccupiedSlot
       components/
-        booking-form.tsx  # 7-day × hourly grid picker; color-coded availability
+        booking-form.tsx  # Date range picker for nightly bookings (needs redesign from old hourly grid)
         my-bookings.tsx   # list with status badges, cancel, pay-now; click to open details
         booking-details-sheet.tsx  # framer-motion slide-over with schedule, pricing, payment, refs
       contents/           # booking-form.content.ts, my-bookings.content.ts
@@ -132,8 +132,9 @@ Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in 
 ## Gotchas
 
 - **Datetime**: always append local timezone offset when sending to API — naive ISO strings cause off-by-N-hour bugs
-- **`working_hours` weekday keys**: `"0"` = Monday … `"6"` = Sunday (not JS default). JS formula: `String((new Date().getDay() + 6) % 7)`
+- **i18n property fields**: Use `resolveTranslation(translations, locale)` from `features/Properties/api/types.ts` to get name/description/address with bg fallback
 - **intlayer HTML attributes**: `placeholder`, `aria-label`, etc. need `.value as string` — intlayer nodes render fine as JSX children but fail as HTML string attributes
+- **axios paramsSerializer**: `api-client.ts` uses `paramsSerializer: { indexes: null }` so array params serialize as `key=a&key=b` (FastAPI-compatible), not `key[0]=a&key[1]=b`
 - **Debounce**: free-text and number inputs → `useDebounce(value, 400)` before firing queries; selects and toggles fire instantly
 - **Figma asset URLs**: Temporary (7 days) — replace with permanent URLs before production
 - **intlayer summary labels**: When building dynamic strings (e.g. "2 adults"), use `.value` on intlayer nodes — they are objects, not strings

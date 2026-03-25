@@ -46,7 +46,7 @@ const propertyDetailContent = {
       }),
     },
     bookingCard: {
-      perHour: t({ en: "/ hour", bg: "/ час" }),
+      perNight: t({ en: "/ night", bg: "/ нощ" }),
       today: t({ en: "Today", bg: "Днес" }),
       capacity: t({ en: "Capacity", bg: "Капацитет" }),
       people: t({ en: "people", bg: "човека" }),

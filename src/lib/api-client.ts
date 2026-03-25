@@ -2,6 +2,9 @@ import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "/api",
+  paramsSerializer: {
+    indexes: null, // serialize arrays as key=a&key=b (FastAPI style)
+  },
 });
 
 // add token to every request

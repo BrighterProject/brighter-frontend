@@ -18,6 +18,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import Header from "@/components/templates/header";
 import Footer from "@/components/templates/footer";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -62,9 +63,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         >
           <IntlayerProvider locale={locale}>
             <QueryClientProvider client={queryClient}>
-              <Header />
-              {children}
-              <Footer />
+              <ErrorBoundary>
+                <Header />
+                {children}
+                <Footer />
+              </ErrorBoundary>
               <Toaster richColors position="top-right" />
               <ReactQueryDevtools
                 initialIsOpen={false}

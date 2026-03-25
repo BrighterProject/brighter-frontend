@@ -251,8 +251,9 @@ export function BookingDetailsSheet({
                 title={c.details.pricing as unknown as string}
               >
                 <Row label={c.details.rate as unknown as string}>
-                  {Number(booking.price_per_hour).toFixed(2)} {booking.currency}
-                  /h
+                  {Number(booking.price_per_night).toFixed(2)}{" "}
+                  {booking.currency}
+                  /night
                 </Row>
                 <Row label={c.total as unknown as string}>
                   <span className="text-base font-bold">

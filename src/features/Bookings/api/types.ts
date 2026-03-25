@@ -46,7 +46,7 @@ export interface BookingResponse {
   start_datetime: string;
   end_datetime: string;
   status: BookingStatus;
-  price_per_hour: string;
+  price_per_night: string;
   total_price: string;
   currency: string;
   notes: string | null;

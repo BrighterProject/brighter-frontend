@@ -18,20 +18,54 @@ const propertiesListContent = {
       bg: "Разгледайте имоти",
     }),
     subtitle: t({
-      en: "Find the perfect place for your next booking.",
-      bg: "Намерете идеалното място за следващата ви резервация.",
+      en: "Find the perfect place for your next stay.",
+      bg: "Намерете идеалното място за следващия ви престой.",
     }),
     filters: {
+      heading: t({ en: "Filter by:", bg: "Филтрирай по:" }),
       city: {
-        label: t({ en: "City", bg: "Град" }),
-        placeholder: t({ en: "Any city", bg: "Всеки град" }),
+        label: t({ en: "Destination", bg: "Дестинация" }),
+        placeholder: t({ en: "Where are you going?", bg: "Къде отивате?" }),
       },
       price: {
-        label: t({ en: "Price / hr (BGN)", bg: "Цена / час (лв)" }),
-        min: t({ en: "Min", bg: "Мин" }),
-        max: t({ en: "Max", bg: "Макс" }),
+        label: t({ en: "Your budget (per night)", bg: "Бюджет (на нощувка)" }),
+        currency: t({ en: "EUR", bg: "EUR" }),
       },
-      clear: t({ en: "Clear", bg: "Изчисти" }),
+      propertyType: {
+        label: t({ en: "Property type", bg: "Тип имот" }),
+        hotel: t({ en: "Hotels", bg: "Хотели" }),
+        apartment: t({ en: "Apartments", bg: "Апартаменти" }),
+        house: t({ en: "Houses", bg: "Къщи" }),
+        villa: t({ en: "Villas", bg: "Вили" }),
+        hostel: t({ en: "Hostels", bg: "Хостели" }),
+        guesthouse: t({ en: "Guest houses", bg: "Къщи за гости" }),
+      },
+      popularFilters: {
+        label: t({ en: "Popular filters", bg: "Популярни филтри" }),
+        freeCancellation: t({
+          en: "Free cancellation",
+          bg: "Безплатно анулиране",
+        }),
+        breakfastIncluded: t({
+          en: "Breakfast included",
+          bg: "Закуска включена",
+        }),
+        pool: t({ en: "Pool", bg: "Басейн" }),
+        wifi: t({ en: "Free WiFi", bg: "Безплатен WiFi" }),
+        parking: t({ en: "Parking", bg: "Паркинг" }),
+        petFriendly: t({ en: "Pet-friendly", bg: "Домашни любимци" }),
+        airConditioning: t({ en: "Air conditioning", bg: "Климатик" }),
+        kitchen: t({ en: "Kitchen", bg: "Кухня" }),
+      },
+      rating: {
+        label: t({ en: "Guest rating", bg: "Оценка от гости" }),
+        above: t({ en: "+", bg: "+" }),
+      },
+      starRating: {
+        label: t({ en: "Star rating", bg: "Брой звезди" }),
+        stars: t({ en: "stars", bg: "звезди" }),
+      },
+      clear: t({ en: "Clear all", bg: "Изчисти всички" }),
     },
     results: {
       property: t({ en: "property", bg: "имот" }),
@@ -50,7 +84,18 @@ const propertiesListContent = {
       bg: "Неуспешно зареждане на имоти. Моля, опитайте отново.",
     }),
     card: {
-      perHour: t({ en: "/hr", bg: "/ч" }),
+      perNight: t({ en: "/night", bg: "/нощ" }),
+      seeAvailability: t({ en: "See availability", bg: "Виж наличност" }),
+      reviews: t({ en: "reviews", bg: "отзива" }),
+      review: t({ en: "review", bg: "отзив" }),
+      guests: t({ en: "guests", bg: "гости" }),
+      excellent: t({ en: "Excellent", bg: "Отлично" }),
+      veryGood: t({ en: "Very good", bg: "Много добро" }),
+      good: t({ en: "Good", bg: "Добро" }),
+      includedTaxes: t({
+        en: "Includes taxes and fees",
+        bg: "Включва данъци и такси",
+      }),
     },
   },
 } satisfies Dictionary;

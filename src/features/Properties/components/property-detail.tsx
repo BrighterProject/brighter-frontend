@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import type { PropertyResponse } from "../api/types";
+import { type PropertyResponse, resolveTranslation } from "../api/types";
+import { useLocale } from "react-intlayer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,8 +30,6 @@ const STATUS_VARIANT: Record<
   maintenance: "outline",
   pending_approval: "outline",
 };
-
-const DAY_KEYS = ["0", "1", "2", "3", "4", "5", "6"] as const;
 
 /* -- Lightbox with pinch-to-zoom + pan -- */
 
@@ -237,13 +236,22 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
   const navigate = useNavigate();
   const localizedNavigate = useLocalizedNavigate();
   const c = useIntlayer("property-detail");
+  const { locale } = useLocale();
+
+  const t = resolveTranslation(property.translations, locale);
+  const name = t?.name ?? "Untitled";
+  const description = t?.description ?? "";
+  const address = t?.address ?? "";
 
   const images = property.images.length > 0 ? property.images : [];
   const mainImage = images[selectedImage];
 
-  const todayKey = String((new Date().getDay() + 6) % 7);
-  const todayHours =
-    property.working_hours[todayKey] ?? property.working_hours["default"];
+  const todayHours = property.check_in_time
+    ? {
+        open: property.check_in_time,
+        close: property.check_out_time ?? "11:00",
+      }
+    : null;
 
   const todayStr = new Date().toISOString().split("T")[0];
   const todayUnavailabilities = property.unavailabilities.filter((u) => {
@@ -298,7 +306,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
         <LightboxOverlay
           images={images}
           index={lightboxIndex}
-          propertyName={property.name}
+          propertyName={name}
           onClose={closeLightbox}
           onPrev={lightboxPrev}
           onNext={lightboxNext}
@@ -308,7 +316,9 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           {/* Back */}
           <button
-            onClick={() => navigate({ to: "/{-$locale}/properties" as any } as any)}
+            onClick={() =>
+              navigate({ to: "/{-$locale}/properties" as any } as any)
+            }
             className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ChevronLeft className="size-4" />
@@ -326,7 +336,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 >
                   <img
                     src={mainImage.url}
-                    alt={property.name}
+                    alt={name}
                     className="size-full object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
@@ -382,13 +392,13 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 </div>
 
                 <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  {property.name}
+                  {name}
                 </h1>
 
                 <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <MapPin className="size-3.5" />
-                    {property.address}, {property.city}
+                    {address}, {property.city}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Star className="size-3.5 fill-yellow-500 text-yellow-500" />
@@ -399,7 +409,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Users className="size-3.5" />
-                    {c.upTo} {property.capacity} {c.people}
+                    {c.upTo} {property.max_guests} {c.people}
                   </span>
                 </div>
               </div>
@@ -412,7 +422,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                   {c.sections.about}
                 </h2>
                 <p className="mt-2 leading-relaxed text-muted-foreground">
-                  {property.description}
+                  {description}
                 </p>
               </div>
 
@@ -442,47 +452,36 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
 
               <hr className="border-border" />
 
-              {/* Working hours */}
-              <div>
-                <h2 className="font-display text-lg font-semibold text-foreground">
-                  {c.sections.workingHours}
-                </h2>
-                <div className="mt-3 grid gap-x-12 sm:grid-cols-2">
-                  {DAY_KEYS.map((day) => {
-                    const hours =
-                      property.working_hours[day] ??
-                      property.working_hours["default"];
-                    const isToday = day === todayKey;
-                    return (
-                      <div
-                        key={day}
-                        className={cn(
-                          "flex justify-between border-b py-2.5 text-sm last:border-0",
-                          isToday && "font-semibold text-primary",
-                        )}
-                      >
-                        <span>{c.days[day]}</span>
-                        {hours ? (
-                          <span
-                            className={cn(
-                              "tabular-nums",
-                              isToday
-                                ? "text-primary"
-                                : "text-muted-foreground",
-                            )}
-                          >
-                            {hours.open} &ndash; {hours.close}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground/50">
-                            {c.closed}
-                          </span>
-                        )}
+              {/* Check-in / Check-out */}
+              {(property.check_in_time || property.check_out_time) && (
+                <div>
+                  <h2 className="font-display text-lg font-semibold text-foreground">
+                    {c.sections.workingHours}
+                  </h2>
+                  <div className="mt-3 grid grid-cols-2 gap-4">
+                    {property.check_in_time && (
+                      <div className="flex flex-col gap-1 rounded-lg border p-3">
+                        <span className="text-xs text-muted-foreground">
+                          Check-in
+                        </span>
+                        <span className="text-sm font-semibold">
+                          {property.check_in_time}
+                        </span>
                       </div>
-                    );
-                  })}
+                    )}
+                    {property.check_out_time && (
+                      <div className="flex flex-col gap-1 rounded-lg border p-3">
+                        <span className="text-xs text-muted-foreground">
+                          Check-out
+                        </span>
+                        <span className="text-sm font-semibold">
+                          {property.check_out_time}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Today's unavailabilities */}
               {todayUnavailabilities.length > 0 && (
@@ -532,7 +531,9 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                               <span className="text-muted-foreground">
                                 , {startTime}
                               </span>
-                              <span className="mx-1.5 text-orange-300">&mdash;</span>
+                              <span className="mx-1.5 text-orange-300">
+                                &mdash;
+                              </span>
                               {!isSameDay && (
                                 <span className="font-semibold text-orange-900 dark:text-orange-200">
                                   {endDate},{" "}
@@ -562,10 +563,10 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 {/* Price */}
                 <div className="flex items-baseline gap-1.5">
                   <span className="font-display text-3xl font-bold text-foreground">
-                    {Number(property.price_per_hour).toFixed(0)}
+                    {Number(property.price_per_night).toFixed(0)}
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {property.currency} {c.bookingCard.perHour}
+                    {property.currency} {c.bookingCard.perNight}
                   </span>
                 </div>
 
@@ -573,22 +574,22 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
 
                 {/* Quick info */}
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      {c.bookingCard.today}
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {todayHours
-                        ? `${todayHours.open} \u2013 ${todayHours.close}`
-                        : c.bookingCard.closed}
-                    </span>
-                  </div>
+                  {todayHours && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Check-in / out
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {todayHours.open} &ndash; {todayHours.close}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
                       {c.bookingCard.capacity}
                     </span>
                     <span className="font-medium text-foreground">
-                      {property.capacity} {c.bookingCard.people}
+                      {property.max_guests} {c.bookingCard.people}
                     </span>
                   </div>
                 </div>

@@ -1,9 +1,31 @@
 import { useIntlayer } from "react-intlayer";
 import { SearchCard } from "@/components/ui/search-card";
-import { OfferCard } from "@Properties/components/offer-card";
+import {
+  OfferCard,
+  type OfferCardData,
+} from "@Properties/components/offer-card";
 
 export function Landing() {
   const content = useIntlayer("landing-page");
+
+  const offerData: OfferCardData = {
+    image:
+      "https://www.figma.com/api/mcp/asset/49762a67-8913-4fe4-b6e7-a8ca4864032c",
+    title: content.offerCard.title as string,
+    location: content.offerCard.location as string,
+    roomType: content.offerCard.roomType as string,
+    roomDetails: content.offerCard.roomDetails as string,
+    bedInfo: content.offerCard.bedInfo as string,
+    scarcity: content.offerCard.scarcity as string,
+    perk: content.offerCard.perk as string,
+    description: content.offerCard.description as string,
+    rating: content.offerCard.rating as string,
+    ratingScore: content.offerCard.ratingScore as string,
+    priceLabel: content.offerCard.priceLabel as string,
+    price: content.offerCard.price as string,
+    priceNote: content.offerCard.priceNote as string,
+    cta: content.offerCard.cta as string,
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -37,11 +59,11 @@ export function Landing() {
         </div>
 
         <div className="flex w-full flex-col items-center gap-3 md:gap-4">
-          <OfferCard content={content.offerCard} />
+          <OfferCard data={offerData} />
           <div className="h-px w-full bg-border md:hidden" />
-          <OfferCard content={content.offerCard} />
+          <OfferCard data={offerData} />
           <div className="h-px w-full bg-border md:hidden" />
-          <OfferCard content={content.offerCard} />
+          <OfferCard data={offerData} />
         </div>
       </div>
 
