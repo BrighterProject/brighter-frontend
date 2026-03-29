@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
+import apiClient from "@/lib/api-client";
 import { useProperty } from "@/features/Properties/api/hooks";
 import { BookingForm } from "@/features/Bookings/components/booking-form";
 
@@ -30,14 +31,14 @@ function BookPropertyPage() {
 
 export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")({
   component: BookPropertyPage,
-  beforeLoad: ({ location }) => {
-    if (
-      typeof window !== "undefined" &&
-      !localStorage.getItem("access_token")
-    ) {
+  beforeLoad: async ({ location }) => {
+    if (typeof window === "undefined") return;
+    try {
+      await apiClient.get("/users/@me/get");
+    } catch {
       throw redirect({
         to: "/{-$locale}/auth/login",
-        params: { locale: location.pathname.split("/")[1] },
+        params: { locale: location.pathname.split("/")[1] || "bg" },
         search: { redirect: location.href },
       });
     }

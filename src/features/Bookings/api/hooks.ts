@@ -17,10 +17,7 @@ export const useOccupiedSlots = (propertyId: string) =>
       });
       return data;
     },
-    enabled:
-      !!propertyId &&
-      typeof window !== "undefined" &&
-      !!localStorage.getItem("access_token"),
+    enabled: !!propertyId,
   });
 
 export const useMyBookings = () =>
@@ -30,8 +27,6 @@ export const useMyBookings = () =>
       const { data } = await apiClient.get<BookingResponse[]>("/bookings/");
       return data;
     },
-    enabled:
-      typeof window !== "undefined" && !!localStorage.getItem("access_token"),
   });
 
 export const useCreateBooking = () => {
@@ -57,8 +52,6 @@ export const useMyPayments = () =>
       const { data } = await apiClient.get<PaymentResponse[]>("/payments/");
       return data;
     },
-    enabled:
-      typeof window !== "undefined" && !!localStorage.getItem("access_token"),
     // Poll every 3 s while any payment is still pending (waiting for Stripe webhook).
     // Stops automatically once all payments settle to paid/failed/refunded.
     refetchInterval: (query) =>
@@ -98,10 +91,7 @@ export const useBookingPayment = (bookingId: string) =>
       );
       return data;
     },
-    enabled:
-      !!bookingId &&
-      typeof window !== "undefined" &&
-      !!localStorage.getItem("access_token"),
+    enabled: !!bookingId,
     retry: false,
   });
 

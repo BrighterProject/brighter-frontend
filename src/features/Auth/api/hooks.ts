@@ -14,7 +14,6 @@ export const useLogin = () => {
       const response = await apiClient.post<Token>("/auth/token", data, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-      localStorage.setItem("access_token", response.data.access_token);
       return response.data;
     },
   });
@@ -26,7 +25,6 @@ export const useGoogleLogin = () => {
       const response = await apiClient.post<Token>("/auth/google", {
         credential,
       });
-      localStorage.setItem("access_token", response.data.access_token);
       return response.data;
     },
   });
@@ -35,8 +33,8 @@ export const useGoogleLogin = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient();
 
-  const logout = () => {
-    localStorage.removeItem("access_token");
+  const logout = async () => {
+    await apiClient.post("/auth/logout");
     queryClient.clear();
   };
 
@@ -63,14 +61,11 @@ export const useMe = () => {
         return data;
       } catch (error: any) {
         if (error?.response?.status === 401) {
-          localStorage.removeItem("access_token");
           return null;
         }
         throw error;
       }
     },
-    enabled:
-      typeof window !== "undefined" && !!localStorage.getItem("access_token"),
     retry: false,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
