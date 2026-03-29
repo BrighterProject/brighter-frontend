@@ -1,31 +1,25 @@
-import { useIntlayer } from "react-intlayer";
+import { useIntlayer, useLocale } from "react-intlayer";
+import { Fragment } from "react";
 import { SearchCard } from "@/components/ui/search-card";
-import {
-  OfferCard,
-  type OfferCardData,
-} from "@Properties/components/offer-card";
+import { OfferCard } from "@Properties/components/offer-card";
+import { useProperties } from "@Properties/api/hooks";
+import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+
+function getRatingLabel(score: string, locale: string): string {
+  const n = parseFloat(score);
+  const isBg = locale === "bg";
+  if (n >= 9) return isBg ? "Изключително" : "Exceptional";
+  if (n >= 8) return isBg ? "Отлично" : "Excellent";
+  if (n >= 7) return isBg ? "Добро" : "Good";
+  return isBg ? "Задоволително" : "Satisfactory";
+}
 
 export function Landing() {
   const content = useIntlayer("landing-page");
-
-  const offerData: OfferCardData = {
-    image:
-      "https://www.figma.com/api/mcp/asset/49762a67-8913-4fe4-b6e7-a8ca4864032c",
-    title: content.offerCard.title as string,
-    location: content.offerCard.location as string,
-    roomType: content.offerCard.roomType as string,
-    roomDetails: content.offerCard.roomDetails as string,
-    bedInfo: content.offerCard.bedInfo as string,
-    scarcity: content.offerCard.scarcity as string,
-    perk: content.offerCard.perk as string,
-    description: content.offerCard.description as string,
-    rating: content.offerCard.rating as string,
-    ratingScore: content.offerCard.ratingScore as string,
-    priceLabel: content.offerCard.priceLabel as string,
-    price: content.offerCard.price as string,
-    priceNote: content.offerCard.priceNote as string,
-    cta: content.offerCard.cta as string,
-  };
+  const { locale } = useLocale();
+  const navigate = useLocalizedNavigate();
+  const { data: allProperties, isLoading } = useProperties({ status: "active" });
+  const properties = allProperties?.slice(0, 3) ?? [];
 
   return (
     <div className="flex flex-col items-center">
@@ -59,11 +53,41 @@ export function Landing() {
         </div>
 
         <div className="flex w-full flex-col items-center gap-3 md:gap-4">
-          <OfferCard data={offerData} />
-          <div className="h-px w-full bg-border md:hidden" />
-          <OfferCard data={offerData} />
-          <div className="h-px w-full bg-border md:hidden" />
-          <OfferCard data={offerData} />
+          {isLoading ? (
+            <>
+              <div className="h-28 w-full animate-pulse rounded-lg bg-muted md:h-36" />
+              <div className="h-28 w-full animate-pulse rounded-lg bg-muted md:h-36" />
+              <div className="h-28 w-full animate-pulse rounded-lg bg-muted md:h-36" />
+            </>
+          ) : (
+            properties.map((property, i) => (
+              <Fragment key={property.id}>
+                <OfferCard
+                  data={{
+                    image: property.thumbnail ?? null,
+                    title: property.name,
+                    location: property.city,
+                    roomType:
+                      property.property_type.charAt(0).toUpperCase() +
+                      property.property_type.slice(1).replace(/_/g, " "),
+                    rating: getRatingLabel(property.rating, locale),
+                    ratingScore: parseFloat(property.rating).toFixed(1),
+                    price: `${property.currency} ${parseFloat(property.price_per_night).toFixed(0)}`,
+                    priceNote: content.offerCard.priceNote as string,
+                    cta: content.offerCard.cta as string,
+                    onClick: () =>
+                      navigate({
+                        to: "/properties/$propertyId",
+                        propertyId: property.id,
+                      }),
+                  }}
+                />
+                {i < properties.length - 1 && (
+                  <div className="h-px w-full bg-border md:hidden" />
+                )}
+              </Fragment>
+            ))
+          )}
         </div>
       </div>
 
