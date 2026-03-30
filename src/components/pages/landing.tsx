@@ -72,6 +72,9 @@ export function Landing() {
                     roomType:
                       property.property_type.charAt(0).toUpperCase() +
                       property.property_type.slice(1).replace(/_/g, " "),
+                    bedrooms: property.bedrooms,
+                    maxGuests: property.max_guests,
+                    totalReviews: property.total_reviews,
                     rating: getRatingLabel(property.rating, locale),
                     ratingScore: parseFloat(property.rating).toFixed(1),
                     price: `${property.currency} ${parseFloat(property.price_per_night).toFixed(0)}`,
