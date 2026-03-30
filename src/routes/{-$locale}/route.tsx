@@ -11,8 +11,8 @@ export const Route = createFileRoute("/{-$locale}")({
     // No locale prefix at all (e.g. visiting /) — redirect to home with default locale
     if (!localeParam) {
       throw redirect({
-        to: "/{-$locale}/",
-        params: { locale: defaultLocale },
+        to: "/{-$locale}" as const,
+        params: { locale: defaultLocale } as any,
       });
     }
 

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
-import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+
 import { type PropertyResponse, resolveTranslation } from "../api/types";
 import { useLocale } from "react-intlayer";
 import { Badge } from "@/components/ui/badge";
@@ -234,7 +234,7 @@ interface PropertyDetailProps {
 export function PropertyDetail({ property }: PropertyDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const navigate = useNavigate();
-  const localizedNavigate = useLocalizedNavigate();
+
   const c = useIntlayer("property-detail");
   const { locale } = useLocale();
 

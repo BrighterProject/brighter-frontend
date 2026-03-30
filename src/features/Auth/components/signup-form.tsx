@@ -187,7 +187,7 @@ export function SignupForm({
           <span className="text-center text-xs underline-offset-4 -mt-5 text-muted-foreground">
             {content.legal.text}
             <Link
-              to="/terms-and-conditions"
+              to={"/terms-and-conditions" as any}
               className="underline hover:text-primary"
             >
               {content.legal.link}

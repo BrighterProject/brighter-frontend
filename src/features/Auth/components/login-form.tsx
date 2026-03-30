@@ -156,7 +156,7 @@ export function LoginForm({ className }: { className?: string }) {
           <span className="text-center text-xs underline-offset-4 -mt-5 text-muted-foreground">
             {termsText}&nbsp;
             <Link
-              to="/terms-and-conditions"
+              to={"/terms-and-conditions" as any}
               className="underline hover:text-primary"
             >
               {termsLink}

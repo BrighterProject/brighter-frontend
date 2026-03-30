@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
 import { useIntlayer } from "react-intlayer";
 import { LocalizedLink as Link } from "@/components/ui/localized-link";
-import { Card, CardContent } from "@/components/ui/card";
 import { MailCheck } from "lucide-react";
 
 export const Route = createFileRoute("/{-$locale}/auth/check-email")({

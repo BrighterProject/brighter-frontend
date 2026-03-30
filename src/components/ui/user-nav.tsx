@@ -77,7 +77,7 @@ export function UserNav({ onAction }: { onAction?: () => void }) {
           </LocalizedLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <LocalizedLink to="/settings" onClick={onAction}>
+          <LocalizedLink to={"/settings" as any} onClick={onAction}>
             {content.labels.settings}
           </LocalizedLink>
         </DropdownMenuItem>

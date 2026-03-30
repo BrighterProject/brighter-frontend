@@ -11,7 +11,10 @@ import {
   useMyBookings,
   useOccupiedSlots,
 } from "../api/hooks";
-import type { PropertyResponse } from "@/features/Properties/api/types";
+import {
+  type PropertyResponse,
+  resolveTranslation,
+} from "@/features/Properties/api/types";
 
 interface BookingFormProps {
   property: PropertyResponse;
@@ -76,6 +79,8 @@ export function BookingForm({ property }: BookingFormProps) {
   const createCheckout = useCreateCheckout(getLocale());
   const { data: myBookings = [] } = useMyBookings();
   const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
+  const propertyName =
+    resolveTranslation(property.translations, getLocale())?.name ?? "Untitled";
 
   const [weekOffset, setWeekOffset] = useState(0);
   const [selDate, setSelDate] = useState<string | null>(null);
@@ -92,18 +97,20 @@ export function BookingForm({ property }: BookingFormProps) {
     });
   }, [weekOffset]);
 
+  // TODO: redesign booking form for nightly model (currently hourly grid)
+  const workingHours = (property as any).working_hours ?? {};
   const [minHour, maxHour] = useMemo(() => {
     let min = 8,
       max = 22;
-    for (const v of Object.values(property.working_hours)) {
+    for (const v of Object.values(workingHours)) {
       if (!v) continue;
-      const o = parseInt(v.open);
-      const c = parseInt(v.close);
+      const o = parseInt((v as any).open);
+      const c = parseInt((v as any).close);
       if (o < min) min = o;
       if (c > max) max = c;
     }
     return [min, max];
-  }, [property.working_hours]);
+  }, [workingHours]);
 
   const hours = useMemo(
     () => Array.from({ length: maxHour - minHour }, (_, i) => minHour + i),
@@ -133,7 +140,7 @@ export function BookingForm({ property }: BookingFormProps) {
     }
 
     const key = jsDateToPropertyKey(dateObj);
-    const wh = property.working_hours[key] ?? property.working_hours["default"];
+    const wh = workingHours[key] ?? workingHours["default"];
     if (!wh || hour < parseInt(wh.open) || hour >= parseInt(wh.close)) {
       return "outside";
     }
@@ -210,7 +217,7 @@ export function BookingForm({ property }: BookingFormProps) {
         ? 1
         : 0;
   const totalPrice =
-    duration > 0 ? (Number(property.price_per_hour) * duration).toFixed(2) : null;
+    duration > 0 ? (Number(property.price_per_night) * duration).toFixed(2) : null;
 
   const formattedSel = useMemo(() => {
     if (!selDate || selStart === null) return null;
@@ -287,7 +294,7 @@ export function BookingForm({ property }: BookingFormProps) {
         </button>
 
         <h1 className="mb-6 font-display text-2xl font-bold tracking-tight text-foreground">
-          {c.title} <span className="text-primary">{property.name}</span>
+          {c.title} <span className="text-primary">{propertyName}</span>
         </h1>
 
         <form onSubmit={handleSubmit}>
@@ -428,11 +435,11 @@ export function BookingForm({ property }: BookingFormProps) {
               <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
                 <div>
                   <p className="truncate font-display font-semibold text-foreground">
-                    {property.name}
+                    {propertyName}
                   </p>
                   <div className="mt-1 flex items-baseline gap-1">
                     <span className="font-display text-2xl font-bold text-foreground">
-                      {Number(property.price_per_hour).toFixed(0)}
+                      {Number(property.price_per_night).toFixed(0)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {property.currency} {c.summary.perHour}
