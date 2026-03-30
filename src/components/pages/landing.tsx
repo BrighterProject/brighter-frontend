@@ -67,6 +67,7 @@ export function Landing() {
                   data={{
                     image: property.thumbnail ?? null,
                     title: property.name,
+                    description: property.description ?? undefined,
                     location: property.city,
                     roomType:
                       property.property_type.charAt(0).toUpperCase() +
