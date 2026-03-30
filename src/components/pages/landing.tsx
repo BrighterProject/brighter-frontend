@@ -67,11 +67,13 @@ export function Landing() {
                   data={{
                     image: property.thumbnail ?? null,
                     title: property.name,
-                    description: property.description ?? undefined,
+                    description: property.description,
                     location: property.city,
                     roomType:
                       property.property_type.charAt(0).toUpperCase() +
                       property.property_type.slice(1).replace(/_/g, " "),
+                    roomDetails: property.room_details,
+                    bedInfo: property.bed_info,
                     bedrooms: property.bedrooms,
                     maxGuests: property.max_guests,
                     totalReviews: property.total_reviews,

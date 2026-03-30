@@ -34,10 +34,12 @@ function propertyToOfferData(
   return {
     title: property.name,
     location: property.city,
-    description: property.description ?? undefined,
+    description: property.description,
     roomType:
       property.property_type.charAt(0).toUpperCase() +
       property.property_type.slice(1).replace(/_/g, " "),
+    roomDetails: property.room_details,
+    bedInfo: property.bed_info,
     bedrooms: property.bedrooms,
     maxGuests: property.max_guests,
     totalReviews: property.total_reviews,

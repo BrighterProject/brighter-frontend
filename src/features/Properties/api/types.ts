@@ -29,7 +29,7 @@ export interface TranslationResponse {
 export interface PropertyListItem {
   id: string;
   name: string;
-  description?: string | null;
+  description: string;
   city: string;
   property_type: PropertyType;
   status: PropertyStatus;
@@ -37,6 +37,8 @@ export interface PropertyListItem {
   currency: string;
   max_guests: number;
   bedrooms: number;
+  room_details: string;
+  bed_info: string;
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;

@@ -39,34 +39,6 @@ const landingContent = {
       }),
     },
     offerCard: {
-      title: t({
-        en: "Lorem ipsum dolor sit amet orci aliquam.",
-        bg: "Lorem ipsum dolor sit amet orci aliquam.",
-      }),
-      location: t({ en: "Burgas", bg: "Бургас" }),
-      amenity: t({ en: "Restaurant", bg: "Ресторант" }),
-      roomType: t({
-        en: "Deluxe King Studio - Ground Floor",
-        bg: "Делукс Кинг Студио - Партер",
-      }),
-      roomDetails: t({
-        en: "Entire studio \u2022 1 bathroom \u2022 50 m\u00B2",
-        bg: "Цяло студио \u2022 1 баня \u2022 50 м\u00B2",
-      }),
-      bedInfo: t({ en: "1 king bed", bg: "1 кинг-сайз легло" }),
-      scarcity: t({
-        en: "Only 3 rooms left at this price on our site",
-        bg: "Само 3 стаи останаха на тази цена на нашия сайт",
-      }),
-      perk: t({ en: "Breakfast included", bg: "Включена закуска" }),
-      description: t({
-        en: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel nisi non quam lacinia aliquet ut non arcu. Sed erat ante, bibendum in efficitur egestas, ultricies id tortor. Proin tincidunt tempus orci bibendum cursus. Curabitur dui felis, congue quis congue fermentum, bibendum nec orci. Fusce sollicitudin augue tempor, vulputate lectus quis, consequat elit. Proin porta",
-        bg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel nisi non quam lacinia aliquet ut non arcu. Sed erat ante, bibendum in efficitur egestas, ultricies id tortor. Proin tincidunt tempus orci bibendum cursus. Curabitur dui felis, congue quis congue fermentum, bibendum nec orci. Fusce sollicitudin augue tempor, vulputate lectus quis, consequat elit. Proin porta",
-      }),
-      rating: t({ en: "Excellent", bg: "Отлично" }),
-      ratingScore: "8.6",
-      priceLabel: t({ en: "1 night, 2 adults", bg: "1 нощувка, 2 възрастни" }),
-      price: "EUR 165",
       priceNote: t({
         en: "Includes taxes and fees",
         bg: "Включва данъци и такси",
