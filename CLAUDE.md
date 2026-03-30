@@ -105,14 +105,15 @@ Content declarations (`*.content.ts`) live next to the components they belong to
 
 ### API client
 
-`src/lib/api-client.ts` — shared axios instance with base URL `http://localhost:80` (Traefik). Attaches `Authorization: Bearer <token>` from localStorage. Use this for all feature API calls.
+`src/lib/api-client.ts` — shared axios instance with base URL `http://localhost:80` (Traefik). `withCredentials: true` — browser sends the httpOnly `access_token` cookie automatically. No manual token attachment. Use this for all feature API calls.
 
 ### Auth flow (frontend side)
 
-Mirrors the admin panel:
-1. `POST /auth/token` (form-urlencoded) → stores `access_token` in `localStorage`
-2. `GET /users/@me/get` with `staleTime: Infinity` for current user
-3. Logout: removes token + clears QueryClient cache
+1. `POST /auth/token` (form-urlencoded) → server sets httpOnly cookie; nothing stored in JS
+2. `GET /users/@me/get` with `staleTime: Infinity`; always enabled — returns `null` on 401 (not logged in), no redirect
+3. Logout: `POST /auth/logout` clears cookie server-side + clears QueryClient cache
+4. Protected routes (e.g. `book.tsx`) guard via async `GET /users/@me/get` in `beforeLoad` — not localStorage
+5. 401 interceptor redirects to login for all calls **except** `/users/@me/get` (prevents redirect on public pages when not logged in)
 
 ### Payments integration
 
