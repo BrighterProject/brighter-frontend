@@ -9,46 +9,47 @@ const bookingFormContent = {
         bg: "Резервирай имот | Brighter.BG",
       }),
       description: t({
-        en: "Book your slot at this property.",
-        bg: "Резервирайте своя час в този имот.",
+        en: "Book your stay at this property.",
+        bg: "Резервирайте престоя си в този имот.",
       }),
     },
     back: t({ en: "Back to property", bg: "Към имота" }),
     title: t({ en: "Book", bg: "Резервирай" }),
-    grid: {
+    calendar: {
+      dayHeaders: t({ en: "Mo_Tu_We_Th_Fr_Sa_Su", bg: "Пн_Вт_Ср_Чт_Пт_Сб_Нд" }),
       instruction: t({
-        en: "Click a slot to start, click another to set the end",
-        bg: "Кликни за начало, кликни отново за края",
+        en: "Select check-in, then check-out",
+        bg: "Изберете настаняване, после напускане",
       }),
-      prev: t({ en: "\u2190 Prev", bg: "\u2190 Назад" }),
-      next: t({ en: "Next \u2192", bg: "Напред \u2192" }),
-      legend: {
-        available: t({ en: "Available", bg: "Свободно" }),
-        closed: t({ en: "Closed", bg: "Затворено" }),
-        unavailable: t({ en: "Unavailable", bg: "Недостъпно" }),
-        mine: t({ en: "My booking", bg: "Моя резервация" }),
-        booked: t({ en: "Booked", bg: "Заето" }),
-        selected: t({ en: "Selected", bg: "Избрано" }),
-      },
+    },
+    labels: {
+      checkIn: t({ en: "Check-in", bg: "Настаняване" }),
+      checkOut: t({ en: "Check-out", bg: "Напускане" }),
+      nights: t({ en: "nights", bg: "нощ." }),
+    },
+    legend: {
+      range: t({ en: "Selected range", bg: "Избран период" }),
+      mine: t({ en: "My booking", bg: "Моя резервация" }),
+      booked: t({ en: "Booked", bg: "Заето" }),
+      unavailable: t({ en: "Unavailable", bg: "Недостъпно" }),
     },
     sections: {
       notes: t({ en: "Notes (optional)", bg: "Бележки (незадължително)" }),
     },
-    labels: {
-      hours: t({ en: "h", bg: "ч" }),
-    },
     errors: {
-      minDuration: t({
-        en: "Minimum booking duration is 1 hour.",
-        bg: "Минималната продължителност е 1 час.",
+      selectDates: t({
+        en: "Please select check-in and check-out dates.",
+        bg: "Моля изберете дати за настаняване и напускане.",
       }),
-      selectSlot: t({
-        en: "Please select a time slot on the grid.",
-        bg: "Моля изберете час от таблицата.",
+      minNights: t({ en: "Minimum stay:", bg: "Минимален престой:" }),
+      maxNights: t({ en: "Maximum stay:", bg: "Максимален престой:" }),
+      blockedInRange: t({
+        en: "The selected range includes unavailable dates. Please choose different dates.",
+        bg: "Избраният период включва недостъпни дати. Моля изберете други.",
       }),
       conflict: t({
-        en: "This slot is no longer available. Please choose another time.",
-        bg: "Този час вече не е свободен. Моля изберете друг.",
+        en: "These dates are no longer available. Please choose different dates.",
+        bg: "Тези дати вече не са свободни. Моля изберете други.",
       }),
       generic: t({
         en: "Something went wrong. Please try again.",
@@ -60,12 +61,18 @@ const bookingFormContent = {
       }),
     },
     summary: {
-      perHour: t({ en: "/ hr", bg: "/ час" }),
+      perNight: t({ en: "/ night", bg: "/ нощ" }),
       total: t({ en: "Total", bg: "Общо" }),
-      noTime: t({
-        en: "Select a slot on the grid",
-        bg: "Изберете час от таблицата",
+      noDates: t({
+        en: "Select check-in and check-out dates",
+        bg: "Изберете дати за настаняване и напускане",
       }),
+      selectCheckout: t({
+        en: "Check-in selected — now pick check-out",
+        bg: "Настаняването е избрано — изберете напускане",
+      }),
+      minLabel: t({ en: "Min", bg: "Мин" }),
+      maxLabel: t({ en: "Max", bg: "Макс" }),
     },
     submit: {
       idle: t({ en: "Confirm & Pay", bg: "Потвърди и плати" }),

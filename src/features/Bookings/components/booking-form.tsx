@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer, useLocaleStorage } from "react-intlayer";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -20,56 +20,54 @@ interface BookingFormProps {
   property: PropertyResponse;
 }
 
-// JS getDay() 0=Sun…6=Sat → Python weekday 0=Mon…6=Sun
-function jsDateToPropertyKey(d: Date): string {
-  return String((d.getDay() + 6) % 7);
-}
-
 function isoDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function offsetAwareISO(dateStr: string, hour: number): string {
-  const d = new Date(`${dateStr}T${String(hour).padStart(2, "0")}:00:00`);
+/** Midnight on date d, with local timezone offset appended. */
+function midnightISO(d: Date): string {
   const off = -d.getTimezoneOffset();
   const sign = off >= 0 ? "+" : "-";
   const abs = Math.abs(off);
   const hh = String(Math.floor(abs / 60)).padStart(2, "0");
   const mm = String(abs % 60).padStart(2, "0");
-  return `${dateStr}T${String(hour).padStart(2, "0")}:00:00${sign}${hh}:${mm}`;
+  return `${isoDate(d)}T00:00:00${sign}${hh}:${mm}`;
 }
 
-type CellState =
+/** Returns an array of Date|null for a calendar month grid (Monday-first, null = padding). */
+function getMonthGrid(year: number, month: number): (Date | null)[] {
+  const firstDay = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startOffset = (firstDay.getDay() + 6) % 7; // Mon=0 … Sun=6
+  const cells: (Date | null)[] = Array(startOffset).fill(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+  return cells;
+}
+
+type DayState =
+  | "past"
+  | "today"
   | "available"
-  | "outside"
   | "unavailable"
   | "booked"
   | "mine"
-  | "selected"
-  | "past";
+  | "check-in"
+  | "check-out"
+  | "in-range";
 
-const CELL_CLASSES: Record<CellState, string> = {
-  available:
-    "bg-card hover:bg-emerald-50 dark:hover:bg-emerald-950/30 cursor-pointer border-border",
-  outside: "bg-muted cursor-default border-border",
-  unavailable:
-    "bg-amber-50 dark:bg-amber-950/20 cursor-default border-amber-200 dark:border-amber-900/30",
-  booked:
-    "bg-red-100 dark:bg-red-950/20 cursor-default border-red-200 dark:border-red-900/30",
-  mine: "bg-blue-100 dark:bg-blue-950/20 cursor-default border-blue-200 dark:border-blue-900/30",
-  selected:
-    "bg-emerald-100 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-700 cursor-pointer",
-  past: "bg-muted/50 cursor-default border-border opacity-50",
+const DAY_BASE = "flex h-10 w-full items-center justify-center text-sm select-none transition-colors";
+
+const DAY_CLASSES: Record<DayState, string> = {
+  past: "text-muted-foreground/35 cursor-default",
+  today: "font-bold text-primary ring-1 ring-inset ring-primary/40 rounded-full cursor-pointer hover:bg-primary/10",
+  available: "text-foreground cursor-pointer hover:bg-primary/10 rounded-full",
+  unavailable: "text-amber-600/50 cursor-default bg-amber-50/60 dark:bg-amber-950/20",
+  booked: "text-red-400/60 cursor-default bg-red-50/60 dark:bg-red-950/20",
+  mine: "text-blue-500/70 cursor-default bg-blue-50/70 dark:bg-blue-950/25",
+  "check-in": "bg-primary text-primary-foreground cursor-pointer rounded-l-full font-semibold",
+  "check-out": "bg-primary text-primary-foreground cursor-pointer rounded-r-full font-semibold",
+  "in-range": "bg-primary/15 text-foreground cursor-pointer",
 };
-
-const LEGEND: { key: CellState; labelKey: string }[] = [
-  { key: "available", labelKey: "available" },
-  { key: "selected", labelKey: "selected" },
-  { key: "mine", labelKey: "mine" },
-  { key: "booked", labelKey: "booked" },
-  { key: "unavailable", labelKey: "unavailable" },
-  { key: "outside", labelKey: "closed" },
-];
 
 export function BookingForm({ property }: BookingFormProps) {
   const c = useIntlayer("booking-form");
@@ -82,39 +80,26 @@ export function BookingForm({ property }: BookingFormProps) {
   const propertyName =
     resolveTranslation(property.translations, getLocale())?.name ?? "Untitled";
 
-  const [weekOffset, setWeekOffset] = useState(0);
-  const [selDate, setSelDate] = useState<string | null>(null);
-  const [selStart, setSelStart] = useState<number | null>(null);
-  const [selEnd, setSelEnd] = useState<number | null>(null);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const [monthOffset, setMonthOffset] = useState(0);
+  const [checkIn, setCheckIn] = useState<Date | null>(null);
+  const [checkOut, setCheckOut] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const dates = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() + weekOffset + i);
-      return d;
-    });
-  }, [weekOffset]);
+  const { viewYear, viewMonth } = useMemo(() => {
+    const d = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
+    return { viewYear: d.getFullYear(), viewMonth: d.getMonth() };
+  }, [today, monthOffset]);
 
-  // TODO: redesign booking form for nightly model (currently hourly grid)
-  const workingHours = (property as any).working_hours ?? {};
-  const [minHour, maxHour] = useMemo(() => {
-    let min = 8,
-      max = 22;
-    for (const v of Object.values(workingHours)) {
-      if (!v) continue;
-      const o = parseInt((v as any).open);
-      const c = parseInt((v as any).close);
-      if (o < min) min = o;
-      if (c > max) max = c;
-    }
-    return [min, max];
-  }, [workingHours]);
-
-  const hours = useMemo(
-    () => Array.from({ length: maxHour - minHour }, (_, i) => minHour + i),
-    [minHour, maxHour],
+  const monthGrid = useMemo(
+    () => getMonthGrid(viewYear, viewMonth),
+    [viewYear, viewMonth],
   );
 
   const myPropertyBookings = useMemo(
@@ -128,133 +113,148 @@ export function BookingForm({ property }: BookingFormProps) {
     [myBookings, property.id],
   );
 
-  function getCellState(
-    dateStr: string,
-    hour: number,
-    dateObj: Date,
-  ): CellState {
-    const now = new Date();
-    const nowDate = isoDate(now);
-    if (dateStr < nowDate || (dateStr === nowDate && hour < now.getHours())) {
-      return "past";
-    }
-
-    const key = jsDateToPropertyKey(dateObj);
-    const wh = workingHours[key] ?? workingHours["default"];
-    if (!wh || hour < parseInt(wh.open) || hour >= parseInt(wh.close)) {
-      return "outside";
-    }
-
-    const cellStart = new Date(
-      `${dateStr}T${String(hour).padStart(2, "0")}:00:00`,
-    );
-    const cellEnd = new Date(
-      `${dateStr}T${String(hour + 1).padStart(2, "0")}:00:00`,
-    );
-    for (const u of property.unavailabilities) {
-      const us = new Date(u.start_datetime);
-      const ue = new Date(u.end_datetime);
-      if (cellStart < ue && cellEnd > us) return "unavailable";
-    }
-
-    for (const b of occupiedSlots) {
-      const bs = new Date(b.start_datetime);
-      const be = new Date(b.end_datetime);
-      if (cellStart < be && cellEnd > bs) return "booked";
-    }
-
+  /** True when date d is blocked (past, occupied, or unavailable). */
+  function isBlockedDate(d: Date): boolean {
+    if (d < today) return true;
+    const ds = d.getTime();
+    const de = ds + 86_400_000;
     for (const b of myPropertyBookings) {
-      const bs = new Date(b.start_datetime);
-      const be = new Date(b.end_datetime);
-      if (cellStart < be && cellEnd > bs) return "mine";
+      const bs = new Date(b.start_datetime).getTime();
+      const be = new Date(b.end_datetime).getTime();
+      if (ds < be && de > bs) return true;
+    }
+    for (const b of occupiedSlots) {
+      const bs = new Date(b.start_datetime).getTime();
+      const be = new Date(b.end_datetime).getTime();
+      if (ds < be && de > bs) return true;
+    }
+    for (const u of property.unavailabilities) {
+      const us = new Date(u.start_datetime).getTime();
+      const ue = new Date(u.end_datetime).getTime();
+      if (ds < ue && de > us) return true;
+    }
+    return false;
+  }
+
+  /** True if any day strictly between `from` and `to` is blocked. */
+  function rangeHasBlocked(from: Date, to: Date): boolean {
+    const cur = new Date(from.getTime() + 86_400_000);
+    while (cur < to) {
+      if (isBlockedDate(cur)) return true;
+      cur.setTime(cur.getTime() + 86_400_000);
+    }
+    return false;
+  }
+
+  function getDayState(d: Date): DayState {
+    if (d < today) return "past";
+
+    // Selection overlay has highest priority
+    if (checkIn && d.getTime() === checkIn.getTime()) return "check-in";
+    if (checkOut && d.getTime() === checkOut.getTime()) return "check-out";
+    if (checkIn && checkOut && d > checkIn && d < checkOut) return "in-range";
+
+    // Occupancy states
+    const ds = d.getTime();
+    const de = ds + 86_400_000;
+    for (const b of myPropertyBookings) {
+      const bs = new Date(b.start_datetime).getTime();
+      const be = new Date(b.end_datetime).getTime();
+      if (ds < be && de > bs) return "mine";
+    }
+    for (const b of occupiedSlots) {
+      const bs = new Date(b.start_datetime).getTime();
+      const be = new Date(b.end_datetime).getTime();
+      if (ds < be && de > bs) return "booked";
+    }
+    for (const u of property.unavailabilities) {
+      const us = new Date(u.start_datetime).getTime();
+      const ue = new Date(u.end_datetime).getTime();
+      if (ds < ue && de > us) return "unavailable";
     }
 
-    if (selDate === dateStr && selStart !== null) {
-      const lo = selEnd !== null ? Math.min(selStart, selEnd) : selStart;
-      const hi = selEnd !== null ? Math.max(selStart, selEnd) : selStart;
-      if (hour >= lo && hour <= hi) return "selected";
-    }
-
+    if (d.getTime() === today.getTime()) return "today";
     return "available";
   }
 
-  function handleCellClick(dateStr: string, hour: number, state: CellState) {
-    if (
-      state === "outside" ||
-      state === "unavailable" ||
-      state === "booked" ||
-      state === "mine" ||
-      state === "past"
-    )
-      return;
-
-    if (selDate !== dateStr || selStart === null) {
-      setSelDate(dateStr);
-      setSelStart(hour);
-      setSelEnd(null);
-    } else if (selEnd === null) {
-      if (hour === selStart) {
-        setSelStart(null);
-        setSelDate(null);
-      } else {
-        const lo = Math.min(selStart, hour);
-        const hi = Math.max(selStart, hour);
-        setSelStart(lo);
-        setSelEnd(hi);
-      }
-    } else {
-      setSelDate(dateStr);
-      setSelStart(hour);
-      setSelEnd(null);
-    }
+  function handleDayClick(d: Date) {
     setError(null);
+
+    // Phase 1: no selection, or resetting — pick check-in
+    if (!checkIn || checkOut) {
+      if (isBlockedDate(d)) return;
+      setCheckIn(d);
+      setCheckOut(null);
+      return;
+    }
+
+    // Phase 2: check-in set, picking check-out
+    if (d <= checkIn) {
+      // Clicked before or on check-in — restart
+      if (isBlockedDate(d)) return;
+      setCheckIn(d);
+      setCheckOut(null);
+      return;
+    }
+
+    const nights = Math.round((d.getTime() - checkIn.getTime()) / 86_400_000);
+
+    if (nights < property.min_nights) {
+      setError(
+        `${c.errors.minNights.value as string} ${property.min_nights} ${c.labels.nights.value as string}`,
+      );
+      return;
+    }
+    if (property.max_nights && nights > property.max_nights) {
+      setError(
+        `${c.errors.maxNights.value as string} ${property.max_nights} ${c.labels.nights.value as string}`,
+      );
+      return;
+    }
+    if (rangeHasBlocked(checkIn, d)) {
+      setError(c.errors.blockedInRange.value as string);
+      return;
+    }
+
+    setCheckOut(d);
   }
 
-  const duration =
-    selStart !== null && selEnd !== null
-      ? selEnd - selStart + 1
-      : selStart !== null
-        ? 1
-        : 0;
-  const totalPrice =
-    duration > 0 ? (Number(property.price_per_night) * duration).toFixed(2) : null;
+  const nights = useMemo(() => {
+    if (!checkIn || !checkOut) return 0;
+    return Math.round((checkOut.getTime() - checkIn.getTime()) / 86_400_000);
+  }, [checkIn, checkOut]);
 
-  const formattedSel = useMemo(() => {
-    if (!selDate || selStart === null) return null;
-    const d = new Date(selDate + "T00:00:00");
-    const dateLabel = d.toLocaleDateString(undefined, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    });
-    const endH = selEnd ?? selStart;
-    return `${dateLabel} · ${String(selStart).padStart(2, "0")}:00 – ${String(endH + 1).padStart(2, "0")}:00`;
-  }, [selDate, selStart, selEnd]);
+  const totalPrice = useMemo(
+    () =>
+      nights > 0
+        ? (Number(property.price_per_night) * nights).toFixed(2)
+        : null,
+    [nights, property.price_per_night],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!selDate || selStart === null) {
-      setError(c.errors.selectSlot.value as string);
+    if (!checkIn || !checkOut) {
+      setError(c.errors.selectDates.value as string);
       return;
     }
-    const endH = selEnd ?? selStart;
     let booking;
     try {
       booking = await createBooking.mutateAsync({
         property_id: property.id,
-        start_datetime: offsetAwareISO(selDate, selStart),
-        end_datetime: offsetAwareISO(selDate, endH + 1),
+        start_datetime: midnightISO(checkIn),
+        end_datetime: midnightISO(checkOut),
         notes: notes.trim() || null,
       });
     } catch (err: any) {
       const httpStatus = err?.response?.status;
       console.error("[booking]", err?.response?.data?.detail ?? err);
-      if (httpStatus === 409) {
-        setError(c.errors.conflict.value as string);
-      } else {
-        setError(c.errors.generic.value as string);
-      }
+      setError(
+        httpStatus === 409
+          ? (c.errors.conflict.value as string)
+          : (c.errors.generic.value as string),
+      );
       return;
     }
 
@@ -274,11 +274,16 @@ export function BookingForm({ property }: BookingFormProps) {
     }
   };
 
-  const DAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const dayHeaders = (c.calendar.dayHeaders.value as string).split("_");
+
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(
+    getLocale(),
+    { month: "long", year: "numeric" },
+  );
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() =>
@@ -299,113 +304,99 @@ export function BookingForm({ property }: BookingFormProps) {
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-8 lg:grid-cols-3">
-            {/* Left: grid */}
+            {/* Calendar */}
             <div className="space-y-4 lg:col-span-2">
-              <div className="rounded-2xl border bg-card p-4 shadow-sm">
-                {/* Week nav */}
-                <div className="mb-3 flex items-center justify-between">
+              <div className="rounded-2xl border bg-card p-5 shadow-sm">
+                {/* Month navigation */}
+                <div className="mb-4 flex items-center justify-between">
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    disabled={weekOffset <= 0}
-                    onClick={() => setWeekOffset((o) => o - 7)}
+                    size="icon"
+                    disabled={monthOffset <= 0}
+                    onClick={() => setMonthOffset((o) => o - 1)}
                   >
-                    {c.grid.prev}
+                    <ChevronLeft className="size-4" />
                   </Button>
-                  <p className="text-xs text-muted-foreground">
-                    {c.grid.instruction}
-                  </p>
+                  <span className="font-display font-semibold capitalize text-foreground">
+                    {monthLabel}
+                  </span>
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    onClick={() => setWeekOffset((o) => o + 7)}
+                    size="icon"
+                    onClick={() => setMonthOffset((o) => o + 1)}
                   >
-                    {c.grid.next}
+                    <ChevronRight className="size-4" />
                   </Button>
                 </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse text-xs">
-                    <thead>
-                      <tr>
-                        <th className="w-12" />
-                        {dates.map((d) => {
-                          const ds = isoDate(d);
-                          const isToday = ds === isoDate(new Date());
-                          return (
-                            <th
-                              key={ds}
-                              className={cn(
-                                "px-1 pb-2 text-center font-medium",
-                                isToday
-                                  ? "text-primary"
-                                  : "text-muted-foreground",
-                              )}
-                            >
-                              <div>{DAY_SHORT[(d.getDay() + 6) % 7]}</div>
-                              <div
-                                className={cn(
-                                  "text-base font-bold",
-                                  isToday && "text-primary",
-                                )}
-                              >
-                                {d.getDate()}
-                              </div>
-                            </th>
-                          );
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {hours.map((hour) => (
-                        <tr key={hour}>
-                          <td className="w-12 py-0 pr-2 text-right tabular-nums leading-none text-muted-foreground">
-                            {String(hour).padStart(2, "0")}:00
-                          </td>
-                          {dates.map((d) => {
-                            const ds = isoDate(d);
-                            const state = getCellState(ds, hour, d);
-                            return (
-                              <td
-                                key={ds}
-                                onClick={() => handleCellClick(ds, hour, state)}
-                                className={cn(
-                                  "h-8 border text-center transition-colors",
-                                  CELL_CLASSES[state],
-                                  state === "selected" &&
-                                    selDate === ds &&
-                                    (hour === (selStart ?? -1) ||
-                                      hour === (selEnd ?? selStart ?? -1)) &&
-                                    "font-bold",
-                                )}
-                              />
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Legend */}
-                <div className="mt-4 flex flex-wrap gap-3 border-t pt-3">
-                  {LEGEND.map(({ key, labelKey }) => (
-                    <div
-                      key={key}
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                    >
-                      <div
-                        className={cn(
-                          "size-3 rounded-sm border",
-                          CELL_CLASSES[key],
-                        )}
-                      />
-                      {(c.grid.legend as any)[labelKey]}
-                    </div>
+                {/* Day-of-week headers */}
+                <div className="mb-1 grid grid-cols-7 text-center text-xs font-medium text-muted-foreground">
+                  {dayHeaders.map((h) => (
+                    <div key={h}>{h}</div>
                   ))}
+                </div>
+
+                {/* Day cells */}
+                <div className="grid grid-cols-7">
+                  {monthGrid.map((d, i) => {
+                    if (!d)
+                      return <div key={`pad-${i}`} className="h-10" />;
+                    const state = getDayState(d);
+                    return (
+                      <div
+                        key={isoDate(d)}
+                        role="button"
+                        tabIndex={state === "past" ? -1 : 0}
+                        aria-label={isoDate(d)}
+                        onClick={() => handleDayClick(d)}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && handleDayClick(d)
+                        }
+                        className={cn(DAY_BASE, DAY_CLASSES[state])}
+                      >
+                        {d.getDate()}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Instruction + legend */}
+                <div className="mt-4 border-t pt-3">
+                  <p className="mb-2 text-center text-xs text-muted-foreground">
+                    {c.calendar.instruction}
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {(
+                      [
+                        {
+                          cls: "bg-primary/15 border border-primary/20",
+                          label: c.legend.range,
+                        },
+                        {
+                          cls: "bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/30",
+                          label: c.legend.mine,
+                        },
+                        {
+                          cls: "bg-red-100 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30",
+                          label: c.legend.booked,
+                        },
+                        {
+                          cls: "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30",
+                          label: c.legend.unavailable,
+                        },
+                      ] as const
+                    ).map(({ cls, label }, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                      >
+                        <div className={cn("size-3 rounded-sm", cls)} />
+                        {label}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -430,9 +421,10 @@ export function BookingForm({ property }: BookingFormProps) {
               )}
             </div>
 
-            {/* Right: summary */}
+            {/* Summary sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
+                {/* Price header */}
                 <div>
                   <p className="truncate font-display font-semibold text-foreground">
                     {propertyName}
@@ -442,23 +434,57 @@ export function BookingForm({ property }: BookingFormProps) {
                       {Number(property.price_per_night).toFixed(0)}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {property.currency} {c.summary.perHour}
+                      {property.currency} {c.summary.perNight}
                     </span>
                   </div>
+                  {(property.min_nights > 1 || property.max_nights > 0) && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {property.min_nights > 1 && (
+                        <>
+                          {c.summary.minLabel} {property.min_nights}{" "}
+                          {c.labels.nights}
+                        </>
+                      )}
+                      {property.min_nights > 1 && property.max_nights > 0 &&
+                        " · "}
+                      {property.max_nights > 0 && (
+                        <>
+                          {c.summary.maxLabel} {property.max_nights}{" "}
+                          {c.labels.nights}
+                        </>
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 <hr className="border-border" />
 
+                {/* Booking details */}
                 <div className="space-y-2 text-sm">
-                  {formattedSel ? (
+                  {checkIn && checkOut ? (
                     <>
-                      <p className="font-medium text-foreground">
-                        {formattedSel}
-                      </p>
                       <div className="flex justify-between text-muted-foreground">
-                        <span>
-                          {duration} {c.labels.hours}
+                        <span>{c.labels.checkIn}</span>
+                        <span className="font-medium text-foreground">
+                          {checkIn.toLocaleDateString(getLocale(), {
+                            day: "numeric",
+                            month: "short",
+                          })}
                         </span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>{c.labels.checkOut}</span>
+                        <span className="font-medium text-foreground">
+                          {checkOut.toLocaleDateString(getLocale(), {
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
+                      </div>
+                      <div className="text-muted-foreground">
+                        {nights} {c.labels.nights} ×{" "}
+                        {Number(property.price_per_night).toFixed(0)}{" "}
+                        {property.currency}
                       </div>
                       <div className="flex justify-between border-t pt-1 text-base font-semibold text-foreground">
                         <span>{c.summary.total}</span>
@@ -467,9 +493,22 @@ export function BookingForm({ property }: BookingFormProps) {
                         </span>
                       </div>
                     </>
+                  ) : checkIn ? (
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        {c.summary.selectCheckout}
+                      </p>
+                      <p className="font-medium text-foreground">
+                        {checkIn.toLocaleDateString(getLocale(), {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </p>
+                    </div>
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      {c.summary.noTime}
+                      {c.summary.noDates}
                     </p>
                   )}
                 </div>
@@ -481,8 +520,8 @@ export function BookingForm({ property }: BookingFormProps) {
                   disabled={
                     createBooking.isPending ||
                     createCheckout.isPending ||
-                    !selDate ||
-                    selStart === null
+                    !checkIn ||
+                    !checkOut
                   }
                 >
                   {createBooking.isPending
