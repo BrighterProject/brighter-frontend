@@ -27,8 +27,7 @@ const landingContent = {
         en: "Enter a destination or property",
         bg: "Въведете дестинация или обект",
       }),
-      checkIn: t({ en: "Check-in date", bg: "Дата на настаняване" }),
-      checkOut: t({ en: "Check-out date", bg: "Дата на напускане" }),
+      dates: t({ en: "Select dates", bg: "Изберете дати" }),
       button: t({ en: "Search", bg: "Търсене" }),
     },
     offers: {

@@ -5,6 +5,7 @@ import { PropertyDetail } from "@/features/Properties/components/property-detail
 
 function PropertyDetailPage() {
   const { propertyId } = Route.useParams();
+  const search = Route.useSearch();
   const { data: property, isLoading, isError } = useProperty(propertyId);
 
   if (isLoading) {
@@ -28,11 +29,22 @@ function PropertyDetailPage() {
     );
   }
 
-  return <PropertyDetail property={property} />;
+  return (
+    <PropertyDetail
+      property={property}
+      checkIn={search.checkIn}
+      checkOut={search.checkOut}
+    />
+  );
 }
 
 export const Route = createFileRoute("/{-$locale}/properties/$propertyId/")({
   component: PropertyDetailPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
+    checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
+    adults: typeof search.adults === "number" ? search.adults : undefined,
+  }),
   head: ({ params }) => {
     const { locale } = params;
     const meta = getIntlayer("property-detail", locale).meta;

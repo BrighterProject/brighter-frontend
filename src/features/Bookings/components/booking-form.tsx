@@ -1,255 +1,126 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer, useLocaleStorage } from "react-intlayer";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import {
   useCreateBooking,
   useCreateCheckout,
-  useMyBookings,
-  useOccupiedSlots,
 } from "../api/hooks";
 import {
   type PropertyResponse,
   resolveTranslation,
 } from "@/features/Properties/api/types";
+import { midnightISO, parseDateParam } from "@/components/ui/date-range-picker";
 
 interface BookingFormProps {
   property: PropertyResponse;
+  checkIn?: string;
+  checkOut?: string;
 }
 
-function isoDate(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+interface GuestInfo {
+  fullName: string;
+  email: string;
+  phone: string;
+  specialRequests: string;
 }
 
-/** Midnight on date d, with local timezone offset appended. */
-function midnightISO(d: Date): string {
-  const off = -d.getTimezoneOffset();
-  const sign = off >= 0 ? "+" : "-";
-  const abs = Math.abs(off);
-  const hh = String(Math.floor(abs / 60)).padStart(2, "0");
-  const mm = String(abs % 60).padStart(2, "0");
-  return `${isoDate(d)}T00:00:00${sign}${hh}:${mm}`;
-}
-
-/** Returns an array of Date|null for a calendar month grid (Monday-first, null = padding). */
-function getMonthGrid(year: number, month: number): (Date | null)[] {
-  const firstDay = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const startOffset = (firstDay.getDay() + 6) % 7; // Mon=0 … Sun=6
-  const cells: (Date | null)[] = Array(startOffset).fill(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
-  return cells;
-}
-
-type DayState =
-  | "past"
-  | "today"
-  | "available"
-  | "unavailable"
-  | "booked"
-  | "mine"
-  | "check-in"
-  | "check-out"
-  | "in-range";
-
-const DAY_BASE = "flex h-10 w-full items-center justify-center text-sm select-none transition-colors";
-
-const DAY_CLASSES: Record<DayState, string> = {
-  past: "text-muted-foreground/35 cursor-default",
-  today: "font-bold text-primary ring-1 ring-inset ring-primary/40 rounded-full cursor-pointer hover:bg-primary/10",
-  available: "text-foreground cursor-pointer hover:bg-primary/10 rounded-full",
-  unavailable: "text-amber-600/50 cursor-default bg-amber-50/60 dark:bg-amber-950/20",
-  booked: "text-red-400/60 cursor-default bg-red-50/60 dark:bg-red-950/20",
-  mine: "text-blue-500/70 cursor-default bg-blue-50/70 dark:bg-blue-950/25",
-  "check-in": "bg-primary text-primary-foreground cursor-pointer rounded-l-full font-semibold",
-  "check-out": "bg-primary text-primary-foreground cursor-pointer rounded-r-full font-semibold",
-  "in-range": "bg-primary/15 text-foreground cursor-pointer",
+const EMPTY_GUEST: GuestInfo = {
+  fullName: "",
+  email: "",
+  phone: "",
+  specialRequests: "",
 };
 
-export function BookingForm({ property }: BookingFormProps) {
+function validateEmail(v: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function validatePhone(v: string): boolean {
+  return /^\+?[\d\s\-().]{6,20}$/.test(v.trim());
+}
+
+export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOutParam }: BookingFormProps) {
   const c = useIntlayer("booking-form");
   const navigate = useNavigate();
   const { getLocale } = useLocaleStorage();
+
   const createBooking = useCreateBooking();
   const createCheckout = useCreateCheckout(getLocale());
-  const { data: myBookings = [] } = useMyBookings();
-  const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
+
   const propertyName =
     resolveTranslation(property.translations, getLocale())?.name ?? "Untitled";
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
+  // Dates come from route search params — set on the property detail page
+  const checkIn = parseDateParam(checkInParam);
+  const checkOut = parseDateParam(checkOutParam);
 
-  const [monthOffset, setMonthOffset] = useState(0);
-  const [checkIn, setCheckIn] = useState<Date | null>(null);
-  const [checkOut, setCheckOut] = useState<Date | null>(null);
+  const nights =
+    checkIn && checkOut
+      ? Math.round((checkOut.getTime() - checkIn.getTime()) / 86_400_000)
+      : 0;
+
+  const totalPrice =
+    nights > 0
+      ? (Number(property.price_per_night) * nights).toFixed(2)
+      : null;
+
+  const [guest, setGuest] = useState<GuestInfo>(EMPTY_GUEST);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<GuestInfo>>({});
 
-  const { viewYear, viewMonth } = useMemo(() => {
-    const d = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
-    return { viewYear: d.getFullYear(), viewMonth: d.getMonth() };
-  }, [today, monthOffset]);
+  const setField = <K extends keyof GuestInfo>(key: K, value: string) => {
+    setGuest((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+  };
 
-  const monthGrid = useMemo(
-    () => getMonthGrid(viewYear, viewMonth),
-    [viewYear, viewMonth],
-  );
-
-  const myPropertyBookings = useMemo(
-    () =>
-      myBookings.filter(
-        (b) =>
-          b.property_id === property.id &&
-          b.status !== "cancelled" &&
-          b.status !== "no_show",
-      ),
-    [myBookings, property.id],
-  );
-
-  /** True when date d is blocked (past, occupied, or unavailable). */
-  function isBlockedDate(d: Date): boolean {
-    if (d < today) return true;
-    const ds = d.getTime();
-    const de = ds + 86_400_000;
-    for (const b of myPropertyBookings) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
-      if (ds < be && de > bs) return true;
-    }
-    for (const b of occupiedSlots) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
-      if (ds < be && de > bs) return true;
-    }
-    for (const u of property.unavailabilities) {
-      const us = new Date(u.start_datetime).getTime();
-      const ue = new Date(u.end_datetime).getTime();
-      if (ds < ue && de > us) return true;
-    }
-    return false;
+  function validate(): boolean {
+    const errs: Partial<GuestInfo> = {};
+    if (!guest.fullName.trim())
+      errs.fullName = c.errors.fullNameRequired.value as string;
+    if (!validateEmail(guest.email))
+      errs.email = c.errors.emailInvalid.value as string;
+    if (guest.phone.trim() && !validatePhone(guest.phone))
+      errs.phone = c.errors.phoneInvalid.value as string;
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
   }
-
-  /** True if any day strictly between `from` and `to` is blocked. */
-  function rangeHasBlocked(from: Date, to: Date): boolean {
-    const cur = new Date(from.getTime() + 86_400_000);
-    while (cur < to) {
-      if (isBlockedDate(cur)) return true;
-      cur.setTime(cur.getTime() + 86_400_000);
-    }
-    return false;
-  }
-
-  function getDayState(d: Date): DayState {
-    if (d < today) return "past";
-
-    // Selection overlay has highest priority
-    if (checkIn && d.getTime() === checkIn.getTime()) return "check-in";
-    if (checkOut && d.getTime() === checkOut.getTime()) return "check-out";
-    if (checkIn && checkOut && d > checkIn && d < checkOut) return "in-range";
-
-    // Occupancy states
-    const ds = d.getTime();
-    const de = ds + 86_400_000;
-    for (const b of myPropertyBookings) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
-      if (ds < be && de > bs) return "mine";
-    }
-    for (const b of occupiedSlots) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
-      if (ds < be && de > bs) return "booked";
-    }
-    for (const u of property.unavailabilities) {
-      const us = new Date(u.start_datetime).getTime();
-      const ue = new Date(u.end_datetime).getTime();
-      if (ds < ue && de > us) return "unavailable";
-    }
-
-    if (d.getTime() === today.getTime()) return "today";
-    return "available";
-  }
-
-  function handleDayClick(d: Date) {
-    setError(null);
-
-    // Phase 1: no selection, or resetting — pick check-in
-    if (!checkIn || checkOut) {
-      if (isBlockedDate(d)) return;
-      setCheckIn(d);
-      setCheckOut(null);
-      return;
-    }
-
-    // Phase 2: check-in set, picking check-out
-    if (d <= checkIn) {
-      // Clicked before or on check-in — restart
-      if (isBlockedDate(d)) return;
-      setCheckIn(d);
-      setCheckOut(null);
-      return;
-    }
-
-    const nights = Math.round((d.getTime() - checkIn.getTime()) / 86_400_000);
-
-    if (nights < property.min_nights) {
-      setError(
-        `${c.errors.minNights.value as string} ${property.min_nights} ${c.labels.nights.value as string}`,
-      );
-      return;
-    }
-    if (property.max_nights && nights > property.max_nights) {
-      setError(
-        `${c.errors.maxNights.value as string} ${property.max_nights} ${c.labels.nights.value as string}`,
-      );
-      return;
-    }
-    if (rangeHasBlocked(checkIn, d)) {
-      setError(c.errors.blockedInRange.value as string);
-      return;
-    }
-
-    setCheckOut(d);
-  }
-
-  const nights = useMemo(() => {
-    if (!checkIn || !checkOut) return 0;
-    return Math.round((checkOut.getTime() - checkIn.getTime()) / 86_400_000);
-  }, [checkIn, checkOut]);
-
-  const totalPrice = useMemo(
-    () =>
-      nights > 0
-        ? (Number(property.price_per_night) * nights).toFixed(2)
-        : null,
-    [nights, property.price_per_night],
-  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     if (!checkIn || !checkOut) {
-      setError(c.errors.selectDates.value as string);
+      setError(c.errors.noDates.value as string);
       return;
     }
+    if (!validate()) return;
+
+    // Pack guest info into notes as structured JSON
+    // TODO: add guest_name, guest_email, guest_phone fields to bookings-ms schema
+    const guestBlock = JSON.stringify({
+      guest_name: guest.fullName.trim(),
+      guest_email: guest.email.trim(),
+      guest_phone: guest.phone.trim() || null,
+      special_requests: guest.specialRequests.trim() || null,
+    });
+    const combinedNotes = notes.trim()
+      ? `${guestBlock}\n${notes.trim()}`
+      : guestBlock;
+
     let booking;
     try {
       booking = await createBooking.mutateAsync({
         property_id: property.id,
         start_datetime: midnightISO(checkIn),
         end_datetime: midnightISO(checkOut),
-        notes: notes.trim() || null,
+        notes: combinedNotes,
       });
     } catch (err: any) {
       const httpStatus = err?.response?.status;
-      console.error("[booking]", err?.response?.data?.detail ?? err);
       setError(
         httpStatus === 409
           ? (c.errors.conflict.value as string)
@@ -267,19 +138,20 @@ export function BookingForm({ property }: BookingFormProps) {
       }
       sessionStorage.setItem("pending_payment_id", payment_id);
       window.location.href = checkout_url;
-    } catch (err: any) {
-      console.error("[checkout]", err?.response?.data?.detail ?? err);
+    } catch {
       setError(c.errors.checkoutFailed.value as string);
       navigate({ to: "/{-$locale}/bookings" as any } as any);
     }
   };
 
-  const dayHeaders = (c.calendar.dayHeaders.value as string).split("_");
-
-  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(
-    getLocale(),
-    { month: "long", year: "numeric" },
-  );
+  const formatDate = (d: Date | null) =>
+    d
+      ? d.toLocaleDateString(getLocale(), {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        })
+      : "—";
 
   return (
     <div className="min-h-screen">
@@ -302,107 +174,108 @@ export function BookingForm({ property }: BookingFormProps) {
           {c.title} <span className="text-primary">{propertyName}</span>
         </h1>
 
+        {/* No dates guard */}
+        {(!checkIn || !checkOut) && (
+          <div className="mb-6 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {c.errors.noDates}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-8 lg:grid-cols-3">
-            {/* Calendar */}
-            <div className="space-y-4 lg:col-span-2">
-              <div className="rounded-2xl border bg-card p-5 shadow-sm">
-                {/* Month navigation */}
-                <div className="mb-4 flex items-center justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    disabled={monthOffset <= 0}
-                    onClick={() => setMonthOffset((o) => o - 1)}
-                  >
-                    <ChevronLeft className="size-4" />
-                  </Button>
-                  <span className="font-display font-semibold capitalize text-foreground">
-                    {monthLabel}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setMonthOffset((o) => o + 1)}
-                  >
-                    <ChevronRight className="size-4" />
-                  </Button>
-                </div>
+            {/* Left: guest info + notes */}
+            <div className="space-y-6 lg:col-span-2">
+              {/* Guest information */}
+              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-5 font-display text-base font-semibold text-foreground">
+                  {c.sections.guestInfo}
+                </h2>
 
-                {/* Day-of-week headers */}
-                <div className="mb-1 grid grid-cols-7 text-center text-xs font-medium text-muted-foreground">
-                  {dayHeaders.map((h) => (
-                    <div key={h}>{h}</div>
-                  ))}
-                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Full name */}
+                  <div className="sm:col-span-2">
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      {c.form.fullName.label}{" "}
+                      <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={guest.fullName}
+                      onChange={(e) => setField("fullName", e.target.value)}
+                      placeholder={c.form.fullName.placeholder.value as string}
+                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                      required
+                    />
+                    {fieldErrors.fullName && (
+                      <p className="mt-1 text-xs text-destructive">
+                        {fieldErrors.fullName}
+                      </p>
+                    )}
+                  </div>
 
-                {/* Day cells */}
-                <div className="grid grid-cols-7">
-                  {monthGrid.map((d, i) => {
-                    if (!d)
-                      return <div key={`pad-${i}`} className="h-10" />;
-                    const state = getDayState(d);
-                    return (
-                      <div
-                        key={isoDate(d)}
-                        role="button"
-                        tabIndex={state === "past" ? -1 : 0}
-                        aria-label={isoDate(d)}
-                        onClick={() => handleDayClick(d)}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleDayClick(d)
-                        }
-                        className={cn(DAY_BASE, DAY_CLASSES[state])}
-                      >
-                        {d.getDate()}
-                      </div>
-                    );
-                  })}
-                </div>
+                  {/* Email */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      {c.form.email.label}{" "}
+                      <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={guest.email}
+                      onChange={(e) => setField("email", e.target.value)}
+                      placeholder={c.form.email.placeholder.value as string}
+                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                      required
+                    />
+                    {fieldErrors.email && (
+                      <p className="mt-1 text-xs text-destructive">
+                        {fieldErrors.email}
+                      </p>
+                    )}
+                  </div>
 
-                {/* Instruction + legend */}
-                <div className="mt-4 border-t pt-3">
-                  <p className="mb-2 text-center text-xs text-muted-foreground">
-                    {c.calendar.instruction}
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-3">
-                    {(
-                      [
-                        {
-                          cls: "bg-primary/15 border border-primary/20",
-                          label: c.legend.range,
-                        },
-                        {
-                          cls: "bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/30",
-                          label: c.legend.mine,
-                        },
-                        {
-                          cls: "bg-red-100 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30",
-                          label: c.legend.booked,
-                        },
-                        {
-                          cls: "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30",
-                          label: c.legend.unavailable,
-                        },
-                      ] as const
-                    ).map(({ cls, label }, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                      >
-                        <div className={cn("size-3 rounded-sm", cls)} />
-                        {label}
-                      </div>
-                    ))}
+                  {/* Phone */}
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      {c.form.phone.label}
+                    </label>
+                    <input
+                      type="tel"
+                      value={guest.phone}
+                      onChange={(e) => setField("phone", e.target.value)}
+                      placeholder={c.form.phone.placeholder.value as string}
+                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    {fieldErrors.phone && (
+                      <p className="mt-1 text-xs text-destructive">
+                        {fieldErrors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Special requests */}
+                  <div className="sm:col-span-2">
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      {c.form.specialRequests.label}
+                    </label>
+                    <Textarea
+                      value={guest.specialRequests}
+                      onChange={(e) =>
+                        setField("specialRequests", e.target.value)
+                      }
+                      placeholder={
+                        c.form.specialRequests.placeholder.value as string
+                      }
+                      rows={2}
+                      maxLength={500}
+                    />
                   </div>
                 </div>
               </div>
 
               {/* Notes */}
-              <div className="space-y-3 rounded-2xl border bg-card p-6 shadow-sm">
-                <h2 className="font-display text-sm font-semibold text-foreground">
+              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-3 font-display text-sm font-semibold text-foreground">
                   {c.sections.notes}
                 </h2>
                 <Textarea
@@ -424,7 +297,6 @@ export function BookingForm({ property }: BookingFormProps) {
             {/* Summary sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
-                {/* Price header */}
                 <div>
                   <p className="truncate font-display font-semibold text-foreground">
                     {propertyName}
@@ -459,28 +331,21 @@ export function BookingForm({ property }: BookingFormProps) {
 
                 <hr className="border-border" />
 
-                {/* Booking details */}
                 <div className="space-y-2 text-sm">
-                  {checkIn && checkOut ? (
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>{c.labels.checkIn}</span>
+                    <span className="font-medium text-foreground">
+                      {formatDate(checkIn)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>{c.labels.checkOut}</span>
+                    <span className="font-medium text-foreground">
+                      {formatDate(checkOut)}
+                    </span>
+                  </div>
+                  {nights > 0 && (
                     <>
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>{c.labels.checkIn}</span>
-                        <span className="font-medium text-foreground">
-                          {checkIn.toLocaleDateString(getLocale(), {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>{c.labels.checkOut}</span>
-                        <span className="font-medium text-foreground">
-                          {checkOut.toLocaleDateString(getLocale(), {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
                       <div className="text-muted-foreground">
                         {nights} {c.labels.nights} ×{" "}
                         {Number(property.price_per_night).toFixed(0)}{" "}
@@ -493,23 +358,6 @@ export function BookingForm({ property }: BookingFormProps) {
                         </span>
                       </div>
                     </>
-                  ) : checkIn ? (
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">
-                        {c.summary.selectCheckout}
-                      </p>
-                      <p className="font-medium text-foreground">
-                        {checkIn.toLocaleDateString(getLocale(), {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      {c.summary.noDates}
-                    </p>
                   )}
                 </div>
 

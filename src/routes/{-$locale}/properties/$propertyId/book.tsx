@@ -6,6 +6,7 @@ import { BookingForm } from "@/features/Bookings/components/booking-form";
 
 function BookPropertyPage() {
   const { propertyId } = Route.useParams();
+  const { checkIn, checkOut } = Route.useSearch();
   const { data: property, isLoading, isError } = useProperty(propertyId);
 
   if (isLoading) {
@@ -26,13 +27,19 @@ function BookPropertyPage() {
     );
   }
 
-  return <BookingForm property={property} />;
+  return <BookingForm property={property} checkIn={checkIn} checkOut={checkOut} />;
 }
 
 export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")({
   component: BookPropertyPage,
-  beforeLoad: async ({ location }) => {
+  validateSearch: (search: Record<string, unknown>) => ({
+    checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
+    checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
+  }),
+  beforeLoad: async ({ location, params, search }) => {
     if (typeof window === "undefined") return;
+
+    // Auth guard
     try {
       await apiClient.get("/users/@me/get");
     } catch {
@@ -40,6 +47,15 @@ export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")(
         to: "/{-$locale}/auth/login",
         params: { locale: location.pathname.split("/")[1] || "bg" },
         search: { redirect: location.href },
+      });
+    }
+
+    // Dates guard — redirect to property detail if missing
+    if (!search.checkIn || !search.checkOut) {
+      throw redirect({
+        to: "/{-$locale}/properties/$propertyId" as any,
+        params: { locale: params.locale ?? "bg", propertyId: params.propertyId } as any,
+        search: {} as any,
       });
     }
   },

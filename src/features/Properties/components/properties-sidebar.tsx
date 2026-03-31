@@ -1,4 +1,4 @@
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useIntlayer } from "react-intlayer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -10,6 +10,7 @@ import {
   POPULAR_FILTER_KEYS,
   PROPERTY_TYPE_KEYS,
   RATING_OPTIONS,
+  BEDROOM_OPTIONS,
 } from "./properties-filters";
 
 interface PropertiesSidebarProps {
@@ -50,22 +51,6 @@ export function PropertiesSidebar({
             {c.filters.clear}
           </button>
         )}
-      </div>
-
-      <div className="border-b border-border pb-4">
-        <label className="mb-2 block text-sm font-semibold text-foreground">
-          {c.filters.city.label}
-        </label>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={c.filters.city.placeholder.value as string}
-            value={filters.city}
-            onChange={(e) => onSet("city", e.target.value)}
-            className="h-9 w-full rounded-md border border-input bg-transparent pl-8 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
       </div>
 
       <CollapsibleSection title={c.filters.price.label as string}>
@@ -150,6 +135,27 @@ export function PropertiesSidebar({
             >
               {r}
               {c.filters.rating.above}
+            </button>
+          ))}
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title={c.filters.bedrooms.label as string}>
+        <div className="flex flex-wrap gap-2">
+          {BEDROOM_OPTIONS.map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() =>
+                onSet("bedrooms", filters.bedrooms === n ? null : n)
+              }
+              className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+                filters.bedrooms === n
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground hover:bg-muted/80"
+              }`}
+            >
+              {n === 5 ? "5+" : n}
             </button>
           ))}
         </div>

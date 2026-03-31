@@ -15,37 +15,47 @@ const bookingFormContent = {
     },
     back: t({ en: "Back to property", bg: "Към имота" }),
     title: t({ en: "Book", bg: "Резервирай" }),
-    calendar: {
-      dayHeaders: t({ en: "Mo_Tu_We_Th_Fr_Sa_Su", bg: "Пн_Вт_Ср_Чт_Пт_Сб_Нд" }),
-      instruction: t({
-        en: "Select check-in, then check-out",
-        bg: "Изберете настаняване, после напускане",
-      }),
-    },
-    labels: {
-      checkIn: t({ en: "Check-in", bg: "Настаняване" }),
-      checkOut: t({ en: "Check-out", bg: "Напускане" }),
-      nights: t({ en: "nights", bg: "нощ." }),
-    },
-    legend: {
-      range: t({ en: "Selected range", bg: "Избран период" }),
-      mine: t({ en: "My booking", bg: "Моя резервация" }),
-      booked: t({ en: "Booked", bg: "Заето" }),
-      unavailable: t({ en: "Unavailable", bg: "Недостъпно" }),
-    },
     sections: {
+      guestInfo: t({ en: "Guest information", bg: "Информация за госта" }),
       notes: t({ en: "Notes (optional)", bg: "Бележки (незадължително)" }),
     },
+    form: {
+      fullName: {
+        label: t({ en: "Full name", bg: "Пълно име" }),
+        placeholder: t({ en: "Jane Doe", bg: "Иван Иванов" }),
+      },
+      email: {
+        label: t({ en: "Email address", bg: "Имейл адрес" }),
+        placeholder: t({ en: "jane@example.com", bg: "ivan@example.com" }),
+      },
+      phone: {
+        label: t({ en: "Phone number", bg: "Телефонен номер" }),
+        placeholder: t({ en: "+1 555 000 0000", bg: "+359 88 000 0000" }),
+      },
+      specialRequests: {
+        label: t({ en: "Special requests", bg: "Специални изисквания" }),
+        placeholder: t({
+          en: "Early check-in, baby cot, allergies...",
+          bg: "Ранно настаняване, бебешко легло, алергии...",
+        }),
+      },
+    },
     errors: {
-      selectDates: t({
-        en: "Please select check-in and check-out dates.",
-        bg: "Моля изберете дати за настаняване и напускане.",
+      noDates: t({
+        en: "No dates selected. Please go back and choose your dates.",
+        bg: "Не са избрани дати. Моля върнете се и изберете дати.",
       }),
-      minNights: t({ en: "Minimum stay:", bg: "Минимален престой:" }),
-      maxNights: t({ en: "Maximum stay:", bg: "Максимален престой:" }),
-      blockedInRange: t({
-        en: "The selected range includes unavailable dates. Please choose different dates.",
-        bg: "Избраният период включва недостъпни дати. Моля изберете други.",
+      fullNameRequired: t({
+        en: "Full name is required.",
+        bg: "Пълното име е задължително.",
+      }),
+      emailInvalid: t({
+        en: "Please enter a valid email address.",
+        bg: "Моля въведете валиден имейл адрес.",
+      }),
+      phoneInvalid: t({
+        en: "Please enter a valid phone number.",
+        bg: "Моля въведете валиден телефонен номер.",
       }),
       conflict: t({
         en: "These dates are no longer available. Please choose different dates.",
@@ -60,17 +70,14 @@ const bookingFormContent = {
         bg: "Резервацията е направена, но плащането не успя. Платете от Моите резервации.",
       }),
     },
+    labels: {
+      checkIn: t({ en: "Check-in", bg: "Настаняване" }),
+      checkOut: t({ en: "Check-out", bg: "Напускане" }),
+      nights: t({ en: "nights", bg: "нощ." }),
+    },
     summary: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
       total: t({ en: "Total", bg: "Общо" }),
-      noDates: t({
-        en: "Select check-in and check-out dates",
-        bg: "Изберете дати за настаняване и напускане",
-      }),
-      selectCheckout: t({
-        en: "Check-in selected — now pick check-out",
-        bg: "Настаняването е избрано — изберете напускане",
-      }),
       minLabel: t({ en: "Min", bg: "Мин" }),
       maxLabel: t({ en: "Max", bg: "Макс" }),
     },
@@ -83,8 +90,8 @@ const bookingFormContent = {
       }),
     },
     notesPlaceholder: t({
-      en: "Any special requests...",
-      bg: "Специални изисквания...",
+      en: "Any additional notes...",
+      bg: "Допълнителни бележки...",
     }),
   },
 } satisfies Dictionary;

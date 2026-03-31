@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
 import { SlidersHorizontal } from "lucide-react";
-import { useProperties } from "../api/hooks";
+import { useInfiniteProperties } from "../api/hooks";
 import type { PropertyListItem } from "../api/types";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
+import { SearchCard } from "@/components/ui/search-card";
 import { OfferCard, type OfferCardData } from "./offer-card";
 import { PropertiesSidebar } from "./properties-sidebar";
 import {
@@ -15,6 +16,7 @@ import {
   PRICE_MAX,
   buildParams,
 } from "./properties-filters";
+import type { SearchParams } from "@/hooks/useSearchParams";
 
 function getRatingLabel(
   rating: number,
@@ -59,22 +61,39 @@ export function PropertiesList() {
   const navigate = useNavigate();
   const c = useIntlayer("properties-list");
 
-  const debouncedCity = useDebounce(filters.city, 400);
+  // Read search params from URL (city, checkIn, checkOut, adults)
+  const searchParams = useSearch({ strict: false }) as SearchParams;
+  const urlCity = searchParams.city ?? "";
+  const urlAdults = searchParams.adults;
+  const urlCheckIn = searchParams.checkIn;
+  const urlCheckOut = searchParams.checkOut;
+
   const debouncedMinPrice = useDebounce(filters.min_price, 400);
   const debouncedMaxPrice = useDebounce(filters.max_price, 400);
 
   const queryFilters: Filters = {
     ...filters,
-    city: debouncedCity,
     min_price: debouncedMinPrice,
     max_price: debouncedMaxPrice,
   };
 
-  const { data: rawData, isLoading, isError } = useProperties(
-    buildParams(queryFilters),
-  );
+  const apiParams = buildParams(queryFilters, {
+    city: urlCity,
+    min_guests: urlAdults,
+    checkIn: urlCheckIn,
+    checkOut: urlCheckOut,
+  });
 
-  const properties = Array.isArray(rawData) ? rawData : [];
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteProperties(apiParams);
+
+  const properties: PropertyListItem[] = data?.pages.flatMap((p) => p) ?? [];
 
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -95,23 +114,61 @@ export function PropertiesList() {
   };
 
   const hasActiveFilters =
-    !!filters.city ||
     filters.min_price > PRICE_MIN ||
     filters.max_price < PRICE_MAX ||
     filters.propertyTypes.length > 0 ||
     filters.popularFilters.length > 0 ||
-    filters.minRating !== null;
+    filters.minRating !== null ||
+    filters.bedrooms !== null;
 
   const activeFilterCount =
-    (filters.city ? 1 : 0) +
     (filters.min_price > PRICE_MIN || filters.max_price < PRICE_MAX ? 1 : 0) +
     filters.propertyTypes.length +
     filters.popularFilters.length +
-    (filters.minRating !== null ? 1 : 0);
+    (filters.minRating !== null ? 1 : 0) +
+    (filters.bedrooms !== null ? 1 : 0);
+
+  // Infinite scroll sentinel
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const onIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage],
+  );
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(onIntersect, { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onIntersect]);
+
+  const searchCardContent = {
+    destination: { value: c.filters.city.placeholder.value as string },
+    dates: { value: "Select dates" },
+    button: c.filters.heading,
+  };
 
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Search card at top of listing */}
+        <div className="mb-8">
+          <SearchCard
+            content={searchCardContent as any}
+            defaultValues={{
+              city: urlCity,
+              checkIn: urlCheckIn,
+              checkOut: urlCheckOut,
+              adults: urlAdults,
+            }}
+          />
+        </div>
+
         <div className="mb-6">
           <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {c.title}
@@ -200,10 +257,26 @@ export function PropertiesList() {
                       navigate({
                         to: "/{-$locale}/properties/$propertyId" as any,
                         params: { propertyId: property.id } as any,
+                        search: {
+                          checkIn: urlCheckIn,
+                          checkOut: urlCheckOut,
+                          adults: urlAdults,
+                        } as any,
                       }),
                     )}
                   />
                 ))}
+
+                {/* Infinite scroll sentinel */}
+                <div ref={sentinelRef} className="py-4 text-center text-sm text-muted-foreground">
+                  {isFetchingNextPage
+                    ? c.loadingMore
+                    : hasNextPage
+                      ? null
+                      : properties.length > 0
+                        ? c.noMore
+                        : null}
+                </div>
               </div>
             )}
           </main>

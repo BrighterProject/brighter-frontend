@@ -65,6 +65,9 @@ const propertiesListContent = {
         label: t({ en: "Star rating", bg: "Брой звезди" }),
         stars: t({ en: "stars", bg: "звезди" }),
       },
+      bedrooms: {
+        label: t({ en: "Bedrooms", bg: "Спални" }),
+      },
       clear: t({ en: "Clear all", bg: "Изчисти всички" }),
     },
     results: {
@@ -79,6 +82,8 @@ const propertiesListContent = {
         bg: "Опитайте да промените филтрите.",
       }),
     },
+    loadingMore: t({ en: "Loading more...", bg: "Зареждане..." }),
+    noMore: t({ en: "No more properties", bg: "Няма повече имоти" }),
     error: t({
       en: "Failed to load properties. Please try again.",
       bg: "Неуспешно зареждане на имоти. Моля, опитайте отново.",

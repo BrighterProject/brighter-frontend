@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
   PropertyListItem,
   PropertyResponse,
   PropertyUnavailabilityResponse,
 } from "./types";
+
+const PAGE_SIZE = 20;
 
 export const useProperties = (params?: Record<string, any>) => {
   return useQuery({
@@ -94,6 +96,21 @@ export const useProperty = (propertyId: string) => {
 // };
 //
 // // --- UNAVAILABILITIES ---
+
+export const useInfiniteProperties = (params?: Record<string, any>) => {
+  return useInfiniteQuery({
+    queryKey: ["properties", "infinite", params],
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await apiClient.get<PropertyListItem[]>("/properties/", {
+        params: { ...params, page: pageParam, page_size: PAGE_SIZE },
+      });
+      return data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _allPages, lastPageParam) =>
+      lastPage.length === PAGE_SIZE ? (lastPageParam as number) + 1 : undefined,
+  });
+};
 
 export const usePropertyUnavailabilities = (propertyId: string) => {
   return useQuery({

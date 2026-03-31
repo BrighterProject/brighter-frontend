@@ -57,6 +57,16 @@ const propertyDetailContent = {
         en: "This property is currently",
         bg: "Този имот в момента е",
       }),
+      selectDates: t({
+        en: "Select check-in and check-out dates",
+        bg: "Изберете дати за настаняване и напускане",
+      }),
+      nights: t({ en: "nights", bg: "нощ." }),
+      total: t({ en: "Total", bg: "Общо" }),
+      dateError: t({
+        en: "Invalid date range",
+        bg: "Невалиден период",
+      }),
     },
   },
 } satisfies Dictionary;

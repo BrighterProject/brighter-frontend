@@ -1,6 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
+import { DateRangePicker, parseDateParam } from "@/components/ui/date-range-picker";
+import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
+import { usePropertyUnavailabilities } from "../api/hooks";
 
 import { type PropertyResponse, resolveTranslation } from "../api/types";
 import { useLocale } from "react-intlayer";
@@ -229,11 +232,21 @@ function LightboxOverlay({
 
 interface PropertyDetailProps {
   property: PropertyResponse;
+  checkIn?: string;
+  checkOut?: string;
 }
 
-export function PropertyDetail({ property }: PropertyDetailProps) {
+export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initCheckOut }: PropertyDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [dateRange, setDateRange] = useState({
+    checkIn: parseDateParam(initCheckIn),
+    checkOut: parseDateParam(initCheckOut),
+  });
+  const [dateError, setDateError] = useState("");
   const navigate = useNavigate();
+
+  const { data: unavailabilities = [] } = usePropertyUnavailabilities(property.id);
+  const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
 
   const c = useIntlayer("property-detail");
   const { locale } = useLocale();
@@ -261,11 +274,29 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
   });
 
   const handleBook = () => {
+    if (!dateRange.checkIn || !dateRange.checkOut) return;
     navigate({
       to: "/{-$locale}/properties/$propertyId/book" as any,
       params: { propertyId: property.id } as any,
+      search: {
+        checkIn: dateRange.checkIn.toISOString().split("T")[0],
+        checkOut: dateRange.checkOut.toISOString().split("T")[0],
+      } as any,
     });
   };
+
+  const nights =
+    dateRange.checkIn && dateRange.checkOut
+      ? Math.round(
+          (dateRange.checkOut.getTime() - dateRange.checkIn.getTime()) /
+            86_400_000,
+        )
+      : 0;
+
+  const totalPrice =
+    nights > 0
+      ? (Number(property.price_per_night) * nights).toFixed(0)
+      : null;
 
   // Lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -572,6 +603,45 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
 
                 <hr className="border-border" />
 
+                {/* Date range picker */}
+                {property.status === "active" && (
+                  <div className="space-y-2">
+                    <DateRangePicker
+                      value={dateRange}
+                      onChange={setDateRange}
+                      unavailabilities={unavailabilities}
+                      occupiedSlots={occupiedSlots}
+                      propertyId={property.id}
+                      minNights={property.min_nights}
+                      maxNights={property.max_nights ?? undefined}
+                      onError={setDateError}
+                    />
+                    {dateError && (
+                      <p className="rounded-lg bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
+                        {dateError}
+                      </p>
+                    )}
+                    {/* Price summary */}
+                    {totalPrice && (
+                      <div className="space-y-1 rounded-lg bg-muted/50 px-3 py-2 text-sm">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>
+                            {nights} {c.bookingCard.nights} ×{" "}
+                            {Number(property.price_per_night).toFixed(0)}{" "}
+                            {property.currency}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-semibold text-foreground">
+                          <span>{c.bookingCard.total}</span>
+                          <span>
+                            {totalPrice} {property.currency}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Quick info */}
                 <div className="space-y-3 text-sm">
                   {todayHours && (
@@ -597,7 +667,11 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 <Button
                   size="lg"
                   className="w-full gap-2 rounded-xl shadow-lg shadow-primary/20"
-                  disabled={property.status !== "active"}
+                  disabled={
+                    property.status !== "active" ||
+                    !dateRange.checkIn ||
+                    !dateRange.checkOut
+                  }
                   onClick={handleBook}
                 >
                   <CalendarCheck className="size-4" />
@@ -605,6 +679,13 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                     ? c.bookingCard.bookNow
                     : c.bookingCard.unavailable}
                 </Button>
+
+                {property.status === "active" &&
+                  (!dateRange.checkIn || !dateRange.checkOut) && (
+                    <p className="text-center text-xs text-muted-foreground">
+                      {c.bookingCard.selectDates}
+                    </p>
+                  )}
 
                 {property.status !== "active" && (
                   <p className="text-center text-xs text-muted-foreground">
