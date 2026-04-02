@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useIntlayer } from "react-intlayer";
+import { useIntlayer, useLocale } from "react-intlayer";
 import { SlidersHorizontal } from "lucide-react";
 import { useInfiniteProperties } from "../api/hooks";
 import type { PropertyListItem } from "../api/types";
+import { formatRoomSummary } from "../utils/format-rooms";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
 import { SearchCard } from "@/components/ui/search-card";
@@ -31,8 +32,10 @@ function propertyToOfferData(
   property: PropertyListItem,
   c: ReturnType<typeof useIntlayer<"properties-list">>["card"],
   onClick: () => void,
+  locale: string,
 ): OfferCardData {
   const rating = Number(property.rating);
+  const { roomLine, bedLine } = formatRoomSummary(property.rooms, locale);
   return {
     title: property.name,
     location: property.city,
@@ -40,8 +43,8 @@ function propertyToOfferData(
     roomType:
       property.property_type.charAt(0).toUpperCase() +
       property.property_type.slice(1).replace(/_/g, " "),
-    roomDetails: property.room_details,
-    bedInfo: property.bed_info,
+    roomDetails: roomLine,
+    bedInfo: bedLine,
     bedrooms: property.bedrooms,
     maxGuests: property.max_guests,
     totalReviews: property.total_reviews,
@@ -60,6 +63,7 @@ export function PropertiesList() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const c = useIntlayer("properties-list");
+  const { locale } = useLocale();
 
   // Read search params from URL (city, checkIn, checkOut, adults)
   const searchParams = useSearch({ strict: false }) as SearchParams;
@@ -156,9 +160,10 @@ export function PropertiesList() {
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Search card at top of listing */}
-        <div className="mb-8">
+        {/* Compact search bar at top of listing */}
+        <div className="mb-6 rounded-lg border border-border bg-card px-4 py-3 shadow-sm">
           <SearchCard
+            variant="compact"
             content={searchCardContent as any}
             defaultValues={{
               city: urlCity,
@@ -253,16 +258,20 @@ export function PropertiesList() {
                 {properties.map((property) => (
                   <OfferCard
                     key={property.id}
-                    data={propertyToOfferData(property, c.card, () =>
-                      navigate({
-                        to: "/{-$locale}/properties/$propertyId" as any,
-                        params: { propertyId: property.id } as any,
-                        search: {
-                          checkIn: urlCheckIn,
-                          checkOut: urlCheckOut,
-                          adults: urlAdults,
-                        } as any,
-                      }),
+                    data={propertyToOfferData(
+                      property,
+                      c.card,
+                      () =>
+                        navigate({
+                          to: "/{-$locale}/properties/$propertyId" as any,
+                          params: { propertyId: property.id } as any,
+                          search: {
+                            checkIn: urlCheckIn,
+                            checkOut: urlCheckOut,
+                            adults: urlAdults,
+                          } as any,
+                        }),
+                      locale,
                     )}
                   />
                 ))}

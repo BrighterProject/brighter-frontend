@@ -1,3 +1,31 @@
+export type BedType =
+  | "single"
+  | "double"
+  | "queen"
+  | "king"
+  | "sofa_bed"
+  | "bunk"
+  | "crib";
+
+export type RoomType =
+  | "bedroom"
+  | "living_room"
+  | "kitchen"
+  | "bathroom"
+  | "studio";
+
+export interface BedEntry {
+  bed_type: BedType;
+  count: number;
+}
+
+export interface RoomEntry {
+  room_type: RoomType;
+  count: number;
+  beds: BedEntry[];
+  area_m2?: number | null;
+}
+
 export type PropertyStatus =
   | "active"
   | "inactive"
@@ -37,8 +65,7 @@ export interface PropertyListItem {
   currency: string;
   max_guests: number;
   bedrooms: number;
-  room_details: string;
-  bed_info: string;
+  rooms: RoomEntry[];
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;

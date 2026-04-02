@@ -4,6 +4,7 @@ import { SearchCard } from "@/components/ui/search-card";
 import { OfferCard } from "@Properties/components/offer-card";
 import { useProperties } from "@Properties/api/hooks";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
+import { formatRoomSummary } from "@Properties/utils/format-rooms";
 
 function getRatingLabel(score: string, locale: string): string {
   const n = parseFloat(score);
@@ -61,7 +62,9 @@ export function Landing() {
               <div className="h-28 w-full animate-pulse rounded-lg bg-muted md:h-36" />
             </>
           ) : (
-            properties.map((property, i) => (
+            properties.map((property, i) => {
+              const { roomLine, bedLine } = formatRoomSummary(property.rooms, locale);
+              return (
               <Fragment key={property.id}>
                 <OfferCard
                   data={{
@@ -72,8 +75,8 @@ export function Landing() {
                     roomType:
                       property.property_type.charAt(0).toUpperCase() +
                       property.property_type.slice(1).replace(/_/g, " "),
-                    roomDetails: property.room_details,
-                    bedInfo: property.bed_info,
+                    roomDetails: roomLine,
+                    bedInfo: bedLine,
                     bedrooms: property.bedrooms,
                     maxGuests: property.max_guests,
                     totalReviews: property.total_reviews,
@@ -93,7 +96,8 @@ export function Landing() {
                   <div className="h-px w-full bg-border md:hidden" />
                 )}
               </Fragment>
-            ))
+            );
+            })
           )}
           </div>
         </div>
