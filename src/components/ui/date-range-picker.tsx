@@ -2,10 +2,11 @@ import { useState, useMemo, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { PropertyUnavailabilityResponse } from "@/features/Properties/api/types";
 import type {
-  PropertyUnavailabilityResponse,
-} from "@/features/Properties/api/types";
-import type { OccupiedSlot, BookingResponse } from "@/features/Bookings/api/types";
+  OccupiedSlot,
+  BookingResponse,
+} from "@/features/Bookings/api/types";
 
 export interface DateRange {
   checkIn: Date | null;
@@ -25,7 +26,7 @@ interface DateRangePickerProps {
   locale?: string;
 }
 
-function isoDate(d: Date): string {
+export function isoDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
@@ -56,12 +57,10 @@ const DAY_CLASSES: Record<DayState, string> = {
   past: "text-muted-foreground/35 cursor-default",
   today:
     "font-bold text-primary ring-1 ring-inset ring-primary/40 rounded-full cursor-pointer hover:bg-primary/10",
-  available:
-    "text-foreground cursor-pointer hover:bg-primary/10 rounded-full",
+  available: "text-foreground cursor-pointer hover:bg-primary/10 rounded-full",
   unavailable:
     "text-amber-600/50 cursor-default bg-amber-50/60 dark:bg-amber-950/20",
-  booked:
-    "text-red-400/60 cursor-default bg-red-50/60 dark:bg-red-950/20",
+  booked: "text-red-400/60 cursor-default bg-red-50/60 dark:bg-red-950/20",
   mine: "text-blue-500/70 cursor-default bg-blue-50/70 dark:bg-blue-950/25",
   "check-in":
     "bg-primary text-primary-foreground cursor-pointer rounded-l-full font-semibold",
@@ -319,5 +318,7 @@ export function midnightISO(d: Date): string {
 export function parseDateParam(s: string | undefined): Date | null {
   if (!s) return null;
   const d = new Date(s);
-  return isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return isNaN(d.getTime())
+    ? null
+    : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }

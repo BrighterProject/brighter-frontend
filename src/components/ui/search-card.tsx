@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, CalendarDays, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestsSelect } from "@/components/ui/guests-select";
-import { DateRangePicker, parseDateParam } from "@/components/ui/date-range-picker";
+import { DateRangePicker, parseDateParam, isoDate } from "@/components/ui/date-range-picker";
 import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 
 interface SearchCardContent {
@@ -121,8 +121,8 @@ export function SearchCard({ content, defaultValues }: SearchCardProps) {
                   checkOut: parseDateParam(checkOut),
                 }}
                 onChange={({ checkIn: ci, checkOut: co }) => {
-                  setCheckIn(ci ? ci.toISOString().split("T")[0] : undefined);
-                  setCheckOut(co ? co.toISOString().split("T")[0] : undefined);
+                  setCheckIn(ci ? isoDate(ci) : undefined);
+                  setCheckOut(co ? isoDate(co) : undefined);
                   if (ci && co) setCalendarOpen(false);
                 }}
                 onError={setCalendarError}
