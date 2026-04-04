@@ -44,6 +44,24 @@ export type PropertyType =
 
 export type CancellationPolicy = "free" | "moderate" | "strict";
 
+export type AmenityType =
+  | "wifi"
+  | "air_conditioning"
+  | "kitchen"
+  | "washing_machine"
+  | "fireplace"
+  | "bbq"
+  | "mountain_view"
+  | "ski_storage"
+  | "breakfast_included"
+  | "reception_24h"
+  | "sea_view"
+  | "balcony"
+  | "pool"
+  | "garden"
+  | "pet_friendly"
+  | "coffee_machine";
+
 export interface TranslationResponse {
   id: string;
   property_id: string;
@@ -86,7 +104,7 @@ export interface PropertyResponse {
   bathrooms: number;
   beds: number;
   has_parking: boolean;
-  amenities: string[];
+  amenities: AmenityType[];
   check_in_time?: string | null;
   check_out_time?: string | null;
   min_nights: number;

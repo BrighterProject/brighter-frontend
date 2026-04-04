@@ -1,3 +1,5 @@
+import type { AmenityType } from "@Properties/api/types";
+
 export interface Filters {
   min_price: number;
   max_price: number;
@@ -46,8 +48,8 @@ export const BEDROOM_OPTIONS = [1, 2, 3, 4, 5] as const;
 
 // Maps frontend popular filter keys to backend amenity names.
 // freeCancellation and parking are handled separately as dedicated backend filters.
-const POPULAR_FILTER_TO_AMENITY: Record<string, string> = {
-  breakfastIncluded: "breakfast",
+const POPULAR_FILTER_TO_AMENITY: Record<string, AmenityType> = {
+  breakfastIncluded: "breakfast_included",
   pool: "pool",
   wifi: "wifi",
   petFriendly: "pet_friendly",

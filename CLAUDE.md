@@ -54,7 +54,7 @@ src/
   features/
     Properties/
       api/hooks.ts        # useProperties (landing 3-item fetch), useInfiniteProperties (listing infinite scroll), useProperty, usePropertyUnavailabilities
-      api/types.ts        # PropertyListItem, PropertyResponse, PropertyType, CancellationPolicy, TranslationResponse, resolveTranslation()
+      api/types.ts        # PropertyListItem, PropertyResponse, PropertyType, AmenityType, CancellationPolicy, TranslationResponse, resolveTranslation()
       components/
         properties-list.tsx   # Browse/listing: SearchCard at top, infinite scroll (IntersectionObserver), sidebar filters (no city — city comes from URL params)
         properties-filters.ts # Filters interface (no city field), buildParams(filters, {city, min_guests}) — always sends status:"active"
