@@ -2,7 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { Search, CalendarDays, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestsSelect } from "@/components/ui/guests-select";
-import { DateRangePicker, parseDateParam, isoDate } from "@/components/ui/date-range-picker";
+import {
+  DateRangePicker,
+  parseDateParam,
+  isoDate,
+} from "@/components/ui/date-range-picker";
 import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 
 interface SearchCardContent {
@@ -14,6 +18,7 @@ interface SearchCardContent {
 interface SearchCardProps {
   content: SearchCardContent;
   defaultValues?: SearchParams;
+  variant?: "default" | "compact";
 }
 
 function formatDateShort(iso: string | undefined): string {
@@ -23,7 +28,8 @@ function formatDateShort(iso: string | undefined): string {
   return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-export function SearchCard({ content, defaultValues }: SearchCardProps) {
+export function SearchCard({ content, defaultValues, variant = "default" }: SearchCardProps) {
+  const isCompact = variant === "compact";
   const { navigate } = useSearchParams();
 
   const [city, setCity] = useState(defaultValues?.city ?? "");
@@ -43,7 +49,10 @@ export function SearchCard({ content, defaultValues }: SearchCardProps) {
   useEffect(() => {
     if (!calendarOpen) return;
     const handler = (e: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(e.target as Node)
+      ) {
         setCalendarOpen(false);
       }
     };
@@ -69,6 +78,81 @@ export function SearchCard({ content, defaultValues }: SearchCardProps) {
     });
     setCalendarOpen(false);
   };
+
+  if (isCompact) {
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Destination */}
+        <div className="relative min-w-40 flex-1">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder={content.destination.value as string}
+            className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+        </div>
+
+        {/* Date range trigger */}
+        <div className="relative w-48 shrink-0" ref={calendarRef}>
+          <button
+            type="button"
+            onClick={() => setCalendarOpen((o) => !o)}
+            className={`flex h-10 w-full items-center gap-2 rounded-md border px-3 text-sm transition-colors ${
+              hasDates
+                ? "border-primary text-foreground"
+                : "border-input text-muted-foreground"
+            } bg-background focus:outline-none focus:ring-2 focus:ring-ring`}
+          >
+            <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
+            <span className="flex-1 truncate text-left">{dateLabel}</span>
+            {hasDates && (
+              <X
+                className="size-3.5 shrink-0 text-muted-foreground hover:text-foreground"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCheckIn(undefined);
+                  setCheckOut(undefined);
+                  setCalendarError("");
+                }}
+              />
+            )}
+          </button>
+
+          {calendarOpen && (
+            <div className="absolute left-0 top-10 z-50 w-80">
+              <DateRangePicker
+                value={{
+                  checkIn: parseDateParam(checkIn),
+                  checkOut: parseDateParam(checkOut),
+                }}
+                onChange={({ checkIn: ci, checkOut: co }) => {
+                  setCheckIn(ci ? isoDate(ci) : undefined);
+                  setCheckOut(co ? isoDate(co) : undefined);
+                }}
+                onError={setCalendarError}
+              />
+              {calendarError && (
+                <p className="mt-1 rounded bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
+                  {calendarError}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="shrink-0">
+          <GuestsSelect compact />
+        </div>
+
+        <Button size="sm" onClick={handleSearch} className="h-10 shrink-0 px-5">
+          {content.button}
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col gap-4 md:rounded-lg md:border md:border-border md:px-6 md:pb-12 md:pt-6 md:shadow-sm">
@@ -123,7 +207,6 @@ export function SearchCard({ content, defaultValues }: SearchCardProps) {
                 onChange={({ checkIn: ci, checkOut: co }) => {
                   setCheckIn(ci ? isoDate(ci) : undefined);
                   setCheckOut(co ? isoDate(co) : undefined);
-                  if (ci && co) setCalendarOpen(false);
                 }}
                 onError={setCalendarError}
               />

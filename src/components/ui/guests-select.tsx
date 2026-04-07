@@ -7,6 +7,7 @@ interface GuestsSelectProps {
   children?: number;
   onAdultsChange?: (value: number) => void;
   onChildrenChange?: (value: number) => void;
+  compact?: boolean;
 }
 
 function Counter({
@@ -55,6 +56,7 @@ export function GuestsSelect({
   children: controlledChildren,
   onAdultsChange,
   onChildrenChange,
+  compact = false,
 }: GuestsSelectProps) {
   const [open, setOpen] = useState(false);
   const [internalAdults, setInternalAdults] = useState(2);
@@ -96,7 +98,7 @@ export function GuestsSelect({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-12 w-full items-center rounded-lg border border-border bg-background px-3 shadow-xs"
+        className={`flex w-full items-center rounded-lg border border-border bg-background px-3 shadow-xs ${compact ? "h-10" : "h-12"}`}
       >
         <Users className="mr-2 size-5 text-muted-foreground" />
         <span className="flex-1 text-left text-sm text-foreground">
