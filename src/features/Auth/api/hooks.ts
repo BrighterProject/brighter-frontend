@@ -9,6 +9,7 @@ import type {
 } from "./types";
 
 export const useLogin = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: FormData) => {
       const response = await apiClient.post<Token>("/auth/token", data, {
@@ -16,16 +17,23 @@ export const useLogin = () => {
       });
       return response.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", "me"] });
+    },
   });
 };
 
 export const useGoogleLogin = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (credential: string) => {
       const response = await apiClient.post<Token>("/auth/google", {
         credential,
       });
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", "me"] });
     },
   });
 };
