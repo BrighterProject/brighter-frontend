@@ -305,14 +305,10 @@ export function DateRangePicker({
   );
 }
 
-/** Midnight on date d with local timezone offset — safe for API submission. */
+/** Midnight on date d as a naive ISO string — no timezone offset so the backend
+ *  stores it verbatim and the browser re-parses it as local midnight. */
 export function midnightISO(d: Date): string {
-  const off = -d.getTimezoneOffset();
-  const sign = off >= 0 ? "+" : "-";
-  const abs = Math.abs(off);
-  const hh = String(Math.floor(abs / 60)).padStart(2, "0");
-  const mm = String(abs % 60).padStart(2, "0");
-  return `${isoDate(d)}T00:00:00${sign}${hh}:${mm}`;
+  return `${isoDate(d)}T00:00:00`;
 }
 
 export function parseDateParam(s: string | undefined): Date | null {

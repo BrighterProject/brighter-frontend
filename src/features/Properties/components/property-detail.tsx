@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
-import { DateRangePicker, parseDateParam } from "@/components/ui/date-range-picker";
+import { DateRangePicker, isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
 import { usePropertyUnavailabilities } from "../api/hooks";
 
@@ -279,8 +279,8 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
       to: "/{-$locale}/properties/$propertyId/book" as any,
       params: { propertyId: property.id } as any,
       search: {
-        checkIn: dateRange.checkIn.toISOString().split("T")[0],
-        checkOut: dateRange.checkOut.toISOString().split("T")[0],
+        checkIn: isoDate(dateRange.checkIn),
+        checkOut: isoDate(dateRange.checkOut),
       } as any,
     });
   };
