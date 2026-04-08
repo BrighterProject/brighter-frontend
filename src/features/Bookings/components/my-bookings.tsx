@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useIntlayer } from "react-intlayer";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Calendar, Clock, CreditCard, CalendarSearch } from "lucide-react";
+import { Calendar, CreditCard, CalendarSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,16 +43,12 @@ const PAYMENT_COLOR: Record<PaymentStatus, string> = {
     "text-red-600 border-red-200 bg-red-50 dark:text-red-400 dark:border-red-800 dark:bg-red-950/30",
 };
 
-function formatDatetime(iso: string) {
-  const d = new Date(iso);
-  return {
-    date: d.toLocaleDateString(undefined, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    }),
-    time: d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  };
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 }
 
 export function MyBookings() {
@@ -156,8 +152,8 @@ export function MyBookings() {
         ) : (
           <div className="space-y-3">
             {bookings.map((booking) => {
-              const start = formatDatetime(booking.start_datetime);
-              const end = formatDatetime(booking.end_datetime);
+              const start = formatDate(booking.start_date);
+              const end = formatDate(booking.end_date);
               const status = booking.status as BookingStatus;
               const isPending = status === "pending";
               const payment = paymentByBooking.get(booking.id);
@@ -197,15 +193,9 @@ export function MyBookings() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="size-3.5" />
-                          {start.date}
-                        </span>
-                        <span className="flex items-center gap-1 tabular-nums">
-                          <Clock className="size-3.5" />
-                          {start.time} – {end.time}
-                        </span>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="size-3.5" />
+                        <span>{start} – {end}</span>
                       </div>
 
                       <p className="text-sm font-semibold text-foreground">

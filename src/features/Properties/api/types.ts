@@ -141,7 +141,7 @@ export interface PropertyImageResponse {
 export interface PropertyUnavailabilityResponse {
   id: string;
   property_id: string;
-  start_datetime: string;
-  end_datetime: string;
+  start_date: string;
+  end_date: string;
   reason?: string | null;
 }

@@ -27,14 +27,14 @@ export type BookingStatus =
   | "no_show";
 
 export interface OccupiedSlot {
-  start_datetime: string;
-  end_datetime: string;
+  start_date: string;
+  end_date: string;
 }
 
 export interface BookingCreate {
   property_id: string;
-  start_datetime: string; // ISO 8601
-  end_datetime: string; // ISO 8601
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
   notes?: string | null;
 }
 
@@ -43,8 +43,8 @@ export interface BookingResponse {
   property_id: string;
   property_owner_id: string;
   user_id: string;
-  start_datetime: string;
-  end_datetime: string;
+  start_date: string;
+  end_date: string;
   status: BookingStatus;
   price_per_night: string;
   total_price: string;

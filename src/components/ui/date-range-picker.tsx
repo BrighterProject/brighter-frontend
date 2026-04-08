@@ -119,18 +119,18 @@ export function DateRangePicker({
       const ds = d.getTime();
       const de = ds + 86_400_000;
       for (const b of myPropertyBookings) {
-        const bs = new Date(b.start_datetime).getTime();
-        const be = new Date(b.end_datetime).getTime();
+        const bs = new Date(b.start_date).getTime();
+        const be = new Date(b.end_date).getTime();
         if (ds < be && de > bs) return true;
       }
       for (const b of occupiedSlots) {
-        const bs = new Date(b.start_datetime).getTime();
-        const be = new Date(b.end_datetime).getTime();
+        const bs = new Date(b.start_date).getTime();
+        const be = new Date(b.end_date).getTime();
         if (ds < be && de > bs) return true;
       }
       for (const u of unavailabilities) {
-        const us = new Date(u.start_datetime).getTime();
-        const ue = new Date(u.end_datetime).getTime();
+        const us = new Date(u.start_date).getTime();
+        const ue = new Date(u.end_date).getTime();
         if (ds < ue && de > us) return true;
       }
       return false;
@@ -160,18 +160,18 @@ export function DateRangePicker({
     const de = ds + 86_400_000;
 
     for (const b of myPropertyBookings) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
+      const bs = new Date(b.start_date).getTime();
+      const be = new Date(b.end_date).getTime();
       if (ds < be && de > bs) return "mine";
     }
     for (const b of occupiedSlots) {
-      const bs = new Date(b.start_datetime).getTime();
-      const be = new Date(b.end_datetime).getTime();
+      const bs = new Date(b.start_date).getTime();
+      const be = new Date(b.end_date).getTime();
       if (ds < be && de > bs) return "booked";
     }
     for (const u of unavailabilities) {
-      const us = new Date(u.start_datetime).getTime();
-      const ue = new Date(u.end_datetime).getTime();
+      const us = new Date(u.start_date).getTime();
+      const ue = new Date(u.end_date).getTime();
       if (ds < ue && de > us) return "unavailable";
     }
 
@@ -303,12 +303,6 @@ export function DateRangePicker({
       )}
     </div>
   );
-}
-
-/** Midnight on date d as a naive ISO string — no timezone offset so the backend
- *  stores it verbatim and the browser re-parses it as local midnight. */
-export function midnightISO(d: Date): string {
-  return `${isoDate(d)}T00:00:00`;
 }
 
 export function parseDateParam(s: string | undefined): Date | null {

@@ -14,7 +14,6 @@ import {
   MapPin,
   Star,
   Users,
-  Clock,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -267,11 +266,9 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
     : null;
 
   const todayStr = new Date().toISOString().split("T")[0];
-  const todayUnavailabilities = property.unavailabilities.filter((u) => {
-    const start = u.start_datetime.split("T")[0];
-    const end = u.end_datetime.split("T")[0];
-    return start <= todayStr && end >= todayStr;
-  });
+  const todayUnavailabilities = property.unavailabilities.filter(
+    (u) => u.start_date <= todayStr && u.end_date >= todayStr,
+  );
 
   const handleBook = () => {
     if (!dateRange.checkIn || !dateRange.checkOut) return;
@@ -523,55 +520,28 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
 
                   <div className="space-y-2">
                     {todayUnavailabilities.map((u) => {
-                      const start = new Date(u.start_datetime);
-                      const end = new Date(u.end_datetime);
-                      const isSameDay =
-                        start.toDateString() === end.toDateString();
-
-                      const dateOptions = {
-                        month: "short",
-                        day: "numeric",
-                      } as const;
-                      const timeOptions = {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      } as const;
-
-                      const startDate = start.toLocaleDateString(
-                        [],
-                        dateOptions,
-                      );
-                      const startTime = start.toLocaleTimeString(
-                        [],
-                        timeOptions,
-                      );
-                      const endDate = end.toLocaleDateString([], dateOptions);
-                      const endTime = end.toLocaleTimeString([], timeOptions);
+                      const fmtD = (iso: string) =>
+                        new Date(iso).toLocaleDateString([], {
+                          month: "short",
+                          day: "numeric",
+                        });
 
                       return (
                         <div
                           key={u.id}
                           className="flex items-start gap-2.5 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 dark:border-orange-900/30 dark:bg-orange-950/20"
                         >
-                          <Clock className="mt-0.5 size-4 shrink-0 text-orange-500" />
-                          <div className="flex flex-col gap-0.5 tabular-nums">
+                          <Calendar className="mt-0.5 size-4 shrink-0 text-orange-500" />
+                          <div className="flex flex-col gap-0.5">
                             <div className="text-sm">
                               <span className="font-semibold text-orange-900 dark:text-orange-200">
-                                {startDate}
-                              </span>
-                              <span className="text-muted-foreground">
-                                , {startTime}
+                                {fmtD(u.start_date)}
                               </span>
                               <span className="mx-1.5 text-orange-300">
                                 &mdash;
                               </span>
-                              {!isSameDay && (
-                                <span className="font-semibold text-orange-900 dark:text-orange-200">
-                                  {endDate},{" "}
-                                </span>
-                              )}
-                              <span className="text-muted-foreground">
-                                {endTime}
+                              <span className="font-semibold text-orange-900 dark:text-orange-200">
+                                {fmtD(u.end_date)}
                               </span>
                             </div>
                             {u.reason && (

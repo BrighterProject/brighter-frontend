@@ -129,8 +129,8 @@ export const usePropertyUnavailabilities = (propertyId: string) => {
 //   const queryClient = useQueryClient();
 //   return useMutation({
 //     mutationFn: async (payload: {
-//       start_datetime: string;
-//       end_datetime: string;
+//       start_date: string;
+//       end_date: string;
 //       reason?: string;
 //     }) => {
 //       const { data } = await apiClient.post(

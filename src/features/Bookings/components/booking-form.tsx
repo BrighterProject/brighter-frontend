@@ -12,7 +12,7 @@ import {
   type PropertyResponse,
   resolveTranslation,
 } from "@/features/Properties/api/types";
-import { midnightISO, parseDateParam } from "@/components/ui/date-range-picker";
+import { isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 
 interface BookingFormProps {
   property: PropertyResponse;
@@ -115,8 +115,8 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
     try {
       booking = await createBooking.mutateAsync({
         property_id: property.id,
-        start_datetime: midnightISO(checkIn),
-        end_datetime: midnightISO(checkOut),
+        start_date: isoDate(checkIn),
+        end_date: isoDate(checkOut),
         notes: combinedNotes,
       });
     } catch (err: any) {

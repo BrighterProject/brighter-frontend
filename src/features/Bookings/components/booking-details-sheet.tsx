@@ -101,13 +101,11 @@ export function BookingDetailsSheet({
   const c = useIntlayer("my-bookings");
 
   const fmt = (iso: string) =>
-    new Date(iso).toLocaleString(undefined, {
+    new Date(iso).toLocaleDateString(undefined, {
       weekday: "short",
       day: "numeric",
       month: "short",
       year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     });
 
   const fmtDate = (iso: string) =>
@@ -117,16 +115,12 @@ export function BookingDetailsSheet({
       month: "long",
     });
 
-  const fmtTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  const durationHours = booking
-    ? (new Date(booking.end_datetime).getTime() -
-        new Date(booking.start_datetime).getTime()) /
-      3_600_000
+  const durationNights = booking
+    ? Math.round(
+        (new Date(booking.end_date).getTime() -
+          new Date(booking.start_date).getTime()) /
+          86_400_000,
+      )
     : 0;
 
   const status = booking?.status as BookingStatus | undefined;
@@ -214,13 +208,12 @@ export function BookingDetailsSheet({
                   )}
                 >
                   <p className="text-xl font-bold leading-tight">
-                    {fmtDate(booking.start_datetime)}
+                    {fmtDate(booking.start_date)}
                   </p>
                   <p className="text-base font-medium opacity-80">
-                    {fmtTime(booking.start_datetime)} –{" "}
-                    {fmtTime(booking.end_datetime)}
+                    → {fmtDate(booking.end_date)}
                     <span className="ml-2 text-sm opacity-60">
-                      ({durationHours.toFixed(1)}h)
+                      ({durationNights}n)
                     </span>
                   </p>
                 </div>
@@ -235,13 +228,13 @@ export function BookingDetailsSheet({
                 title={c.details.schedule as unknown as string}
               >
                 <Row label={c.details.start as unknown as string}>
-                  {fmt(booking.start_datetime)}
+                  {fmt(booking.start_date)}
                 </Row>
                 <Row label={c.details.end as unknown as string}>
-                  {fmt(booking.end_datetime)}
+                  {fmt(booking.end_date)}
                 </Row>
                 <Row label={c.details.duration as unknown as string}>
-                  {durationHours.toFixed(1)} h
+                  {durationNights} nights
                 </Row>
               </Section>
 
