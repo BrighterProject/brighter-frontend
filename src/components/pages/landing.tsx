@@ -4,7 +4,8 @@ import { SearchCard } from "@/components/ui/search-card";
 import { OfferCard } from "@Properties/components/offer-card";
 import { useProperties } from "@Properties/api/hooks";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import { formatRoomSummary } from "@Properties/utils/format-rooms";
+import { useFormatRooms } from "@Properties/utils/format-rooms";
+import type { PropertyType } from "@Properties/api/types";
 
 function getRatingLabel(score: string, locale: string): string {
   const n = parseFloat(score);
@@ -17,7 +18,9 @@ function getRatingLabel(score: string, locale: string): string {
 
 export function Landing() {
   const content = useIntlayer("landing-page");
+  const roomsC = useIntlayer("rooms");
   const { locale } = useLocale();
+  const formatRooms = useFormatRooms();
   const navigate = useLocalizedNavigate();
   const { data: allProperties, isLoading } = useProperties({ status: "active" });
   const properties = allProperties?.slice(0, 3) ?? [];
@@ -63,7 +66,7 @@ export function Landing() {
             </>
           ) : (
             properties.map((property, i) => {
-              const { roomLine, bedLine } = formatRoomSummary(property.rooms, locale);
+              const { roomLine, bedLine } = formatRooms(property.rooms);
               return (
               <Fragment key={property.id}>
                 <OfferCard
@@ -72,9 +75,7 @@ export function Landing() {
                     title: property.name,
                     description: property.description,
                     location: property.city,
-                    roomType:
-                      property.property_type.charAt(0).toUpperCase() +
-                      property.property_type.slice(1).replace(/_/g, " "),
+                    roomType: roomsC.propertyTypes[property.property_type as PropertyType].value as string,
                     roomDetails: roomLine,
                     bedInfo: bedLine,
                     bedrooms: property.bedrooms,

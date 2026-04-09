@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useIntlayer, useLocale } from "react-intlayer";
+import { useIntlayer } from "react-intlayer";
 import { SlidersHorizontal } from "lucide-react";
 import { useInfiniteProperties } from "../api/hooks";
-import type { PropertyListItem } from "../api/types";
-import { formatRoomSummary } from "../utils/format-rooms";
+import type { PropertyListItem, PropertyType } from "../api/types";
+import { useFormatRooms } from "../utils/format-rooms";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
 import { SearchCard } from "@/components/ui/search-card";
@@ -31,18 +31,17 @@ function getRatingLabel(
 function propertyToOfferData(
   property: PropertyListItem,
   c: ReturnType<typeof useIntlayer<"properties-list">>["card"],
+  roomsC: ReturnType<typeof useIntlayer<"rooms">>,
+  formatRooms: (rooms: PropertyListItem["rooms"]) => { roomLine: string; bedLine: string },
   onClick: () => void,
-  locale: string,
 ): OfferCardData {
   const rating = Number(property.rating);
-  const { roomLine, bedLine } = formatRoomSummary(property.rooms, locale);
+  const { roomLine, bedLine } = formatRooms(property.rooms);
   return {
     title: property.name,
     location: property.city,
     description: property.description,
-    roomType:
-      property.property_type.charAt(0).toUpperCase() +
-      property.property_type.slice(1).replace(/_/g, " "),
+    roomType: roomsC.propertyTypes[property.property_type as PropertyType].value as string,
     roomDetails: roomLine,
     bedInfo: bedLine,
     bedrooms: property.bedrooms,
@@ -63,7 +62,8 @@ export function PropertiesList() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const c = useIntlayer("properties-list");
-  const { locale } = useLocale();
+  const roomsC = useIntlayer("rooms");
+  const formatRooms = useFormatRooms();
 
   // Read search params from URL (city, checkIn, checkOut, adults)
   const searchParams = useSearch({ strict: false }) as SearchParams;
@@ -261,6 +261,8 @@ export function PropertiesList() {
                     data={propertyToOfferData(
                       property,
                       c.card,
+                      roomsC,
+                      formatRooms,
                       () =>
                         navigate({
                           to: "/{-$locale}/properties/$propertyId" as any,
@@ -271,7 +273,6 @@ export function PropertiesList() {
                             adults: urlAdults,
                           } as any,
                         }),
-                      locale,
                     )}
                   />
                 ))}
