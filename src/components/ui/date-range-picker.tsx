@@ -43,30 +43,52 @@ type DayState =
   | "past"
   | "today"
   | "available"
+  | "out-of-reach"      // cannot be selected as checkout (after checkIn is set)
   | "unavailable"
+  | "unavailable-start" // turnover: block starts here, preceding night is free
   | "booked"
+  | "booked-start"      // turnover: block starts here, preceding night is free
   | "mine"
+  | "mine-start"        // turnover: block starts here, preceding night is free
   | "check-in"
   | "check-out"
   | "in-range";
 
 const DAY_BASE =
-  "flex h-10 w-full items-center justify-center text-sm select-none transition-colors";
+  "relative flex h-10 w-full items-center justify-center text-sm select-none transition-all duration-150";
 
 const DAY_CLASSES: Record<DayState, string> = {
-  past: "text-muted-foreground/35 cursor-default",
+  past: "text-muted-foreground/30 cursor-default",
   today:
-    "font-bold text-primary ring-1 ring-inset ring-primary/40 rounded-full cursor-pointer hover:bg-primary/10",
-  available: "text-foreground cursor-pointer hover:bg-primary/10 rounded-full",
+    "font-semibold text-primary ring-2 ring-primary/30 rounded-full cursor-pointer hover:bg-primary/8 hover:ring-primary/50",
+  available:
+    "text-foreground cursor-pointer hover:bg-primary/10 rounded-full active:scale-95",
+  // Dates unreachable as checkout once checkIn is selected: muted, non-interactive
+  "out-of-reach": "text-muted-foreground/40 cursor-default",
   unavailable:
-    "text-amber-600/50 cursor-default bg-amber-50/60 dark:bg-amber-950/20",
-  booked: "text-red-400/60 cursor-default bg-red-50/60 dark:bg-red-950/20",
+    "text-amber-600/50 cursor-default bg-amber-50/70 dark:bg-amber-950/20",
+  // Turnover days look nearly normal — a small dot below the number carries the hint.
+  // The preceding night is free so checkout here is valid; check-in is still blocked.
+  "unavailable-start":
+    "text-foreground/70 cursor-pointer hover:bg-primary/10 rounded-full active:scale-95",
+  booked: "text-rose-400/70 cursor-default bg-rose-50/70 dark:bg-rose-950/20",
+  "booked-start":
+    "text-foreground/70 cursor-pointer hover:bg-primary/10 rounded-full active:scale-95",
   mine: "text-blue-500/70 cursor-default bg-blue-50/70 dark:bg-blue-950/25",
+  "mine-start":
+    "text-foreground/70 cursor-pointer hover:bg-primary/10 rounded-full active:scale-95",
   "check-in":
-    "bg-primary text-primary-foreground cursor-pointer rounded-l-full font-semibold",
+    "bg-primary text-primary-foreground cursor-pointer rounded-l-full font-semibold active:scale-95",
   "check-out":
-    "bg-primary text-primary-foreground cursor-pointer rounded-r-full font-semibold",
-  "in-range": "bg-primary/15 text-foreground cursor-pointer",
+    "bg-primary text-primary-foreground cursor-pointer rounded-r-full font-semibold active:scale-95",
+  "in-range": "bg-primary/10 text-foreground cursor-pointer",
+};
+
+// Small dot rendered below the date number for turnover days
+const TURNOVER_DOT_CLASS: Partial<Record<DayState, string>> = {
+  "booked-start": "bg-rose-400/60",
+  "mine-start": "bg-blue-400/60",
+  "unavailable-start": "bg-amber-400/60",
 };
 
 const DAY_HEADERS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -85,6 +107,7 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
   const { checkIn, checkOut } = value;
   const [monthOffset, setMonthOffset] = useState(0);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   const today = useMemo(() => {
     const d = new Date();
@@ -115,23 +138,17 @@ export function DateRangePicker({
 
   const isBlockedDate = useCallback(
     (d: Date): boolean => {
-      if (d < today) return true;
-      const ds = d.getTime();
-      const de = ds + 86_400_000;
+      const ds = isoDate(d);
+      if (ds < isoDate(today)) return true;
+      // Night-based: booking [start, end) — checkout date is free for next check-in.
       for (const b of myPropertyBookings) {
-        const bs = new Date(b.start_date).getTime();
-        const be = new Date(b.end_date).getTime();
-        if (ds < be && de > bs) return true;
+        if (ds >= b.start_date && ds < b.end_date) return true;
       }
       for (const b of occupiedSlots) {
-        const bs = new Date(b.start_date).getTime();
-        const be = new Date(b.end_date).getTime();
-        if (ds < be && de > bs) return true;
+        if (ds >= b.start_date && ds < b.end_date) return true;
       }
       for (const u of unavailabilities) {
-        const us = new Date(u.start_date).getTime();
-        const ue = new Date(u.end_date).getTime();
-        if (ds < ue && de > us) return true;
+        if (ds >= u.start_date && ds < u.end_date) return true;
       }
       return false;
     },
@@ -140,55 +157,100 @@ export function DateRangePicker({
 
   const rangeHasBlocked = useCallback(
     (from: Date, to: Date): boolean => {
-      const cur = new Date(from.getTime() + 86_400_000);
-      while (cur < to) {
+      const toStr = isoDate(to);
+      const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 1);
+      while (isoDate(cur) < toStr) {
         if (isBlockedDate(cur)) return true;
-        cur.setTime(cur.getTime() + 86_400_000);
+        cur.setDate(cur.getDate() + 1);
       }
       return false;
     },
     [isBlockedDate],
   );
 
+  /**
+   * Once the user has picked a checkIn, find the first date after it that is blocked.
+   * Checkout AT that date is still valid (rangeHasBlocked stops before it), but the
+   * next day onward is unreachable — we grey those out as "out-of-reach".
+   */
+  const outOfReachFrom = useMemo<string | null>(() => {
+    if (!checkIn || checkOut) return null;
+    const cur = new Date(checkIn);
+    cur.setDate(cur.getDate() + 1);
+    for (let i = 0; i < 400; i++) {
+      if (isBlockedDate(cur)) {
+        const cutoff = new Date(cur);
+        cutoff.setDate(cutoff.getDate() + 1);
+        return isoDate(cutoff);
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+    return null;
+  }, [checkIn, checkOut, isBlockedDate]);
+
   function getDayState(d: Date): DayState {
-    if (d < today) return "past";
-    if (checkIn && d.getTime() === checkIn.getTime()) return "check-in";
-    if (checkOut && d.getTime() === checkOut.getTime()) return "check-out";
-    if (checkIn && checkOut && d > checkIn && d < checkOut) return "in-range";
+    const ds = isoDate(d);
+    const ts = isoDate(today);
+    if (ds < ts) return "past";
+    if (checkIn && ds === isoDate(checkIn)) return "check-in";
+    if (checkOut && ds === isoDate(checkOut)) return "check-out";
+    if (checkIn && checkOut && ds > isoDate(checkIn) && ds < isoDate(checkOut)) return "in-range";
 
-    const ds = d.getTime();
-    const de = ds + 86_400_000;
+    // Dynamic shading: dates after checkIn that cannot be reached as checkout
+    if (checkIn && !checkOut && ds > isoDate(checkIn)) {
+      const nights = Math.round((d.getTime() - checkIn.getTime()) / 86_400_000);
+      if (nights < minNights) return "out-of-reach";
+      if (maxNights && nights > maxNights) return "out-of-reach";
+      if (outOfReachFrom && ds >= outOfReachFrom) return "out-of-reach";
+    }
 
+    // Static occupancy states — turnover (-start) days get a dot, not a background
     for (const b of myPropertyBookings) {
-      const bs = new Date(b.start_date).getTime();
-      const be = new Date(b.end_date).getTime();
-      if (ds < be && de > bs) return "mine";
+      if (ds === b.start_date) return "mine-start";
+      if (ds > b.start_date && ds < b.end_date) return "mine";
     }
     for (const b of occupiedSlots) {
-      const bs = new Date(b.start_date).getTime();
-      const be = new Date(b.end_date).getTime();
-      if (ds < be && de > bs) return "booked";
+      if (ds === b.start_date) return "booked-start";
+      if (ds > b.start_date && ds < b.end_date) return "booked";
     }
     for (const u of unavailabilities) {
-      const us = new Date(u.start_date).getTime();
-      const ue = new Date(u.end_date).getTime();
-      if (ds < ue && de > us) return "unavailable";
+      if (ds === u.start_date) return "unavailable-start";
+      if (ds > u.start_date && ds < u.end_date) return "unavailable";
     }
 
-    if (d.getTime() === today.getTime()) return "today";
+    if (ds === ts) return "today";
     return "available";
+  }
+
+  /** Returns true if d is exactly the first day of any occupied block (turnover day). */
+  function isTurnoverStart(d: Date): boolean {
+    const ds = isoDate(d);
+    return (
+      myPropertyBookings.some((b) => b.start_date === ds) ||
+      occupiedSlots.some((b) => b.start_date === ds) ||
+      unavailabilities.some((u) => u.start_date === ds)
+    );
   }
 
   function handleDayClick(d: Date) {
     onError?.("");
+    setInfoMsg(null);
 
     if (!checkIn || checkOut) {
+      if (isTurnoverStart(d)) {
+        setInfoMsg("You can only check out here.");
+        return;
+      }
       if (isBlockedDate(d)) return;
       onChange({ checkIn: d, checkOut: null });
       return;
     }
 
     if (d <= checkIn) {
+      if (isTurnoverStart(d)) {
+        setInfoMsg("You can only check out here.");
+        return;
+      }
       if (isBlockedDate(d)) return;
       onChange({ checkIn: d, checkOut: null });
       return;
@@ -209,6 +271,7 @@ export function DateRangePicker({
       return;
     }
 
+    setInfoMsg(null);
     onChange({ checkIn, checkOut: d });
   }
 
@@ -260,26 +323,48 @@ export function DateRangePicker({
         {monthGrid.map((d, i) => {
           if (!d) return <div key={`pad-${i}`} className="h-10" />;
           const state = getDayState(d);
+          const dotClass = TURNOVER_DOT_CLASS[state];
+          const interactive =
+            state !== "past" &&
+            state !== "booked" &&
+            state !== "mine" &&
+            state !== "unavailable" &&
+            state !== "out-of-reach";
           return (
             <div
               key={isoDate(d)}
               role="button"
-              tabIndex={state === "past" ? -1 : 0}
+              tabIndex={interactive ? 0 : -1}
               aria-label={isoDate(d)}
               onClick={() => handleDayClick(d)}
               onKeyDown={(e) => e.key === "Enter" && handleDayClick(d)}
               className={cn(DAY_BASE, DAY_CLASSES[state])}
             >
               {d.getDate()}
+              {dotClass && (
+                <span
+                  className={cn(
+                    "absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full",
+                    dotClass,
+                  )}
+                />
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Legend (only shown when there are blocked dates to explain) */}
+      {/* Info message (e.g. turnover-day check-in attempt) */}
+      {infoMsg && (
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          {infoMsg}
+        </p>
+      )}
+
+      {/* Legend */}
       {hasBlockedDates && (
         <div className="mt-3 border-t pt-3">
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
             {myPropertyBookings.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <div className="size-3 rounded-sm bg-blue-100 dark:bg-blue-950/30" />
@@ -288,13 +373,13 @@ export function DateRangePicker({
             )}
             {occupiedSlots.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <div className="size-3 rounded-sm bg-red-100 dark:bg-red-950/20" />
+                <div className="size-3 rounded-sm bg-rose-100 dark:bg-rose-950/25" />
                 Booked
               </div>
             )}
             {unavailabilities.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <div className="size-3 rounded-sm bg-amber-50 dark:bg-amber-950/20" />
+                <div className="size-3 rounded-sm border border-amber-200/60 bg-amber-50 dark:border-amber-800/40 dark:bg-amber-950/20" />
                 Unavailable
               </div>
             )}
@@ -307,8 +392,10 @@ export function DateRangePicker({
 
 export function parseDateParam(s: string | undefined): Date | null {
   if (!s) return null;
-  const d = new Date(s);
-  return isNaN(d.getTime())
-    ? null
-    : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  // Parse as local midnight to avoid UTC-offset shifting the date.
+  const parts = s.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const [y, m, d] = parts;
+  const date = new Date(y, m - 1, d);
+  return isNaN(date.getTime()) ? null : date;
 }
