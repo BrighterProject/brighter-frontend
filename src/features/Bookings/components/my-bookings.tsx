@@ -124,7 +124,7 @@ export function MyBookings() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-sm text-muted-foreground">Loading...</div>
+        <div className="text-sm text-muted-foreground">{c.loading}</div>
       </div>
     );
   }

@@ -14,6 +14,7 @@ const myBookingsContent = {
       }),
     },
     title: t({ en: "My Bookings", bg: "Моите резервации" }),
+    loading: t({ en: "Loading...", bg: "Зарежда..." }),
     empty: t({
       en: "No bookings yet. Browse properties to get started.",
       bg: "Нямате резервации. Разгледайте имотите, за да започнете.",
@@ -54,6 +55,9 @@ const myBookingsContent = {
       start: t({ en: "Start", bg: "Начало" }),
       end: t({ en: "End", bg: "Край" }),
       duration: t({ en: "Duration", bg: "Продължителност" }),
+      nights: t({ en: "nights", bg: "нощи" }),
+      nightsShort: t({ en: "n", bg: "н" }),
+      perNight: t({ en: "/ night", bg: "/ нощ" }),
       pricing: t({ en: "Pricing", bg: "Цена" }),
       rate: t({ en: "Rate", bg: "Тарифа" }),
       payment: t({ en: "Payment", bg: "Плащане" }),

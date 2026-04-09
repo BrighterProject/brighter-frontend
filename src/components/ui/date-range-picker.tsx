@@ -13,6 +13,26 @@ export interface DateRange {
   checkOut: Date | null;
 }
 
+export interface DateRangePickerLabels {
+  myBooking?: string;
+  booked?: string;
+  unavailable?: string;
+  turnoverCheckoutOnly?: string;
+  minNights?: (n: number) => string;
+  maxNights?: (n: number) => string;
+  rangeUnavailable?: string;
+}
+
+const DEFAULT_LABELS: Required<DateRangePickerLabels> = {
+  myBooking: "My booking",
+  booked: "Booked",
+  unavailable: "Unavailable",
+  turnoverCheckoutOnly: "You can only check out here.",
+  minNights: (n) => `Minimum stay: ${n} nights`,
+  maxNights: (n) => `Maximum stay: ${n} nights`,
+  rangeUnavailable: "The selected range includes unavailable dates.",
+};
+
 interface DateRangePickerProps {
   value: DateRange;
   onChange: (range: DateRange) => void;
@@ -24,6 +44,7 @@ interface DateRangePickerProps {
   maxNights?: number;
   onError?: (msg: string) => void;
   locale?: string;
+  labels?: DateRangePickerLabels;
 }
 
 export function isoDate(d: Date): string {
@@ -91,8 +112,6 @@ const TURNOVER_DOT_CLASS: Partial<Record<DayState, string>> = {
   "unavailable-start": "bg-amber-400/60",
 };
 
-const DAY_HEADERS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-
 export function DateRangePicker({
   value,
   onChange,
@@ -104,10 +123,23 @@ export function DateRangePicker({
   maxNights,
   onError,
   locale = "en",
+  labels: labelsProp,
 }: DateRangePickerProps) {
+  const L = { ...DEFAULT_LABELS, ...labelsProp };
   const { checkIn, checkOut } = value;
   const [monthOffset, setMonthOffset] = useState(0);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
+
+  // Locale-aware short weekday headers Mon–Sun (2024-01-01 is a Monday)
+  const dayHeaders = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) =>
+        new Date(2024, 0, i + 1).toLocaleDateString(locale, {
+          weekday: "short",
+        }),
+      ),
+    [locale],
+  );
 
   const today = useMemo(() => {
     const d = new Date();
@@ -238,7 +270,7 @@ export function DateRangePicker({
 
     if (!checkIn || checkOut) {
       if (isTurnoverStart(d)) {
-        setInfoMsg("You can only check out here.");
+        setInfoMsg(L.turnoverCheckoutOnly);
         return;
       }
       if (isBlockedDate(d)) return;
@@ -248,7 +280,7 @@ export function DateRangePicker({
 
     if (d <= checkIn) {
       if (isTurnoverStart(d)) {
-        setInfoMsg("You can only check out here.");
+        setInfoMsg(L.turnoverCheckoutOnly);
         return;
       }
       if (isBlockedDate(d)) return;
@@ -259,15 +291,15 @@ export function DateRangePicker({
     const nights = Math.round((d.getTime() - checkIn.getTime()) / 86_400_000);
 
     if (nights < minNights) {
-      onError?.(`Minimum stay: ${minNights} nights`);
+      onError?.(L.minNights(minNights));
       return;
     }
     if (maxNights && nights > maxNights) {
-      onError?.(`Maximum stay: ${maxNights} nights`);
+      onError?.(L.maxNights(maxNights));
       return;
     }
     if (rangeHasBlocked(checkIn, d)) {
-      onError?.("The selected range includes unavailable dates.");
+      onError?.(L.rangeUnavailable);
       return;
     }
 
@@ -313,7 +345,7 @@ export function DateRangePicker({
 
       {/* Day headers */}
       <div className="mb-1 grid grid-cols-7 text-center text-xs font-medium text-muted-foreground">
-        {DAY_HEADERS.map((h) => (
+        {dayHeaders.map((h) => (
           <div key={h}>{h}</div>
         ))}
       </div>
@@ -368,19 +400,19 @@ export function DateRangePicker({
             {myPropertyBookings.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <div className="size-3 rounded-sm bg-blue-100 dark:bg-blue-950/30" />
-                My booking
+                {L.myBooking}
               </div>
             )}
             {occupiedSlots.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <div className="size-3 rounded-sm bg-rose-100 dark:bg-rose-950/25" />
-                Booked
+                {L.booked}
               </div>
             )}
             {unavailabilities.length > 0 && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <div className="size-3 rounded-sm border border-amber-200/60 bg-amber-50 dark:border-amber-800/40 dark:bg-amber-950/20" />
-                Unavailable
+                {L.unavailable}
               </div>
             )}
           </div>

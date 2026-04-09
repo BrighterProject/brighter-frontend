@@ -67,6 +67,21 @@ const propertyDetailContent = {
         en: "Invalid date range",
         bg: "Невалиден период",
       }),
+      calendar: {
+        myBooking: t({ en: "My booking", bg: "Моята резервация" }),
+        booked: t({ en: "Booked", bg: "Заето" }),
+        unavailable: t({ en: "Unavailable", bg: "Недостъпно" }),
+        turnoverCheckoutOnly: t({
+          en: "You can only check out here.",
+          bg: "Тук можете само да напуснете.",
+        }),
+        minNightsPrefix: t({ en: "Minimum stay:", bg: "Минимален престой:" }),
+        maxNightsPrefix: t({ en: "Maximum stay:", bg: "Максимален престой:" }),
+        rangeUnavailable: t({
+          en: "The selected range includes unavailable dates.",
+          bg: "Избраният период включва недостъпни дати.",
+        }),
+      },
     },
   },
 } satisfies Dictionary;

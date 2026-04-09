@@ -213,7 +213,7 @@ export function BookingDetailsSheet({
                   <p className="text-base font-medium opacity-80">
                     → {fmtDate(booking.end_date)}
                     <span className="ml-2 text-sm opacity-60">
-                      ({durationNights}n)
+                      ({durationNights}{c.details.nightsShort})
                     </span>
                   </p>
                 </div>
@@ -234,7 +234,7 @@ export function BookingDetailsSheet({
                   {fmt(booking.end_date)}
                 </Row>
                 <Row label={c.details.duration as unknown as string}>
-                  {durationNights} nights
+                  {durationNights} {c.details.nights}
                 </Row>
               </Section>
 
@@ -246,7 +246,7 @@ export function BookingDetailsSheet({
                 <Row label={c.details.rate as unknown as string}>
                   {Number(booking.price_per_night).toFixed(2)}{" "}
                   {booking.currency}
-                  /night
+                  {" "}{c.details.perNight}
                 </Row>
                 <Row label={c.total as unknown as string}>
                   <span className="text-base font-bold">

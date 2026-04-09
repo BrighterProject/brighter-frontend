@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ImageOff,
+  Calendar,
   CalendarCheck,
   X,
   Expand,
@@ -585,6 +586,16 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       minNights={property.min_nights}
                       maxNights={property.max_nights ?? undefined}
                       onError={setDateError}
+                      locale={locale}
+                      labels={{
+                        myBooking: c.bookingCard.calendar.myBooking.value as string,
+                        booked: c.bookingCard.calendar.booked.value as string,
+                        unavailable: c.bookingCard.calendar.unavailable.value as string,
+                        turnoverCheckoutOnly: c.bookingCard.calendar.turnoverCheckoutOnly.value as string,
+                        minNights: (n) => `${c.bookingCard.calendar.minNightsPrefix.value as string} ${n} ${c.bookingCard.nights.value as string}`,
+                        maxNights: (n) => `${c.bookingCard.calendar.maxNightsPrefix.value as string} ${n} ${c.bookingCard.nights.value as string}`,
+                        rangeUnavailable: c.bookingCard.calendar.rangeUnavailable.value as string,
+                      }}
                     />
                     {dateError && (
                       <p className="rounded-lg bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
