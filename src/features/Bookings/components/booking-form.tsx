@@ -68,7 +68,6 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
       : null;
 
   const [guest, setGuest] = useState<GuestInfo>(EMPTY_GUEST);
-  const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<GuestInfo>>({});
 
@@ -99,25 +98,16 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
     }
     if (!validate()) return;
 
-    // Pack guest info into notes as structured JSON
-    // TODO: add guest_name, guest_email, guest_phone fields to bookings-ms schema
-    const guestBlock = JSON.stringify({
-      guest_name: guest.fullName.trim(),
-      guest_email: guest.email.trim(),
-      guest_phone: guest.phone.trim() || null,
-      special_requests: guest.specialRequests.trim() || null,
-    });
-    const combinedNotes = notes.trim()
-      ? `${guestBlock}\n${notes.trim()}`
-      : guestBlock;
-
     let booking;
     try {
       booking = await createBooking.mutateAsync({
         property_id: property.id,
         start_date: isoDate(checkIn),
         end_date: isoDate(checkOut),
-        notes: combinedNotes,
+        guest_name: guest.fullName.trim(),
+        guest_email: guest.email.trim(),
+        guest_phone: guest.phone.trim() || null,
+        special_requests: guest.specialRequests.trim() || null,
       });
     } catch (err: any) {
       const httpStatus = err?.response?.status;
@@ -271,20 +261,6 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                     />
                   </div>
                 </div>
-              </div>
-
-              {/* Notes */}
-              <div className="rounded-2xl border bg-card p-6 shadow-sm">
-                <h2 className="mb-3 font-display text-sm font-semibold text-foreground">
-                  {c.sections.notes}
-                </h2>
-                <Textarea
-                  value={notes}
-                  maxLength={1000}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder={c.notesPlaceholder.value as string}
-                  rows={2}
-                />
               </div>
 
               {error && (

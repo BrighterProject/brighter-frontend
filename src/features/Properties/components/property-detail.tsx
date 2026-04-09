@@ -468,10 +468,10 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                         <Badge
                           key={a}
                           variant="outline"
-                          className="gap-1.5 capitalize"
+                          className="gap-1.5"
                         >
                           <CheckCircle className="size-3 text-green-500" />
-                          {a}
+                          {(c.amenityLabels as Record<string, any>)[a]?.value ?? a}
                         </Badge>
                       ))}
                     </div>

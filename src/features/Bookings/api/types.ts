@@ -35,7 +35,10 @@ export interface BookingCreate {
   property_id: string;
   start_date: string; // YYYY-MM-DD
   end_date: string; // YYYY-MM-DD
-  notes?: string | null;
+  guest_name?: string | null;
+  guest_email?: string | null;
+  guest_phone?: string | null;
+  special_requests?: string | null;
 }
 
 export interface BookingResponse {
@@ -49,6 +52,9 @@ export interface BookingResponse {
   price_per_night: string;
   total_price: string;
   currency: string;
-  notes: string | null;
+  guest_name: string | null;
+  guest_email: string | null;
+  guest_phone: string | null;
+  special_requests: string | null;
   updated_at: string;
 }
