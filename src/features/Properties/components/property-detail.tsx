@@ -592,8 +592,8 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                         booked: c.bookingCard.calendar.booked.value as string,
                         unavailable: c.bookingCard.calendar.unavailable.value as string,
                         turnoverCheckoutOnly: c.bookingCard.calendar.turnoverCheckoutOnly.value as string,
-                        minNights: (n) => `${c.bookingCard.calendar.minNightsPrefix.value as string} ${n} ${c.bookingCard.nights.value as string}`,
-                        maxNights: (n) => `${c.bookingCard.calendar.maxNightsPrefix.value as string} ${n} ${c.bookingCard.nights.value as string}`,
+                        minNights: (n) => `${c.bookingCard.calendar.minNightsPrefix.value as string} ${n} ${c.bookingCard.nights(n).value as string}`,
+                        maxNights: (n) => `${c.bookingCard.calendar.maxNightsPrefix.value as string} ${n} ${c.bookingCard.nights(n).value as string}`,
                         rangeUnavailable: c.bookingCard.calendar.rangeUnavailable.value as string,
                       }}
                     />
@@ -607,7 +607,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       <div className="space-y-1 rounded-lg bg-muted/50 px-3 py-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
-                            {nights} {c.bookingCard.nights} ×{" "}
+                            {nights} {c.bookingCard.nights(nights)} ×{" "}
                             {Number(property.price_per_night).toFixed(0)}{" "}
                             {property.currency}
                           </span>

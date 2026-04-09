@@ -26,41 +26,85 @@ const ROOM_TYPE_LABELS: Record<string, Record<RoomType, string>> = {
   },
 };
 
-const BED_TYPE_LABELS: Record<string, Record<BedType, string>> = {
+type PluralForms = { one: Record<BedType, string>; other: Record<BedType, string> };
+
+const BED_TYPE_LABELS: Record<string, PluralForms> = {
   en: {
-    single: "single bed",
-    double: "double bed",
-    queen: "queen bed",
-    king: "king bed",
-    sofa_bed: "sofa bed",
-    bunk: "bunk bed",
-    crib: "crib",
+    one: {
+      single: "single bed",
+      double: "double bed",
+      queen: "queen bed",
+      king: "king bed",
+      sofa_bed: "sofa bed",
+      bunk: "bunk bed",
+      crib: "crib",
+    },
+    other: {
+      single: "single beds",
+      double: "double beds",
+      queen: "queen beds",
+      king: "king beds",
+      sofa_bed: "sofa beds",
+      bunk: "bunk beds",
+      crib: "cribs",
+    },
   },
   bg: {
-    single: "единично легло",
-    double: "двойно легло",
-    queen: "легло queen",
-    king: "легло king",
-    sofa_bed: "диван-легло",
-    bunk: "двуетажно легло",
-    crib: "бебешко легло",
+    one: {
+      single: "единично легло",
+      double: "двойно легло",
+      queen: "легло queen",
+      king: "легло king",
+      sofa_bed: "диван-легло",
+      bunk: "двуетажно легло",
+      crib: "бебешко легло",
+    },
+    other: {
+      single: "единични легла",
+      double: "двойни легла",
+      queen: "легла queen",
+      king: "легла king",
+      sofa_bed: "дивани-легла",
+      bunk: "двуетажни легла",
+      crib: "бебешки легла",
+    },
   },
   ru: {
-    single: "односпальная кровать",
-    double: "двуспальная кровать",
-    queen: "кровать queen",
-    king: "кровать king",
-    sofa_bed: "диван-кровать",
-    bunk: "двухъярусная кровать",
-    crib: "детская кроватка",
+    one: {
+      single: "односпальная кровать",
+      double: "двуспальная кровать",
+      queen: "кровать queen",
+      king: "кровать king",
+      sofa_bed: "диван-кровать",
+      bunk: "двухъярусная кровать",
+      crib: "детская кроватка",
+    },
+    other: {
+      single: "односпальные кровати",
+      double: "двуспальные кровати",
+      queen: "кровати queen",
+      king: "кровати king",
+      sofa_bed: "диваны-кровати",
+      bunk: "двухъярусные кровати",
+      crib: "детские кроватки",
+    },
   },
 };
 
-const BEDS_LABEL: Record<string, string> = {
-  en: "beds",
-  bg: "легла",
-  ru: "кроватей",
+const BEDS_LABEL: Record<string, { one: string; other: string }> = {
+  en: { one: "bed", other: "beds" },
+  bg: { one: "легло", other: "легла" },
+  ru: { one: "кровать", other: "кроватей" },
 };
+
+const pluralRulesCache = new Map<string, Intl.PluralRules>();
+function pluralCategory(locale: string, n: number): "one" | "other" {
+  if (!pluralRulesCache.has(locale)) {
+    pluralRulesCache.set(locale, new Intl.PluralRules(locale));
+  }
+  const category = pluralRulesCache.get(locale)!.select(n);
+  return category === "one" ? "one" : "other";
+}
 
 function forLocale<T>(map: Record<string, T>, locale: string): T {
   return map[locale] ?? map[FALLBACK_LOCALE];
@@ -71,8 +115,8 @@ export function formatRoomSummary(
   locale: string,
 ): { roomLine: string; bedLine: string } {
   const roomLabels = forLocale(ROOM_TYPE_LABELS, locale);
-  const bedLabels = forLocale(BED_TYPE_LABELS, locale);
-  const bedsLabel = forLocale(BEDS_LABEL, locale);
+  const bedLabelForms = forLocale(BED_TYPE_LABELS, locale);
+  const bedsLabelForms = forLocale(BEDS_LABEL, locale);
 
   const roomLine = rooms
     .filter((r) => r.count > 0)
@@ -89,14 +133,18 @@ export function formatRoomSummary(
   }
 
   const bedDetails = (Object.entries(mergedBeds) as [BedType, number][])
-    .map(([type, count]) => `${count} ${bedLabels[type]}`)
+    .map(([type, count]) => {
+      const form = pluralCategory(locale, count);
+      return `${count} ${bedLabelForms[form][type]}`;
+    })
     .join(", ");
 
+  const totalForm = pluralCategory(locale, totalBeds);
   const bedLine =
     totalBeds === 1
       ? bedDetails
       : totalBeds > 1
-        ? `${totalBeds} ${bedsLabel} (${bedDetails})`
+        ? `${totalBeds} ${bedsLabelForms[totalForm]} (${bedDetails})`
         : "";
 
   return { roomLine, bedLine };

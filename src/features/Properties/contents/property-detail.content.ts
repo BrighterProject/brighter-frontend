@@ -1,4 +1,4 @@
-import { t, type Dictionary } from "intlayer";
+import { t, enu, type Dictionary } from "intlayer";
 
 const propertyDetailContent = {
   key: "property-detail",
@@ -61,7 +61,10 @@ const propertyDetailContent = {
         en: "Select check-in and check-out dates",
         bg: "Изберете дати за настаняване и напускане",
       }),
-      nights: t({ en: "nights", bg: "нощ." }),
+      nights: enu({
+        "1": t({ en: "night", bg: "нощ" }),
+        ">1": t({ en: "nights", bg: "нощи" }),
+      }),
       total: t({ en: "Total", bg: "Общо" }),
       dateError: t({
         en: "Invalid date range",
