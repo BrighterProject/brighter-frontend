@@ -2,27 +2,56 @@ import type { BedType, RoomEntry, RoomType } from "../api/types";
 
 const FALLBACK_LOCALE = "bg";
 
-const ROOM_TYPE_LABELS: Record<string, Record<RoomType, string>> = {
+type RoomPluralForms = { one: Record<RoomType, string>; other: Record<RoomType, string> };
+
+const ROOM_TYPE_LABELS: Record<string, RoomPluralForms> = {
   en: {
-    bedroom: "bedroom",
-    living_room: "living room",
-    kitchen: "kitchen",
-    bathroom: "bathroom",
-    studio: "studio",
+    one: {
+      bedroom: "bedroom",
+      living_room: "living room",
+      kitchen: "kitchen",
+      bathroom: "bathroom",
+      studio: "studio",
+    },
+    other: {
+      bedroom: "bedrooms",
+      living_room: "living rooms",
+      kitchen: "kitchens",
+      bathroom: "bathrooms",
+      studio: "studios",
+    },
   },
   bg: {
-    bedroom: "спалня",
-    living_room: "хол",
-    kitchen: "кухня",
-    bathroom: "баня",
-    studio: "студио",
+    one: {
+      bedroom: "спалня",
+      living_room: "хол",
+      kitchen: "кухня",
+      bathroom: "баня",
+      studio: "студио",
+    },
+    other: {
+      bedroom: "спални",
+      living_room: "хола",
+      kitchen: "кухни",
+      bathroom: "бани",
+      studio: "студиа",
+    },
   },
   ru: {
-    bedroom: "спальня",
-    living_room: "гостиная",
-    kitchen: "кухня",
-    bathroom: "ванная комната",
-    studio: "студия",
+    one: {
+      bedroom: "спальня",
+      living_room: "гостиная",
+      kitchen: "кухня",
+      bathroom: "ванная комната",
+      studio: "студия",
+    },
+    other: {
+      bedroom: "спальни",
+      living_room: "гостиные",
+      kitchen: "кухни",
+      bathroom: "ванные комнаты",
+      studio: "студии",
+    },
   },
 };
 
@@ -114,13 +143,13 @@ export function formatRoomSummary(
   rooms: RoomEntry[],
   locale: string,
 ): { roomLine: string; bedLine: string } {
-  const roomLabels = forLocale(ROOM_TYPE_LABELS, locale);
+  const roomLabelForms = forLocale(ROOM_TYPE_LABELS, locale);
   const bedLabelForms = forLocale(BED_TYPE_LABELS, locale);
   const bedsLabelForms = forLocale(BEDS_LABEL, locale);
 
   const roomLine = rooms
     .filter((r) => r.count > 0)
-    .map((r) => `${r.count} ${roomLabels[r.room_type]}`)
+    .map((r) => `${r.count} ${roomLabelForms[pluralCategory(locale, r.count)][r.room_type]}`)
     .join(" • ");
 
   const mergedBeds: Partial<Record<BedType, number>> = {};
