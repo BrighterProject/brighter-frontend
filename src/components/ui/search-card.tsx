@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, CalendarDays, X } from "lucide-react";
+import { Search, CalendarDays, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestsSelect } from "@/components/ui/guests-select";
 import {
@@ -42,6 +42,7 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
   const [adults] = useState(defaultValues?.adults ?? 1);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarError, setCalendarError] = useState("");
+  const [mobileExpanded, setMobileExpanded] = useState(false);
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -77,79 +78,143 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
       adults: adults > 1 ? adults : undefined,
     });
     setCalendarOpen(false);
+    setMobileExpanded(false);
   };
 
+  const mobileSummary = [
+    city || (content.destination.value as string),
+    checkIn && checkOut
+      ? `${formatDateShort(checkIn)} – ${formatDateShort(checkOut)}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   if (isCompact) {
-    return (
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Destination */}
-        <div className="relative min-w-40 flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder={content.destination.value as string}
-            className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
-        </div>
+    const dateSection = (fullWidth: boolean) => (
+      <div className={`relative ${fullWidth ? "w-full" : "w-48 shrink-0"}`} ref={calendarRef}>
+        <button
+          type="button"
+          onClick={() => setCalendarOpen((o) => !o)}
+          className={`flex h-10 w-full items-center gap-2 rounded-md border px-3 text-sm transition-colors ${
+            hasDates
+              ? "border-primary text-foreground"
+              : "border-input text-muted-foreground"
+          } bg-background focus:outline-none focus:ring-2 focus:ring-ring`}
+        >
+          <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
+          <span className="flex-1 truncate text-left">{dateLabel}</span>
+          {hasDates && (
+            <X
+              className="size-3.5 shrink-0 text-muted-foreground hover:text-foreground"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCheckIn(undefined);
+                setCheckOut(undefined);
+                setCalendarError("");
+              }}
+            />
+          )}
+        </button>
 
-        {/* Date range trigger */}
-        <div className="relative w-48 shrink-0" ref={calendarRef}>
-          <button
-            type="button"
-            onClick={() => setCalendarOpen((o) => !o)}
-            className={`flex h-10 w-full items-center gap-2 rounded-md border px-3 text-sm transition-colors ${
-              hasDates
-                ? "border-primary text-foreground"
-                : "border-input text-muted-foreground"
-            } bg-background focus:outline-none focus:ring-2 focus:ring-ring`}
-          >
-            <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
-            <span className="flex-1 truncate text-left">{dateLabel}</span>
-            {hasDates && (
-              <X
-                className="size-3.5 shrink-0 text-muted-foreground hover:text-foreground"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCheckIn(undefined);
-                  setCheckOut(undefined);
-                  setCalendarError("");
-                }}
-              />
+        {calendarOpen && (
+          <div className="absolute left-0 top-10 z-50 w-[calc(100vw-2rem)] sm:w-80">
+            <DateRangePicker
+              value={{
+                checkIn: parseDateParam(checkIn),
+                checkOut: parseDateParam(checkOut),
+              }}
+              onChange={({ checkIn: ci, checkOut: co }) => {
+                setCheckIn(ci ? isoDate(ci) : undefined);
+                setCheckOut(co ? isoDate(co) : undefined);
+              }}
+              onError={setCalendarError}
+            />
+            {calendarError && (
+              <p className="mt-1 rounded bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
+                {calendarError}
+              </p>
             )}
-          </button>
+          </div>
+        )}
+      </div>
+    );
 
-          {calendarOpen && (
-            <div className="absolute left-0 top-10 z-50 w-[calc(100vw-2rem)] sm:w-80">
-              <DateRangePicker
-                value={{
-                  checkIn: parseDateParam(checkIn),
-                  checkOut: parseDateParam(checkOut),
-                }}
-                onChange={({ checkIn: ci, checkOut: co }) => {
-                  setCheckIn(ci ? isoDate(ci) : undefined);
-                  setCheckOut(co ? isoDate(co) : undefined);
-                }}
-                onError={setCalendarError}
-              />
-              {calendarError && (
-                <p className="mt-1 rounded bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
-                  {calendarError}
-                </p>
-              )}
+    return (
+      <div>
+        {/* Mobile only */}
+        <div className="sm:hidden">
+          {!mobileExpanded ? (
+            /* Collapsed summary bar */
+            <button
+              type="button"
+              onClick={() => setMobileExpanded(true)}
+              className="flex w-full items-center gap-2"
+            >
+              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <span className="flex-1 truncate text-left text-sm text-muted-foreground">
+                {mobileSummary}
+              </span>
+              <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+            </button>
+          ) : (
+            /* Expanded: full-width stacked form */
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => setMobileExpanded(false)}
+                className="ml-auto flex items-center gap-1 text-xs text-muted-foreground"
+              >
+                <ChevronDown className="size-4 rotate-180" />
+              </button>
+
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder={content.destination.value as string}
+                  className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+              </div>
+
+              {dateSection(true)}
+
+              <GuestsSelect compact />
+
+              <Button size="sm" onClick={handleSearch} className="h-10 w-full">
+                {content.button}
+              </Button>
             </div>
           )}
         </div>
 
-        <div className="shrink-0">
-          <GuestsSelect compact />
-        </div>
+        {/* Desktop: always visible inline form */}
+        <div className="hidden sm:flex flex-wrap items-center gap-2">
+          <div className="relative min-w-40 flex-1">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder={content.destination.value as string}
+              className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            />
+          </div>
 
-        <Button size="sm" onClick={handleSearch} className="h-10 shrink-0 px-5">
-          {content.button}
-        </Button>
+          {dateSection(false)}
+
+          <div className="shrink-0">
+            <GuestsSelect compact />
+          </div>
+
+          <Button size="sm" onClick={handleSearch} className="h-10 shrink-0 px-5">
+            {content.button}
+          </Button>
+        </div>
       </div>
     );
   }
