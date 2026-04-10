@@ -37,7 +37,7 @@ export function OfferCardDesktop({ data }: Props) {
         </div>
 
         <div className="flex flex-1 flex-row gap-1.5 overflow-hidden px-2.5 py-2">
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-col gap-0.5">
               <p
                 className="cursor-pointer text-base font-medium leading-normal text-primary hover:underline"
@@ -71,7 +71,8 @@ export function OfferCardDesktop({ data }: Props) {
                         {data.bedInfo}
                       </p>
                     )}
-                    {(data.bedrooms !== undefined || data.maxGuests !== undefined) && (
+                    {(data.bedrooms !== undefined ||
+                      data.maxGuests !== undefined) && (
                       <div className="flex items-center gap-3">
                         {data.bedrooms !== undefined && (
                           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
@@ -103,7 +104,7 @@ export function OfferCardDesktop({ data }: Props) {
             </div>
 
             {data.description && (
-              <div className="relative max-h-20 overflow-hidden pr-8">
+              <div className="relative max-h-32 h-32 overflow-hidden pr-8">
                 <p className="text-xs leading-normal tracking-wide text-foreground">
                   {data.description}
                 </p>

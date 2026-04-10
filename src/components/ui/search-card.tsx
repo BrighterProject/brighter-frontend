@@ -122,7 +122,7 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
           </button>
 
           {calendarOpen && (
-            <div className="absolute left-0 top-10 z-50 w-80">
+            <div className="absolute left-0 top-10 z-50 w-[calc(100vw-2rem)] sm:w-80">
               <DateRangePicker
                 value={{
                   checkIn: parseDateParam(checkIn),
@@ -198,7 +198,7 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
 
           {/* Calendar dropdown */}
           {calendarOpen && (
-            <div className="absolute left-0 top-12 z-50 w-80">
+            <div className="absolute left-0 top-12 z-50 w-[calc(100vw-2rem)] sm:w-80">
               <DateRangePicker
                 value={{
                   checkIn: parseDateParam(checkIn),

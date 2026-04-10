@@ -318,7 +318,7 @@ export function DateRangePicker({
     myPropertyBookings.length > 0;
 
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className="rounded-xl border bg-card p-2 shadow-sm sm:p-4">
       {/* Month navigation */}
       <div className="mb-4 flex items-center justify-between">
         <Button

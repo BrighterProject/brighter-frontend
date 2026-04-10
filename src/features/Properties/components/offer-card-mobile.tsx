@@ -8,7 +8,7 @@ interface Props {
 export function OfferCardMobile({ data }: Props) {
   return (
     <div
-      className="flex w-full gap-2.5 md:hidden"
+      className="flex min-h-40 w-full gap-2.5 md:hidden"
       onClick={data.onClick}
       role={data.onClick ? "button" : undefined}
     >
