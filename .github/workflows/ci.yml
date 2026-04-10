@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE: ghcr.io/brighterbg/brighter-frontend
+  IMAGE: ghcr.io/brighterproject/brighter-frontend
 
 jobs:
   test:
