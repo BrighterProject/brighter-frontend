@@ -71,7 +71,7 @@ export function buildParams(
   if (filters.propertyTypes.length > 0)
     params.property_type = filters.propertyTypes;
   if (filters.minRating !== null)
-    params.min_rating = (filters.minRating / 2).toFixed(1); // UI 0-10 → backend 0-5
+    params.min_rating = filters.minRating.toFixed(1);
   if (filters.bedrooms !== null) params.bedrooms = filters.bedrooms;
 
   // min_guests: prefer the URL search param (adults count), fall back to filter

@@ -491,7 +491,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                     {property.check_in_time && (
                       <div className="flex flex-col gap-1 rounded-lg border p-3">
                         <span className="text-xs text-muted-foreground">
-                          Check-in
+                          {c.checkIn}
                         </span>
                         <span className="text-sm font-semibold">
                           {property.check_in_time}
@@ -501,7 +501,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                     {property.check_out_time && (
                       <div className="flex flex-col gap-1 rounded-lg border p-3">
                         <span className="text-xs text-muted-foreground">
-                          Check-out
+                          {c.checkOut}
                         </span>
                         <span className="text-sm font-semibold">
                           {property.check_out_time}
@@ -628,7 +628,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                   {todayHours && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Check-in / out
+                        {c.checkInOut}
                       </span>
                       <span className="font-medium text-foreground">
                         {todayHours.open} &ndash; {todayHours.close}
