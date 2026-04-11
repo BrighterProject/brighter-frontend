@@ -161,6 +161,6 @@ Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in 
 - **Figma asset URLs**: Temporary (7 days) — replace with permanent URLs before production
 - **intlayer summary labels**: When building dynamic strings (e.g. "2 adults"), use `.value` on intlayer nodes — they are objects, not strings
 - **Properties filters — no city field**: `Filters` (in `properties-filters.ts`) no longer has a `city` key. City comes from URL search params and is passed to `buildParams(filters, { city })` as the second argument. Do not add city back into `Filters`.
-- **Booking guest info**: `BookingForm` packs `guest_name`, `guest_email`, `guest_phone`, `special_requests` as a JSON string into the `notes` field. This is a temporary measure — once `brighter-bookings-ms` adds proper columns, these fields should be sent directly.
+- **Booking guest info**: `BookingForm` sends `guest_name`, `guest_email`, `guest_phone`, `special_requests` as top-level fields in `BookingCreate` — these are proper columns on the `Booking` model.
 - **Infinite scroll query key**: `useInfiniteProperties` uses `["properties", "infinite", params]`. When filters change the params object changes, which resets to page 1 automatically. Keep `buildParams()` output stable (don't create new object references unnecessarily inside render).
 - **`useOccupiedSlots` on property detail**: Called unconditionally — unauthenticated users get a 401 which the hook handles gracefully (returns empty array, no retry). Only authenticated users see booking-occupied dates.
