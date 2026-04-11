@@ -4,9 +4,9 @@ import { useProperty } from "@/features/Properties/api/hooks";
 import { PropertyDetail } from "@/features/Properties/components/property-detail";
 
 function PropertyDetailPage() {
-  const { propertyId } = Route.useParams();
+  const { propertyId, locale } = Route.useParams();
   const search = Route.useSearch();
-  const { data: property, isLoading, isError } = useProperty(propertyId);
+  const { data: property, isLoading, isError } = useProperty(propertyId, locale);
 
   if (isLoading) {
     return (

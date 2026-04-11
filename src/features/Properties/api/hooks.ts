@@ -20,11 +20,13 @@ export const useProperties = (params?: Record<string, any>) => {
   });
 };
 
-export const useProperty = (propertyId: string) => {
+export const useProperty = (propertyId: string, lang?: string) => {
   return useQuery({
-    queryKey: ["properties", propertyId],
+    queryKey: ["properties", propertyId, lang],
     queryFn: async () => {
-      const { data } = await apiClient.get<PropertyResponse>(`/properties/${propertyId}`);
+      const { data } = await apiClient.get<PropertyResponse>(`/properties/${propertyId}`, {
+        params: lang ? { lang } : undefined,
+      });
       return data;
     },
     enabled: !!propertyId,

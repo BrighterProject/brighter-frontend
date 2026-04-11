@@ -59,7 +59,7 @@ const POPULAR_FILTER_TO_AMENITY: Record<string, AmenityType> = {
 
 export function buildParams(
   filters: Filters,
-  extra?: { city?: string; min_guests?: number; checkIn?: string; checkOut?: string },
+  extra?: { city?: string; min_guests?: number; checkIn?: string; checkOut?: string; lang?: string },
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {
     status: "active",
@@ -89,6 +89,7 @@ export function buildParams(
 
   if (extra?.checkIn) params.available_from = extra.checkIn;
   if (extra?.checkOut) params.available_to = extra.checkOut;
+  if (extra?.lang) params.lang = extra.lang;
 
   return params;
 }

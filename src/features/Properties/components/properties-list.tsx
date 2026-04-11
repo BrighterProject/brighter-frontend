@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { useIntlayer } from "react-intlayer";
 import { SlidersHorizontal } from "lucide-react";
 import { useInfiniteProperties } from "../api/hooks";
@@ -61,6 +61,7 @@ export function PropertiesList() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { locale } = useParams({ strict: false }) as { locale?: string };
   const c = useIntlayer("properties-list");
   const roomsC = useIntlayer("rooms");
   const formatRooms = useFormatRooms();
@@ -86,6 +87,7 @@ export function PropertiesList() {
     min_guests: urlAdults,
     checkIn: urlCheckIn,
     checkOut: urlCheckOut,
+    lang: locale,
   });
 
   const {
