@@ -71,6 +71,14 @@ export function UserNav({ onAction }: { onAction?: () => void }) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {user.scopes?.includes("properties:me") &&
+          !user.scopes?.some((s: string) => s.startsWith("admin:")) && (
+          <DropdownMenuItem asChild>
+            <a href="/admin/properties/new" onClick={onAction}>
+              + Добави имот
+            </a>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <LocalizedLink to="/bookings" onClick={onAction}>
             {content.labels.myBookings}
