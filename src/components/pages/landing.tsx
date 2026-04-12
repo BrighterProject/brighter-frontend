@@ -6,6 +6,7 @@ import { useProperties } from "@Properties/api/hooks";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useFormatRooms } from "@Properties/utils/format-rooms";
 import type { PropertyType } from "@Properties/api/types";
+import { useMe } from "@Auth/api/hooks";
 
 function getRatingLabel(score: string, locale: string): string {
   const n = parseFloat(score);
@@ -26,6 +27,10 @@ export function Landing() {
     status: "active",
   });
   const properties = allProperties?.slice(0, 3) ?? [];
+  const { data: me } = useMe();
+  const isOwner =
+    (me?.scopes?.includes("properties:me") ?? false) &&
+    !(me?.scopes?.some((s: string) => s.startsWith("admin:")) ?? false);
 
   return (
     <div className="flex flex-col items-center">
@@ -46,6 +51,19 @@ export function Landing() {
           </div>
 
           <SearchCard content={content.search} />
+          {isOwner && (
+            <div className="flex items-center justify-between rounded-xl border bg-card px-4 py-3 text-sm shadow-sm">
+              <span className="text-muted-foreground">
+                Вие сте собственик на имот.
+              </span>
+              <a
+                href="/admin/properties/new"
+                className="font-medium text-primary hover:underline"
+              >
+                Добави имот →
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Offers */}
