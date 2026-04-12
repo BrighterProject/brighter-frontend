@@ -100,6 +100,12 @@ describe('PropertyDetail edit button', () => {
     expect(screen.getByRole('link', { name: /edit property|редактирай/i })).toBeTruthy();
   });
 
+  it('shows Edit Property button when viewer is an admin (not the owner)', () => {
+    vi.mocked(useMe).mockReturnValue({ data: { id: 2, scopes: ['admin:properties'] } } as any);
+    render(<PropertyDetail property={makeProperty('1')} />);
+    expect(screen.getByRole('link', { name: /edit property|редактирай/i })).toBeTruthy();
+  });
+
   it('does not show Edit Property button when viewer is not the owner', () => {
     vi.mocked(useMe).mockReturnValue({ data: { id: 2, scopes: [] } } as any);
     render(<PropertyDetail property={makeProperty('1')} />);

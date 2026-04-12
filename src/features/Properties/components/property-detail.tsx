@@ -249,7 +249,9 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
   const { data: unavailabilities = [] } = usePropertyUnavailabilities(property.id);
   const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
   const { data: me } = useMe();
+  const isAdmin = !!me?.scopes?.some((s: string) => s.startsWith("admin:"));
   const isOwner = !!me && String(me.id) === property.owner_id;
+  const canEdit = isOwner || isAdmin;
 
   const c = useIntlayer("property-detail");
   const { locale } = useLocale();
@@ -357,7 +359,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
               <ChevronLeft className="size-4" />
               {c.back}
             </button>
-            {isOwner && (
+            {canEdit && (
               <a
                 href={`/admin/properties/${property.id}/edit`}
                 className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
