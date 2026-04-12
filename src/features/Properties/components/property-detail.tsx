@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useMe } from "@Auth/api/hooks";
 import { useIntlayer } from "react-intlayer";
 import { DateRangePicker, isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
@@ -247,6 +248,8 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
 
   const { data: unavailabilities = [] } = usePropertyUnavailabilities(property.id);
   const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
+  const { data: me } = useMe();
+  const isOwner = !!me && String(me.id) === property.owner_id;
 
   const c = useIntlayer("property-detail");
   const { locale } = useLocale();
@@ -343,16 +346,27 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
       )}
       <div className="min-h-screen">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          {/* Back */}
-          <button
-            onClick={() =>
-              navigate({ to: "/{-$locale}/properties" as any } as any)
-            }
-            className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ChevronLeft className="size-4" />
-            {c.back}
-          </button>
+          {/* Back + Edit */}
+          <div className="mb-6 flex items-center justify-between">
+            <button
+              onClick={() =>
+                navigate({ to: "/{-$locale}/properties" as any } as any)
+              }
+              className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="size-4" />
+              {c.back}
+            </button>
+            {isOwner && (
+              <a
+                href={`/admin/properties/${property.id}/edit`}
+                className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                aria-label="Edit Property"
+              >
+                Редактирай имота
+              </a>
+            )}
+          </div>
 
           {/* Gallery */}
           <div className="mb-8">
