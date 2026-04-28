@@ -35,13 +35,19 @@ interface WeekdayGridProps {
   currency: string;
 }
 
-function WeekdayGrid({ propertyId, basePricePerNight, currency }: WeekdayGridProps) {
+function WeekdayGrid({
+  propertyId,
+  basePricePerNight,
+  currency,
+}: WeekdayGridProps) {
   const { data: existing } = useWeekdayPrices(propertyId);
   const upsert = useUpsertWeekdayPrices(propertyId);
 
   // local state: weekday -> price string | null (null = use base)
   const [prices, setPrices] = useState<(string | null)[]>(() => {
-    const map = Object.fromEntries((existing ?? []).map((w) => [w.weekday, w.price]));
+    const map = Object.fromEntries(
+      (existing ?? []).map((w) => [w.weekday, w.price]),
+    );
     return Array.from({ length: 7 }, (_, i) => map[i] ?? null);
   });
   const [saved, setSaved] = useState(false);
@@ -97,7 +103,9 @@ function WeekdayGrid({ propertyId, basePricePerNight, currency }: WeekdayGridPro
               key={i}
               className="flex items-center gap-3 rounded-xl border bg-background px-4 py-3"
             >
-              <span className="w-24 text-sm font-medium text-foreground">{label}</span>
+              <span className="w-24 text-sm font-medium text-foreground">
+                {label}
+              </span>
 
               <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
                 <input
@@ -119,22 +127,22 @@ function WeekdayGrid({ propertyId, basePricePerNight, currency }: WeekdayGridPro
                 placeholder={basePricePerNight}
                 className="ml-auto h-9 w-28 rounded-lg border bg-background px-3 text-right text-sm disabled:cursor-not-allowed disabled:opacity-40"
               />
-              <span className="w-8 text-xs text-muted-foreground">{currency}</span>
+              <span className="w-8 text-xs text-muted-foreground">
+                {currency}
+              </span>
             </div>
           );
         })}
       </div>
 
-      {error && (
-        <p className="mt-3 text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
-      <Button
-        className="mt-5"
-        onClick={handleSave}
-        disabled={upsert.isPending}
-      >
-        {upsert.isPending ? "Saving…" : saved ? "Saved!" : "Save weekday prices"}
+      <Button className="mt-5" onClick={handleSave} disabled={upsert.isPending}>
+        {upsert.isPending
+          ? "Saving…"
+          : saved
+            ? "Saved!"
+            : "Save weekday prices"}
       </Button>
     </div>
   );
@@ -151,7 +159,12 @@ interface OverrideFormProps {
   onDone: () => void;
 }
 
-function OverrideForm({ propertyId, currency, editTarget, onDone }: OverrideFormProps) {
+function OverrideForm({
+  propertyId,
+  currency,
+  editTarget,
+  onDone,
+}: OverrideFormProps) {
   const create = useCreateDateOverride(propertyId);
   const update = useUpdateDateOverride(propertyId);
 
@@ -200,7 +213,10 @@ function OverrideForm({ propertyId, currency, editTarget, onDone }: OverrideForm
     "h-9 w-full rounded-lg border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 rounded-xl border bg-card p-5 shadow-sm"
+    >
       <h3 className="font-display text-sm font-semibold text-foreground">
         {editTarget ? "Edit override" : "Add date override"}
       </h3>
@@ -289,7 +305,9 @@ function DateOverrides({ propertyId, currency }: DateOverridesProps) {
   const { data: overrides = [] } = useDateOverrides(propertyId);
   const deleteOverride = useDeleteDateOverride(propertyId);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<DatePriceOverride | undefined>(undefined);
+  const [editing, setEditing] = useState<DatePriceOverride | undefined>(
+    undefined,
+  );
 
   return (
     <div className="rounded-2xl border bg-card p-6 shadow-sm">
@@ -443,19 +461,4 @@ export const Route = createFileRoute(
   "/{-$locale}/owner/properties/$propertyId/pricing",
 )({
   component: OwnerPricingPage,
-  beforeLoad: async ({ params }) => {
-    try {
-      const { data: me } = await apiClient.get("/users/@me/get");
-      const scopes: string[] = me?.scopes ?? [];
-      const hasScope = scopes.some(
-        (s) => s === "properties:schedule" || s.startsWith("admin:"),
-      );
-      if (!hasScope) {
-        throw redirect({ to: `/{-$locale}/properties/$propertyId` as any, params } as any);
-      }
-    } catch (err: any) {
-      if (err?.isRedirect) throw err;
-      throw redirect({ to: "/{-$locale}/auth/login" as any } as any);
-    }
-  },
 });

@@ -116,6 +116,8 @@ export interface PropertyResponse {
   translations: TranslationResponse[];
   images: PropertyImageResponse[];
   unavailabilities: PropertyUnavailabilityResponse[];
+  weekday_prices: WeekdayPriceOut[];
+  date_price_overrides: DatePriceOverride[];
 }
 
 /**

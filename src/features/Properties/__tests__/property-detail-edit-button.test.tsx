@@ -81,6 +81,8 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   translations: [
     { id: 't1', property_id: 'prop-1', locale: 'bg', name: 'Test Villa', description: 'Desc', address: 'Sofia' },
   ],
+  weekday_prices: [],
+  date_price_overrides: [],
 });
 
 const { useMe } = await import('@Auth/api/hooks');

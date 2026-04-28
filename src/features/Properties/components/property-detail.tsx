@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMe } from "@Auth/api/hooks";
 import { useIntlayer } from "react-intlayer";
 import { DateRangePicker, isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
 import { usePropertyUnavailabilities } from "../api/hooks";
+import { buildPricingMap, resolveTotal } from "../utils/pricing";
 
 import { type PropertyResponse, resolveTranslation } from "../api/types";
 import { useLocale } from "react-intlayer";
@@ -300,10 +301,29 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
         )
       : 0;
 
-  const totalPrice =
-    nights > 0
-      ? (Number(property.price_per_night) * nights).toFixed(0)
-      : null;
+  const pricingMap = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const end = new Date(today.getFullYear(), today.getMonth() + 13, 1);
+    return buildPricingMap(
+      today,
+      end,
+      property.price_per_night,
+      property.weekday_prices,
+      property.date_price_overrides,
+    );
+  }, [property.price_per_night, property.weekday_prices, property.date_price_overrides]);
+
+  const totalPrice = useMemo(() => {
+    if (!dateRange.checkIn || !dateRange.checkOut || nights <= 0) return null;
+    return resolveTotal(
+      dateRange.checkIn,
+      dateRange.checkOut,
+      property.price_per_night,
+      property.weekday_prices,
+      property.date_price_overrides,
+    ).toFixed(0);
+  }, [dateRange.checkIn, dateRange.checkOut, nights, property.price_per_night, property.weekday_prices, property.date_price_overrides]);
 
   // Lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -607,6 +627,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       maxNights={property.max_nights ?? undefined}
                       onError={setDateError}
                       locale={locale}
+                      pricingMap={pricingMap}
                       labels={{
                         myBooking: c.bookingCard.calendar.myBooking.value as string,
                         booked: c.bookingCard.calendar.booked.value as string,
@@ -627,9 +648,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       <div className="space-y-1 rounded-lg bg-muted/50 px-3 py-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>
-                            {nights} {c.bookingCard.nights(nights)} ×{" "}
-                            {Number(property.price_per_night).toFixed(0)}{" "}
-                            {property.currency}
+                            {nights} {c.bookingCard.nights(nights)}
                           </span>
                         </div>
                         <div className="flex justify-between font-semibold text-foreground">

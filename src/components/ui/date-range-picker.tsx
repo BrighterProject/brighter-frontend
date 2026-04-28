@@ -45,6 +45,8 @@ interface DateRangePickerProps {
   onError?: (msg: string) => void;
   locale?: string;
   labels?: DateRangePickerLabels;
+  /** ISO date → price string. When provided, shows the price below each non-past day number. */
+  pricingMap?: Record<string, string>;
 }
 
 export function isoDate(d: Date): string {
@@ -76,7 +78,9 @@ type DayState =
   | "in-range";
 
 const DAY_BASE =
-  "relative flex h-10 w-full items-center justify-center text-sm select-none transition-all duration-150";
+  "relative flex w-full flex-col items-center justify-center select-none transition-all duration-150";
+const DAY_BASE_NO_PRICE = "h-10 text-sm";
+const DAY_BASE_PRICE = "h-14 text-sm";
 
 const DAY_CLASSES: Record<DayState, string> = {
   past: "text-muted-foreground/30 cursor-default",
@@ -124,6 +128,7 @@ export function DateRangePicker({
   onError,
   locale = "en",
   labels: labelsProp,
+  pricingMap,
 }: DateRangePickerProps) {
   const L = { ...DEFAULT_LABELS, ...labelsProp };
   const { checkIn, checkOut } = value;
@@ -353,7 +358,13 @@ export function DateRangePicker({
       {/* Day cells */}
       <div className="grid grid-cols-7">
         {monthGrid.map((d, i) => {
-          if (!d) return <div key={`pad-${i}`} className="h-10" />;
+          if (!d)
+            return (
+              <div
+                key={`pad-${i}`}
+                className={pricingMap ? "h-14" : "h-10"}
+              />
+            );
           const state = getDayState(d);
           const dotClass = TURNOVER_DOT_CLASS[state];
           const interactive =
@@ -362,21 +373,33 @@ export function DateRangePicker({
             state !== "mine" &&
             state !== "unavailable" &&
             state !== "out-of-reach";
+          const ds = isoDate(d);
+          const dayPrice =
+            pricingMap && state !== "past" ? pricingMap[ds] : undefined;
           return (
             <div
-              key={isoDate(d)}
+              key={ds}
               role="button"
               tabIndex={interactive ? 0 : -1}
-              aria-label={isoDate(d)}
+              aria-label={ds}
               onClick={() => handleDayClick(d)}
               onKeyDown={(e) => e.key === "Enter" && handleDayClick(d)}
-              className={cn(DAY_BASE, DAY_CLASSES[state])}
+              className={cn(
+                DAY_BASE,
+                pricingMap ? DAY_BASE_PRICE : DAY_BASE_NO_PRICE,
+                DAY_CLASSES[state],
+              )}
             >
-              {d.getDate()}
+              <span>{d.getDate()}</span>
+              {dayPrice !== undefined && (
+                <span className="text-[9px] leading-none tabular-nums text-muted-foreground/70">
+                  {Math.round(parseFloat(dayPrice))}
+                </span>
+              )}
               {dotClass && (
                 <span
                   className={cn(
-                    "absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full",
+                    "absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full",
                     dotClass,
                   )}
                 />
