@@ -148,6 +148,7 @@ export function BookingForm({
         guest_name: guest.fullName.trim(),
         guest_email: guest.email.trim(),
         guest_phone: guest.phone.trim(),
+        guest_country: guest.country || null,
         special_requests: guest.specialRequests.trim() || null,
       });
     } catch (err: any) {

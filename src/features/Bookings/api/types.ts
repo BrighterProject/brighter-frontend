@@ -39,6 +39,7 @@ export interface BookingCreate {
   guest_name?: string | null;
   guest_email?: string | null;
   guest_phone?: string | null;
+  guest_country?: string | null;
   special_requests?: string | null;
 }
 
@@ -56,6 +57,7 @@ export interface BookingResponse {
   guest_name: string | null;
   guest_email: string | null;
   guest_phone: string | null;
+  guest_country: string | null;
   special_requests: string | null;
   updated_at: string;
 }
