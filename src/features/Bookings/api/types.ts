@@ -35,6 +35,7 @@ export interface BookingCreate {
   property_id: string;
   start_date: string; // YYYY-MM-DD
   end_date: string; // YYYY-MM-DD
+  num_guests?: number;
   guest_name?: string | null;
   guest_email?: string | null;
   guest_phone?: string | null;

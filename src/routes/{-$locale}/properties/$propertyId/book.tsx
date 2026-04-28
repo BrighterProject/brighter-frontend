@@ -6,7 +6,7 @@ import { BookingForm } from "@/features/Bookings/components/booking-form";
 
 function BookPropertyPage() {
   const { propertyId } = Route.useParams();
-  const { checkIn, checkOut } = Route.useSearch();
+  const { checkIn, checkOut, adults, children } = Route.useSearch();
   const { data: property, isLoading, isError } = useProperty(propertyId);
 
   if (isLoading) {
@@ -27,7 +27,7 @@ function BookPropertyPage() {
     );
   }
 
-  return <BookingForm property={property} checkIn={checkIn} checkOut={checkOut} />;
+  return <BookingForm property={property} checkIn={checkIn} checkOut={checkOut} adults={adults} children={children} />;
 }
 
 export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")({
@@ -35,6 +35,8 @@ export const Route = createFileRoute("/{-$locale}/properties/$propertyId/book")(
   validateSearch: (search: Record<string, unknown>) => ({
     checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
     checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
+    adults: typeof search.adults === "number" ? search.adults : undefined,
+    children: typeof search.children === "number" ? search.children : undefined,
   }),
   beforeLoad: async ({ location, params, search }) => {
     if (typeof window === "undefined") return;

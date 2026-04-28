@@ -235,9 +235,11 @@ interface PropertyDetailProps {
   property: PropertyResponse;
   checkIn?: string;
   checkOut?: string;
+  adults?: number;
+  children?: number;
 }
 
-export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initCheckOut }: PropertyDetailProps) {
+export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initCheckOut, adults, children }: PropertyDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [dateRange, setDateRange] = useState({
     checkIn: parseDateParam(initCheckIn),
@@ -284,6 +286,8 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
       search: {
         checkIn: isoDate(dateRange.checkIn),
         checkOut: isoDate(dateRange.checkOut),
+        adults: adults ?? undefined,
+        children: children ?? undefined,
       } as any,
     });
   };

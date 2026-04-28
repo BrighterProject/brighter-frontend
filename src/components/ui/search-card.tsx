@@ -28,7 +28,11 @@ function formatDateShort(iso: string | undefined): string {
   return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-export function SearchCard({ content, defaultValues, variant = "default" }: SearchCardProps) {
+export function SearchCard({
+  content,
+  defaultValues,
+  variant = "default",
+}: SearchCardProps) {
   const isCompact = variant === "compact";
   const { navigate } = useSearchParams();
 
@@ -39,7 +43,8 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
   const [checkOut, setCheckOut] = useState<string | undefined>(
     defaultValues?.checkOut,
   );
-  const [adults] = useState(defaultValues?.adults ?? 1);
+  const [adults, setAdults] = useState(defaultValues?.adults ?? 1);
+  const [children, setChildren] = useState(defaultValues?.children ?? 0);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarError, setCalendarError] = useState("");
   const [mobileExpanded, setMobileExpanded] = useState(false);
@@ -76,6 +81,7 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
       checkIn,
       checkOut,
       adults: adults > 1 ? adults : undefined,
+      children: children > 0 ? children : undefined,
     });
     setCalendarOpen(false);
     setMobileExpanded(false);
@@ -92,7 +98,10 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
 
   if (isCompact) {
     const dateSection = (fullWidth: boolean) => (
-      <div className={`relative ${fullWidth ? "w-full" : "w-48 shrink-0"}`} ref={calendarRef}>
+      <div
+        className={`relative ${fullWidth ? "w-full" : "w-48 shrink-0"}`}
+        ref={calendarRef}
+      >
         <button
           type="button"
           onClick={() => setCalendarOpen((o) => !o)}
@@ -182,7 +191,13 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
 
               {dateSection(true)}
 
-              <GuestsSelect compact />
+              <GuestsSelect
+                compact
+                adults={adults}
+                children={children}
+                onAdultsChange={setAdults}
+                onChildrenChange={setChildren}
+              />
 
               <Button size="sm" onClick={handleSearch} className="h-10 w-full">
                 {content.button}
@@ -211,7 +226,11 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
             <GuestsSelect compact />
           </div>
 
-          <Button size="sm" onClick={handleSearch} className="h-10 shrink-0 px-5">
+          <Button
+            size="sm"
+            onClick={handleSearch}
+            className="h-10 shrink-0 px-5"
+          >
             {content.button}
           </Button>
         </div>
@@ -286,13 +305,23 @@ export function SearchCard({ content, defaultValues, variant = "default" }: Sear
 
         {/* Guests — hidden on mobile */}
         <div className="hidden md:col-span-2 md:block">
-          <GuestsSelect />
+          <GuestsSelect
+            adults={adults}
+            children={children}
+            onAdultsChange={setAdults}
+            onChildrenChange={setChildren}
+          />
         </div>
       </div>
 
       {/* Guests — mobile only */}
       <div className="md:hidden">
-        <GuestsSelect />
+        <GuestsSelect
+          adults={adults}
+          children={children}
+          onAdultsChange={setAdults}
+          onChildrenChange={setChildren}
+        />
       </div>
 
       <Button

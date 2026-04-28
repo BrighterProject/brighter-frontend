@@ -1,13 +1,6 @@
 import { useIntlayer } from "react-intlayer";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  X,
-  Calendar,
-  CreditCard,
-  FileText,
-  Hash,
-  ExternalLink,
-} from "lucide-react";
+import { X, Calendar, CreditCard, Hash, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type {
@@ -155,7 +148,7 @@ export function BookingDetailsSheet({
             {/* Status header */}
             <div
               className={cn(
-                "relative shrink-0 bg-gradient-to-br px-6 pb-8 pt-6",
+                "relative shrink-0 bg-linear-to-br px-6 pb-8 pt-6",
                 status
                   ? STATUS_GRADIENT[status]
                   : "from-slate-400 to-slate-300",
@@ -213,7 +206,8 @@ export function BookingDetailsSheet({
                   <p className="text-base font-medium opacity-80">
                     → {fmtDate(booking.end_date)}
                     <span className="ml-2 text-sm opacity-60">
-                      ({durationNights}{c.details.nightsShort})
+                      ({durationNights}
+                      {c.details.nightsShort})
                     </span>
                   </p>
                 </div>
@@ -245,8 +239,7 @@ export function BookingDetailsSheet({
               >
                 <Row label={c.details.rate as unknown as string}>
                   {Number(booking.price_per_night).toFixed(2)}{" "}
-                  {booking.currency}
-                  {" "}{c.details.perNight}
+                  {booking.currency} {c.details.perNight}
                 </Row>
                 <Row label={c.total as unknown as string}>
                   <span className="text-base font-bold">
@@ -254,18 +247,6 @@ export function BookingDetailsSheet({
                   </span>
                 </Row>
               </Section>
-
-              {/* Notes */}
-              {booking.notes && (
-                <Section
-                  icon={FileText}
-                  title={c.details.notes as unknown as string}
-                >
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {booking.notes}
-                  </p>
-                </Section>
-              )}
 
               {/* References */}
               <Section

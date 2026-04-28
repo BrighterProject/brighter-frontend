@@ -1,29 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useIntlayer, useLocaleStorage } from "react-intlayer";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  useCreateBooking,
-  useCreateCheckout,
-} from "../api/hooks";
+import { useCreateBooking, useCreateCheckout } from "../api/hooks";
 import {
   type PropertyResponse,
   resolveTranslation,
 } from "@/features/Properties/api/types";
 import { isoDate, parseDateParam } from "@/components/ui/date-range-picker";
+import { useMe } from "@/features/Auth/api/hooks";
+
+const COUNTRY_CODES = [
+  "AF", "AL", "DZ", "AD", "AO", "AR", "AM", "AU", "AT", "AZ", "BH", "BD",
+  "BY", "BE", "BA", "BR", "BG", "KH", "CA", "CL", "CN", "CO", "HR", "CY",
+  "CZ", "DK", "EG", "EE", "ET", "FI", "FR", "GE", "DE", "GH", "GR", "HU",
+  "IS", "IN", "ID", "IR", "IQ", "IE", "IL", "IT", "JP", "JO", "KZ", "KE",
+  "XK", "KW", "LV", "LB", "LY", "LI", "LT", "LU", "MY", "MT", "MX", "MD",
+  "MC", "ME", "MA", "NL", "NZ", "NG", "MK", "NO", "PK", "PS", "PH", "PL",
+  "PT", "QA", "RO", "RU", "SA", "RS", "SG", "SK", "SI", "ZA", "KR", "ES",
+  "SE", "CH", "SY", "TW", "TH", "TN", "TR", "UA", "AE", "GB", "US", "UZ",
+  "VN",
+];
 
 interface BookingFormProps {
   property: PropertyResponse;
   checkIn?: string;
   checkOut?: string;
+  adults?: number;
+  children?: number;
 }
 
 interface GuestInfo {
   fullName: string;
   email: string;
   phone: string;
+  country: string;
   specialRequests: string;
 }
 
@@ -31,6 +44,7 @@ const EMPTY_GUEST: GuestInfo = {
   fullName: "",
   email: "",
   phone: "",
+  country: "",
   specialRequests: "",
 };
 
@@ -42,18 +56,31 @@ function validatePhone(v: string): boolean {
   return /^\+?[\d\s\-().]{6,20}$/.test(v.trim());
 }
 
-export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOutParam }: BookingFormProps) {
+export function BookingForm({
+  property,
+  checkIn: checkInParam,
+  checkOut: checkOutParam,
+  adults = 1,
+  children = 0,
+}: BookingFormProps) {
   const c = useIntlayer("booking-form");
   const navigate = useNavigate();
   const { getLocale } = useLocaleStorage();
+  const locale = getLocale();
 
+  const { data: me } = useMe();
   const createBooking = useCreateBooking();
-  const createCheckout = useCreateCheckout(getLocale());
-
+  const createCheckout = useCreateCheckout(locale);
   const propertyName =
-    resolveTranslation(property.translations, getLocale())?.name ?? "Untitled";
+    resolveTranslation(property.translations, locale)?.name ?? "Untitled";
 
-  // Dates come from route search params — set on the property detail page
+  const countryOptions = (() => {
+    const dn = new Intl.DisplayNames([locale], { type: "region" });
+    return COUNTRY_CODES
+      .map((code) => ({ code, name: dn.of(code) ?? code }))
+      .sort((a, b) => a.name.localeCompare(b.name, locale));
+  })();
+
   const checkIn = parseDateParam(checkInParam);
   const checkOut = parseDateParam(checkOutParam);
 
@@ -63,13 +90,22 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
       : 0;
 
   const totalPrice =
-    nights > 0
-      ? (Number(property.price_per_night) * nights).toFixed(2)
-      : null;
+    nights > 0 ? (Number(property.price_per_night) * nights).toFixed(2) : null;
+
+  const numGuests = adults + children;
 
   const [guest, setGuest] = useState<GuestInfo>(EMPTY_GUEST);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<GuestInfo>>({});
+
+  useEffect(() => {
+    if (!me) return;
+    setGuest((prev) => ({
+      ...prev,
+      fullName: prev.fullName || me.full_name || "",
+      email: prev.email || me.email || "",
+    }));
+  }, [me]);
 
   const setField = <K extends keyof GuestInfo>(key: K, value: string) => {
     setGuest((prev) => ({ ...prev, [key]: value }));
@@ -82,8 +118,12 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
       errs.fullName = c.errors.fullNameRequired.value as string;
     if (!validateEmail(guest.email))
       errs.email = c.errors.emailInvalid.value as string;
-    if (guest.phone.trim() && !validatePhone(guest.phone))
+    if (!guest.phone.trim())
+      errs.phone = c.errors.phoneRequired.value as string;
+    else if (!validatePhone(guest.phone))
       errs.phone = c.errors.phoneInvalid.value as string;
+    if (!guest.country)
+      errs.country = c.errors.countryRequired.value as string;
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -104,9 +144,10 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
         property_id: property.id,
         start_date: isoDate(checkIn),
         end_date: isoDate(checkOut),
+        num_guests: numGuests,
         guest_name: guest.fullName.trim(),
         guest_email: guest.email.trim(),
-        guest_phone: guest.phone.trim() || null,
+        guest_phone: guest.phone.trim(),
         special_requests: guest.specialRequests.trim() || null,
       });
     } catch (err: any) {
@@ -136,16 +177,26 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
 
   const formatDate = (d: Date | null) =>
     d
-      ? d.toLocaleDateString(getLocale(), {
+      ? d.toLocaleDateString(locale, {
           weekday: "short",
           day: "numeric",
           month: "short",
         })
       : "—";
 
+  const guestsLabel = (() => {
+    const adultStr = `${adults} ${adults === 1 ? (c.labels.adult.value as string) : (c.labels.adults.value as string)}`;
+    if (children === 0) return adultStr;
+    const childStr = `${children} ${children === 1 ? (c.labels.child.value as string) : (c.labels.children.value as string)}`;
+    return `${adultStr}, ${childStr}`;
+  })();
+
+  const inputClass =
+    "h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring";
+
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() =>
@@ -164,7 +215,6 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
           {c.title} <span className="text-primary">{propertyName}</span>
         </h1>
 
-        {/* No dates guard */}
         {(!checkIn || !checkOut) && (
           <div className="mb-6 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {c.errors.noDates}
@@ -173,9 +223,8 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-8 lg:grid-cols-3">
-            {/* Left: guest info + notes */}
+            {/* Left: guest info */}
             <div className="space-y-6 lg:col-span-2">
-              {/* Guest information */}
               <div className="rounded-2xl border bg-card p-6 shadow-sm">
                 <h2 className="mb-5 font-display text-base font-semibold text-foreground">
                   {c.sections.guestInfo}
@@ -193,7 +242,7 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                       value={guest.fullName}
                       onChange={(e) => setField("fullName", e.target.value)}
                       placeholder={c.form.fullName.placeholder.value as string}
-                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                      className={inputClass}
                       required
                     />
                     {fieldErrors.fullName && (
@@ -214,7 +263,7 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                       value={guest.email}
                       onChange={(e) => setField("email", e.target.value)}
                       placeholder={c.form.email.placeholder.value as string}
-                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                      className={inputClass}
                       required
                     />
                     {fieldErrors.email && (
@@ -227,18 +276,48 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                   {/* Phone */}
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-foreground">
-                      {c.form.phone.label}
+                      {c.form.phone.label}{" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="tel"
                       value={guest.phone}
                       onChange={(e) => setField("phone", e.target.value)}
                       placeholder={c.form.phone.placeholder.value as string}
-                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                      className={inputClass}
+                      required
                     />
                     {fieldErrors.phone && (
                       <p className="mt-1 text-xs text-destructive">
                         {fieldErrors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Country */}
+                  <div className="sm:col-span-2">
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      {c.form.country.label}{" "}
+                      <span className="text-destructive">*</span>
+                    </label>
+                    <select
+                      value={guest.country}
+                      onChange={(e) => setField("country", e.target.value)}
+                      className={`${inputClass} cursor-pointer`}
+                      required
+                    >
+                      <option value="" disabled>
+                        {c.form.country.placeholder.value as string}
+                      </option>
+                      {countryOptions.map(({ code, name }) => (
+                        <option key={code} value={code}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldErrors.country && (
+                      <p className="mt-1 text-xs text-destructive">
+                        {fieldErrors.country}
                       </p>
                     )}
                   </div>
@@ -270,14 +349,52 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
               )}
             </div>
 
-            {/* Summary sidebar */}
+            {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
-                <div>
-                  <p className="truncate font-display font-semibold text-foreground">
+              <div className="sticky top-20 space-y-4">
+                {/* Stay details card */}
+                <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                  <h3 className="mb-4 font-display text-base font-semibold text-foreground">
+                    {c.sections.stayDetails}
+                  </h3>
+                  <p className="mb-3 truncate text-sm font-medium text-foreground">
                     {propertyName}
                   </p>
-                  <div className="mt-1 flex items-baseline gap-1">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>{c.labels.checkIn}</span>
+                      <div className="text-right font-medium text-foreground">
+                        <div>{formatDate(checkIn)}</div>
+                        {property.check_in_time && (
+                          <div className="text-xs text-muted-foreground">
+                            {property.check_in_time}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>{c.labels.checkOut}</span>
+                      <div className="text-right font-medium text-foreground">
+                        <div>{formatDate(checkOut)}</div>
+                        {property.check_out_time && (
+                          <div className="text-xs text-muted-foreground">
+                            {property.check_out_time}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>{c.labels.guests}</span>
+                      <span className="font-medium text-foreground">
+                        {guestsLabel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing card */}
+                <div className="rounded-2xl border bg-card p-6 shadow-sm">
+                  <div className="mb-4 flex items-baseline gap-1">
                     <span className="font-display text-2xl font-bold text-foreground">
                       {Number(property.price_per_night).toFixed(0)}
                     </span>
@@ -285,16 +402,16 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                       {property.currency} {c.summary.perNight}
                     </span>
                   </div>
+
                   {(property.min_nights > 1 || property.max_nights > 0) && (
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mb-3 text-xs text-muted-foreground">
                       {property.min_nights > 1 && (
                         <>
                           {c.summary.minLabel} {property.min_nights}{" "}
                           {c.labels.nights}
                         </>
                       )}
-                      {property.min_nights > 1 && property.max_nights > 0 &&
-                        " · "}
+                      {property.min_nights > 1 && property.max_nights > 0 && " · "}
                       {property.max_nights > 0 && (
                         <>
                           {c.summary.maxLabel} {property.max_nights}{" "}
@@ -303,57 +420,41 @@ export function BookingForm({ property, checkIn: checkInParam, checkOut: checkOu
                       )}
                     </p>
                   )}
-                </div>
 
-                <hr className="border-border" />
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>{c.labels.checkIn}</span>
-                    <span className="font-medium text-foreground">
-                      {formatDate(checkIn)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>{c.labels.checkOut}</span>
-                    <span className="font-medium text-foreground">
-                      {formatDate(checkOut)}
-                    </span>
-                  </div>
                   {nights > 0 && (
-                    <>
+                    <div className="space-y-2 text-sm">
                       <div className="text-muted-foreground">
                         {nights} {c.labels.nights} ×{" "}
                         {Number(property.price_per_night).toFixed(0)}{" "}
                         {property.currency}
                       </div>
-                      <div className="flex justify-between border-t pt-1 text-base font-semibold text-foreground">
+                      <div className="flex justify-between border-t pt-2 text-base font-semibold text-foreground">
                         <span>{c.summary.total}</span>
                         <span>
                           {totalPrice} {property.currency}
                         </span>
                       </div>
-                    </>
+                    </div>
                   )}
-                </div>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full gap-2 rounded-xl shadow-lg shadow-primary/20"
-                  disabled={
-                    createBooking.isPending ||
-                    createCheckout.isPending ||
-                    !checkIn ||
-                    !checkOut
-                  }
-                >
-                  {createBooking.isPending
-                    ? c.submit.submitting
-                    : createCheckout.isPending
-                      ? c.submit.redirecting
-                      : c.submit.idle}
-                </Button>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="mt-5 w-full gap-2 rounded-xl shadow-lg shadow-primary/20"
+                    disabled={
+                      createBooking.isPending ||
+                      createCheckout.isPending ||
+                      !checkIn ||
+                      !checkOut
+                    }
+                  >
+                    {createBooking.isPending
+                      ? c.submit.submitting
+                      : createCheckout.isPending
+                        ? c.submit.redirecting
+                        : c.submit.idle}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

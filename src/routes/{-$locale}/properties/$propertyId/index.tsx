@@ -34,6 +34,8 @@ function PropertyDetailPage() {
       property={property}
       checkIn={search.checkIn}
       checkOut={search.checkOut}
+      adults={search.adults}
+      children={search.children}
     />
   );
 }
@@ -44,6 +46,7 @@ export const Route = createFileRoute("/{-$locale}/properties/$propertyId/")({
     checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
     checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
     adults: typeof search.adults === "number" ? search.adults : undefined,
+    children: typeof search.children === "number" ? search.children : undefined,
   }),
   head: ({ params }) => {
     const { locale } = params;

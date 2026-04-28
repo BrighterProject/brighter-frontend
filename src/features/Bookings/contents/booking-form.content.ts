@@ -17,7 +17,7 @@ const bookingFormContent = {
     title: t({ en: "Book", bg: "Резервирай" }),
     sections: {
       guestInfo: t({ en: "Guest information", bg: "Информация за госта" }),
-      notes: t({ en: "Notes (optional)", bg: "Бележки (незадължително)" }),
+      stayDetails: t({ en: "Stay details", bg: "Детайли за престоя" }),
     },
     form: {
       fullName: {
@@ -31,6 +31,10 @@ const bookingFormContent = {
       phone: {
         label: t({ en: "Phone number", bg: "Телефонен номер" }),
         placeholder: t({ en: "+1 555 000 0000", bg: "+359 88 000 0000" }),
+      },
+      country: {
+        label: t({ en: "Country / Region", bg: "Държава / Регион" }),
+        placeholder: t({ en: "Select country", bg: "Изберете държава" }),
       },
       specialRequests: {
         label: t({ en: "Special requests", bg: "Специални изисквания" }),
@@ -53,9 +57,17 @@ const bookingFormContent = {
         en: "Please enter a valid email address.",
         bg: "Моля въведете валиден имейл адрес.",
       }),
+      phoneRequired: t({
+        en: "Phone number is required.",
+        bg: "Телефонният номер е задължителен.",
+      }),
       phoneInvalid: t({
         en: "Please enter a valid phone number.",
         bg: "Моля въведете валиден телефонен номер.",
+      }),
+      countryRequired: t({
+        en: "Please select a country.",
+        bg: "Моля изберете държава.",
       }),
       conflict: t({
         en: "These dates are no longer available. Please choose different dates.",
@@ -74,6 +86,11 @@ const bookingFormContent = {
       checkIn: t({ en: "Check-in", bg: "Настаняване" }),
       checkOut: t({ en: "Check-out", bg: "Напускане" }),
       nights: t({ en: "nights", bg: "нощ." }),
+      guests: t({ en: "Guests", bg: "Гости" }),
+      adult: t({ en: "adult", bg: "възрастен" }),
+      adults: t({ en: "adults", bg: "възрастни" }),
+      child: t({ en: "child", bg: "дете" }),
+      children: t({ en: "children", bg: "деца" }),
     },
     summary: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
