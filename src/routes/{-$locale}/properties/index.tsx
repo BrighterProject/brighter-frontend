@@ -8,8 +8,8 @@ export const Route = createFileRoute("/{-$locale}/properties/")({
     city: typeof search.city === "string" ? search.city : undefined,
     checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
     checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
-    adults: typeof search.adults === "number" ? search.adults : undefined,
-    children: typeof search.children === "number" ? search.children : undefined,
+    adults: search.adults !== undefined ? Number(search.adults) || undefined : undefined,
+    children: search.children !== undefined ? Number(search.children) || undefined : undefined,
   }),
   head: ({ params }) => {
     const { locale } = params;

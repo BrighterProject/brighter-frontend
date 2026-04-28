@@ -70,6 +70,7 @@ export function PropertiesList() {
   const searchParams = useSearch({ strict: false }) as SearchParams;
   const urlCity = searchParams.city ?? "";
   const urlAdults = searchParams.adults;
+  const urlChildren = searchParams.children;
   const urlCheckIn = searchParams.checkIn;
   const urlCheckOut = searchParams.checkOut;
 
@@ -84,7 +85,9 @@ export function PropertiesList() {
 
   const apiParams = buildParams(queryFilters, {
     city: urlCity,
-    min_guests: urlAdults,
+    min_guests: urlAdults !== undefined || urlChildren !== undefined
+      ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
+      : undefined,
     checkIn: urlCheckIn,
     checkOut: urlCheckOut,
     lang: locale,

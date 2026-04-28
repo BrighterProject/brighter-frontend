@@ -223,7 +223,13 @@ export function SearchCard({
           {dateSection(false)}
 
           <div className="w-44 shrink-0">
-            <GuestsSelect compact />
+            <GuestsSelect
+              compact
+              adults={adults}
+              children={children}
+              onAdultsChange={setAdults}
+              onChildrenChange={setChildren}
+            />
           </div>
 
           <Button
