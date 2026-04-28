@@ -110,7 +110,7 @@ export function GuestsSelect({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-lg border border-border bg-background p-4 shadow-md">
+        <div className="absolute left-0 top-full z-50 mt-1 min-w-52 w-full rounded-lg border border-border bg-background p-4 shadow-md">
           <Counter
             label={content.adults}
             value={adults}

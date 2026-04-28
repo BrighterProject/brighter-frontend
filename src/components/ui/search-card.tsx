@@ -222,7 +222,7 @@ export function SearchCard({
 
           {dateSection(false)}
 
-          <div className="shrink-0">
+          <div className="w-44 shrink-0">
             <GuestsSelect compact />
           </div>
 

@@ -470,7 +470,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                 <h2 className="font-display text-lg font-semibold text-foreground">
                   {c.sections.about}
                 </h2>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
+                <p className="mt-2 whitespace-pre-wrap leading-relaxed text-muted-foreground">
                   {description}
                 </p>
               </div>
