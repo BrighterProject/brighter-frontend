@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateBooking, useCreateCheckout } from "../api/hooks";
+import { PriceBreakdown } from "./price-breakdown";
 import {
   type PropertyResponse,
   resolveTranslation,
@@ -88,9 +89,6 @@ export function BookingForm({
     checkIn && checkOut
       ? Math.round((checkOut.getTime() - checkIn.getTime()) / 86_400_000)
       : 0;
-
-  const totalPrice =
-    nights > 0 ? (Number(property.price_per_night) * nights).toFixed(2) : null;
 
   const numGuests = adults + children;
 
@@ -422,20 +420,14 @@ export function BookingForm({
                     </p>
                   )}
 
-                  {nights > 0 && (
-                    <div className="space-y-2 text-sm">
-                      <div className="text-muted-foreground">
-                        {nights} {c.labels.nights} ×{" "}
-                        {Number(property.price_per_night).toFixed(0)}{" "}
-                        {property.currency}
-                      </div>
-                      <div className="flex justify-between border-t pt-2 text-base font-semibold text-foreground">
-                        <span>{c.summary.total}</span>
-                        <span>
-                          {totalPrice} {property.currency}
-                        </span>
-                      </div>
-                    </div>
+                  {nights > 0 && checkIn && checkOut && (
+                    <PriceBreakdown
+                      propertyId={property.id}
+                      startDate={isoDate(checkIn)}
+                      endDate={isoDate(checkOut)}
+                      basePricePerNight={property.price_per_night}
+                      currency={property.currency}
+                    />
                   )}
 
                   <Button

@@ -145,3 +145,38 @@ export interface PropertyUnavailabilityResponse {
   end_date: string;
   reason?: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// Pricing
+// ---------------------------------------------------------------------------
+
+export interface WeekdayPriceOut {
+  id: string;
+  property_id: string;
+  weekday: number;
+  price: string;
+}
+
+export interface DatePriceOverride {
+  id: string;
+  property_id: string;
+  start_date: string;
+  end_date: string;
+  price: string;
+  label?: string | null;
+}
+
+export type PriceSource = "base" | "weekday" | "date_override";
+
+export interface ResolvedNightPrice {
+  date: string;
+  price: string;
+  source: PriceSource;
+  label?: string | null;
+}
+
+export interface PriceResolutionResponse {
+  currency: string;
+  nights: ResolvedNightPrice[];
+  total: string;
+}

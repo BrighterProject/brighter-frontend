@@ -23,6 +23,7 @@ import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$l
 import { Route as Char123LocaleChar125AuthCheckEmailRouteImport } from './routes/{-$locale}/auth/check-email'
 import { Route as Char123LocaleChar125PropertiesPropertyIdIndexRouteImport } from './routes/{-$locale}/properties/$propertyId/index'
 import { Route as Char123LocaleChar125PropertiesPropertyIdBookRouteImport } from './routes/{-$locale}/properties/$propertyId/book'
+import { Route as Char123LocaleChar125OwnerPropertiesPropertyIdPricingRouteImport } from './routes/{-$locale}/owner/properties/$propertyId/pricing'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -107,6 +108,12 @@ const Char123LocaleChar125PropertiesPropertyIdBookRoute =
     path: '/properties/$propertyId/book',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute =
+  Char123LocaleChar125OwnerPropertiesPropertyIdPricingRouteImport.update({
+    id: '/owner/properties/$propertyId/pricing',
+    path: '/owner/properties/$propertyId/pricing',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
@@ -123,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
+  '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRoutesByTo {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
@@ -138,6 +146,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/properties': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
+  '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,6 +164,7 @@ export interface FileRoutesById {
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
+  '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId/'
+    | '/{-$locale}/owner/properties/$propertyId/pricing'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}/$'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/properties'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId'
+    | '/{-$locale}/owner/properties/$propertyId/pricing'
   id:
     | '__root__'
     | '/{-$locale}'
@@ -204,6 +216,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId/'
+    | '/{-$locale}/owner/properties/$propertyId/pricing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/owner/properties/$propertyId/pricing': {
+      id: '/{-$locale}/owner/properties/$propertyId/pricing'
+      path: '/owner/properties/$propertyId/pricing'
+      fullPath: '/{-$locale}/owner/properties/$propertyId/pricing'
+      preLoaderRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
   }
 }
 
@@ -327,6 +347,7 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125PropertiesIndexRoute: typeof Char123LocaleChar125PropertiesIndexRoute
   Char123LocaleChar125PropertiesPropertyIdBookRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   Char123LocaleChar125PropertiesPropertyIdIndexRoute: typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
+  Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
@@ -350,6 +371,8 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
       Char123LocaleChar125PropertiesPropertyIdBookRoute,
     Char123LocaleChar125PropertiesPropertyIdIndexRoute:
       Char123LocaleChar125PropertiesPropertyIdIndexRoute,
+    Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute:
+      Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute,
   }
 
 const Char123LocaleChar125RouteRouteWithChildren =

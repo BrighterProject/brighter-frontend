@@ -1,9 +1,12 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
+  DatePriceOverride,
+  PriceResolutionResponse,
   PropertyListItem,
   PropertyResponse,
   PropertyUnavailabilityResponse,
+  WeekdayPriceOut,
 } from "./types";
 
 const PAGE_SIZE = 20;
@@ -146,3 +149,144 @@ export const usePropertyUnavailabilities = (propertyId: string) => {
 //     },
 //   });
 // };
+
+// ---------------------------------------------------------------------------
+// Pricing — public resolve
+// ---------------------------------------------------------------------------
+
+export const usePriceResolution = (
+  propertyId: string,
+  startDate?: string,
+  endDate?: string,
+) => {
+  return useQuery({
+    queryKey: ["properties", propertyId, "pricing", "resolve", startDate, endDate],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PriceResolutionResponse>(
+        `/properties/${propertyId}/pricing/resolve`,
+        { params: { start_date: startDate, end_date: endDate } },
+      );
+      return data;
+    },
+    enabled: !!propertyId && !!startDate && !!endDate,
+    staleTime: 30_000,
+  });
+};
+
+// ---------------------------------------------------------------------------
+// Pricing — owner weekday prices
+// ---------------------------------------------------------------------------
+
+export const useWeekdayPrices = (propertyId: string) => {
+  return useQuery({
+    queryKey: ["properties", propertyId, "pricing", "weekdays"],
+    queryFn: async () => {
+      const { data } = await apiClient.get<WeekdayPriceOut[]>(
+        `/properties/${propertyId}/pricing/weekdays`,
+      );
+      return data;
+    },
+    enabled: !!propertyId,
+  });
+};
+
+export const useUpsertWeekdayPrices = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (rules: { weekday: number; price: string }[]) => {
+      const { data } = await apiClient.put<WeekdayPriceOut[]>(
+        `/properties/${propertyId}/pricing/weekdays`,
+        rules,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["properties", propertyId, "pricing"],
+      });
+    },
+  });
+};
+
+// ---------------------------------------------------------------------------
+// Pricing — owner date overrides
+// ---------------------------------------------------------------------------
+
+export const useDateOverrides = (propertyId: string) => {
+  return useQuery({
+    queryKey: ["properties", propertyId, "pricing", "overrides"],
+    queryFn: async () => {
+      const { data } = await apiClient.get<DatePriceOverride[]>(
+        `/properties/${propertyId}/pricing/overrides`,
+      );
+      return data;
+    },
+    enabled: !!propertyId,
+  });
+};
+
+export const useCreateDateOverride = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: {
+      start_date: string;
+      end_date: string;
+      price: string;
+      label?: string | null;
+    }) => {
+      const { data } = await apiClient.post<DatePriceOverride>(
+        `/properties/${propertyId}/pricing/overrides`,
+        payload,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["properties", propertyId, "pricing"],
+      });
+    },
+  });
+};
+
+export const useUpdateDateOverride = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      overrideId,
+      ...payload
+    }: {
+      overrideId: string;
+      start_date?: string;
+      end_date?: string;
+      price?: string;
+      label?: string | null;
+    }) => {
+      const { data } = await apiClient.patch<DatePriceOverride>(
+        `/properties/${propertyId}/pricing/overrides/${overrideId}`,
+        payload,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["properties", propertyId, "pricing"],
+      });
+    },
+  });
+};
+
+export const useDeleteDateOverride = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (overrideId: string) => {
+      await apiClient.delete(
+        `/properties/${propertyId}/pricing/overrides/${overrideId}`,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["properties", propertyId, "pricing"],
+      });
+    },
+  });
+};
