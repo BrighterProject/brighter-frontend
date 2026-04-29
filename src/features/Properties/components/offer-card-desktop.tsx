@@ -115,18 +115,26 @@ export function OfferCardDesktop({ data }: Props) {
 
           <div className="flex flex-col items-end justify-between">
             <div className="flex flex-col items-end gap-0.5">
-              <div className="flex items-center gap-1">
-                <span className="text-sm leading-normal tracking-tight text-foreground">
-                  {data.rating}
+              {data.isNew ? (
+                <span className="inline-flex items-center rounded-sm bg-chart-4 px-2 py-1 text-xs font-medium text-white">
+                  New
                 </span>
-                <span className="flex size-8 items-center justify-center rounded-sm bg-primary text-sm text-primary-foreground">
-                  {data.ratingScore}
-                </span>
-              </div>
-              {data.totalReviews !== undefined && (
-                <span className="text-[10px] text-muted-foreground">
-                  {data.totalReviews} reviews
-                </span>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm leading-normal tracking-tight text-foreground">
+                      {data.rating}
+                    </span>
+                    <span className="flex size-8 items-center justify-center rounded-sm bg-primary text-sm text-primary-foreground">
+                      {data.ratingScore}
+                    </span>
+                  </div>
+                  {data.totalReviews !== undefined && (
+                    <span className="text-[10px] text-muted-foreground">
+                      {data.totalReviews} reviews
+                    </span>
+                  )}
+                </>
               )}
             </div>
 

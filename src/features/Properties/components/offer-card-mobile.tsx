@@ -34,16 +34,24 @@ export function OfferCardMobile({ data }: Props) {
         </p>
 
         <div className="flex items-center gap-1">
-          <span className="flex size-5 items-center justify-center rounded-sm bg-primary text-[10px] text-primary-foreground">
-            {data.ratingScore}
-          </span>
-          <span className="text-xs leading-normal tracking-wide text-foreground">
-            {data.rating}
-          </span>
-          {data.totalReviews !== undefined && (
-            <span className="text-[10px] leading-normal text-muted-foreground">
-              ({data.totalReviews})
+          {data.isNew ? (
+            <span className="inline-flex items-center rounded-sm bg-chart-4 px-1.5 py-0.5 text-[10px] font-medium text-white">
+              New
             </span>
+          ) : (
+            <>
+              <span className="flex size-5 items-center justify-center rounded-sm bg-primary text-[10px] text-primary-foreground">
+                {data.ratingScore}
+              </span>
+              <span className="text-xs leading-normal tracking-wide text-foreground">
+                {data.rating}
+              </span>
+              {data.totalReviews !== undefined && (
+                <span className="text-[10px] leading-normal text-muted-foreground">
+                  ({data.totalReviews})
+                </span>
+              )}
+            </>
           )}
         </div>
 

@@ -47,6 +47,7 @@ function propertyToOfferData(
     bedrooms: property.bedrooms,
     maxGuests: property.max_guests,
     totalReviews: property.total_reviews,
+    isNew: property.total_reviews === 0,
     rating: getRatingLabel(rating, c),
     ratingScore: rating.toFixed(1),
     price: `${Number(property.price_per_night).toFixed(0)} ${property.currency}`,

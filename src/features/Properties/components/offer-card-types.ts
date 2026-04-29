@@ -10,6 +10,7 @@ export interface OfferCardData {
   totalReviews?: number;
   scarcity?: string;
   perk?: string;
+  isNew?: boolean;
   rating: string;
   ratingScore: string;
   priceLabel?: string;
