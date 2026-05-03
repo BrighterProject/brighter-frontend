@@ -27,6 +27,12 @@ const propertiesListContent = {
         label: t({ en: "Destination", bg: "Дестинация" }),
         placeholder: t({ en: "Where are you going?", bg: "Къде отивате?" }),
       },
+      keyword: t({
+        en: "Search by keywords",
+        bg: "Търси по ключови думи",
+      }),
+      dates: t({ en: "Select dates", bg: "Изберете дати" }),
+
       price: {
         label: t({ en: "Your budget (per night)", bg: "Бюджет (на нощувка)" }),
         currency: t({ en: "EUR", bg: "EUR" }),

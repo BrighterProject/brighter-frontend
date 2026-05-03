@@ -32,7 +32,10 @@ function propertyToOfferData(
   property: PropertyListItem,
   c: ReturnType<typeof useIntlayer<"properties-list">>["card"],
   roomsC: ReturnType<typeof useIntlayer<"rooms">>,
-  formatRooms: (rooms: PropertyListItem["rooms"]) => { roomLine: string; bedLine: string },
+  formatRooms: (rooms: PropertyListItem["rooms"]) => {
+    roomLine: string;
+    bedLine: string;
+  },
   onClick: () => void,
 ): OfferCardData {
   const rating = Number(property.rating);
@@ -41,7 +44,8 @@ function propertyToOfferData(
     title: property.name,
     location: property.city,
     description: property.description,
-    roomType: roomsC.propertyTypes[property.property_type as PropertyType].value as string,
+    roomType: roomsC.propertyTypes[property.property_type as PropertyType]
+      .value as string,
     roomDetails: roomLine,
     bedInfo: bedLine,
     bedrooms: property.bedrooms,
@@ -90,9 +94,10 @@ export function PropertiesList() {
     city: urlCity,
     settlement_ekatte: urlSettlementEkatte,
     q: urlQ,
-    min_guests: urlAdults !== undefined || urlChildren !== undefined
-      ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
-      : undefined,
+    min_guests:
+      urlAdults !== undefined || urlChildren !== undefined
+        ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
+        : undefined,
     checkIn: urlCheckIn,
     checkOut: urlCheckOut,
     lang: locale,
@@ -163,7 +168,8 @@ export function PropertiesList() {
 
   const searchCardContent = {
     destination: { value: c.filters.city.placeholder.value as string },
-    dates: { value: "Select dates" },
+    dates: { value: c.filters.dates.value },
+    keyword: { value: c.filters.keyword.value },
     button: c.filters.heading,
   };
 
@@ -290,7 +296,10 @@ export function PropertiesList() {
                 ))}
 
                 {/* Infinite scroll sentinel */}
-                <div ref={sentinelRef} className="py-4 text-center text-sm text-muted-foreground">
+                <div
+                  ref={sentinelRef}
+                  className="py-4 text-center text-sm text-muted-foreground"
+                >
                   {isFetchingNextPage
                     ? c.loadingMore
                     : hasNextPage

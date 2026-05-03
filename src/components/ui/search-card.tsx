@@ -13,7 +13,7 @@ import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 interface SearchCardContent {
   destination: { value: string };
   dates: { value: string };
-  keyword?: { value: string };
+  keyword: { value: string };
   button: React.ReactNode;
 }
 

@@ -28,6 +28,10 @@ const landingContent = {
         bg: "Въведете дестинация или обект",
       }),
       dates: t({ en: "Select dates", bg: "Изберете дати" }),
+      keyword: t({
+        en: "Search by name, location...",
+        bg: "Думи съдържащи се в обявите",
+      }),
       button: t({ en: "Search", bg: "Търсене" }),
     },
     offers: {
