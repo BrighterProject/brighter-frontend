@@ -30,7 +30,7 @@ const landingContent = {
       dates: t({ en: "Select dates", bg: "Изберете дати" }),
       keyword: t({
         en: "Search by name, location...",
-        bg: "Думи съдържащи се в обявите",
+        bg: "Търси по име на плаж, комплекс...",
       }),
       button: t({ en: "Search", bg: "Търсене" }),
     },
