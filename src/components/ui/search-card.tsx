@@ -7,6 +7,7 @@ import {
   parseDateParam,
   isoDate,
 } from "@/components/ui/date-range-picker";
+import { SettlementCombobox } from "@/components/ui/settlement-combobox";
 import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 
 interface SearchCardContent {
@@ -37,6 +38,9 @@ export function SearchCard({
   const { navigate } = useSearchParams();
 
   const [city, setCity] = useState(defaultValues?.city ?? "");
+  const [settlementEkatte, setSettlementEkatte] = useState<string | undefined>(
+    defaultValues?.settlement_ekatte,
+  );
   const [checkIn, setCheckIn] = useState<string | undefined>(
     defaultValues?.checkIn,
   );
@@ -78,6 +82,7 @@ export function SearchCard({
   const handleSearch = () => {
     navigate({
       city: city.trim() || undefined,
+      settlement_ekatte: settlementEkatte,
       checkIn,
       checkOut,
       adults: adults > 1 ? adults : undefined,
@@ -177,15 +182,16 @@ export function SearchCard({
                 <ChevronDown className="size-4 rotate-180" />
               </button>
 
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
+              <div className="relative h-10 w-full">
+                <SettlementCombobox
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  ekatte={settlementEkatte}
+                  onChange={(name, ekatte) => {
+                    setCity(name);
+                    setSettlementEkatte(ekatte);
+                  }}
                   placeholder={content.destination.value as string}
-                  className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="h-10"
                 />
               </div>
 
@@ -208,15 +214,16 @@ export function SearchCard({
 
         {/* Desktop: always visible inline form */}
         <div className="hidden sm:flex flex-wrap items-center gap-2">
-          <div className="relative min-w-40 flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
+          <div className="relative h-10 min-w-40 flex-1">
+            <SettlementCombobox
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              ekatte={settlementEkatte}
+              onChange={(name, ekatte) => {
+                setCity(name);
+                setSettlementEkatte(ekatte);
+              }}
               placeholder={content.destination.value as string}
-              className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className="h-10"
             />
           </div>
 
@@ -247,15 +254,16 @@ export function SearchCard({
   return (
     <div className="relative flex flex-col gap-4 md:rounded-lg md:border md:border-border md:px-6 md:pb-12 md:pt-6 md:shadow-sm">
       {/* Destination */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
+      <div className="relative h-11">
+        <SettlementCombobox
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          ekatte={settlementEkatte}
+          onChange={(name, ekatte) => {
+            setCity(name);
+            setSettlementEkatte(ekatte);
+          }}
           placeholder={content.destination.value as string}
-          className="h-11 w-full rounded-md border border-input bg-background pl-10 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          className="h-11"
         />
       </div>
 

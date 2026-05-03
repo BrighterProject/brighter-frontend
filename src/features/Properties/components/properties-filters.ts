@@ -59,13 +59,17 @@ const POPULAR_FILTER_TO_AMENITY: Record<string, AmenityType> = {
 
 export function buildParams(
   filters: Filters,
-  extra?: { city?: string; min_guests?: number; checkIn?: string; checkOut?: string; lang?: string },
+  extra?: { city?: string; settlement_ekatte?: string; min_guests?: number; checkIn?: string; checkOut?: string; lang?: string },
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {
     status: "active",
   };
 
-  if (extra?.city?.trim()) params.city = extra.city.trim();
+  if (extra?.settlement_ekatte?.trim()) {
+    params.settlement_ekatte = extra.settlement_ekatte.trim();
+  } else if (extra?.city?.trim()) {
+    params.city = extra.city.trim();
+  }
   if (filters.min_price > PRICE_MIN) params.min_price = filters.min_price;
   if (filters.max_price < PRICE_MAX) params.max_price = filters.max_price;
   if (filters.propertyTypes.length > 0)
