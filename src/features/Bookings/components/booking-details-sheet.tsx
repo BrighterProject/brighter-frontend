@@ -241,6 +241,14 @@ export function BookingDetailsSheet({
                   {Number(booking.price_per_night).toFixed(2)}{" "}
                   {booking.currency} {c.details.perNight}
                 </Row>
+                {booking.gap_adjustment_pct != null && booking.gap_adjustment_pct > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Малка пролука (short stay premium {booking.gap_adjustment_pct}%)
+                    </span>
+                    <span>включено</span>
+                  </div>
+                )}
                 <Row label={c.total as unknown as string}>
                   <span className="text-base font-bold">
                     {Number(booking.total_price).toFixed(2)} {booking.currency}

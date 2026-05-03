@@ -60,4 +60,5 @@ export interface BookingResponse {
   guest_country: string | null;
   special_requests: string | null;
   updated_at: string;
+  gap_adjustment_pct?: number;
 }

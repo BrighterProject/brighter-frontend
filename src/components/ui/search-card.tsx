@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, CalendarDays, X, ChevronDown } from "lucide-react";
+import { Search, CalendarDays, X, ChevronDown, TextSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestsSelect } from "@/components/ui/guests-select";
 import {
@@ -13,6 +13,7 @@ import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 interface SearchCardContent {
   destination: { value: string };
   dates: { value: string };
+  keyword?: { value: string };
   button: React.ReactNode;
 }
 
@@ -41,6 +42,7 @@ export function SearchCard({
   const [settlementEkatte, setSettlementEkatte] = useState<string | undefined>(
     defaultValues?.settlement_ekatte,
   );
+  const [keyword, setKeyword] = useState(defaultValues?.q ?? "");
   const [checkIn, setCheckIn] = useState<string | undefined>(
     defaultValues?.checkIn,
   );
@@ -83,6 +85,7 @@ export function SearchCard({
     navigate({
       city: city.trim() || undefined,
       settlement_ekatte: settlementEkatte,
+      q: keyword.trim() || undefined,
       checkIn,
       checkOut,
       adults: adults > 1 ? adults : undefined,
@@ -100,6 +103,28 @@ export function SearchCard({
   ]
     .filter(Boolean)
     .join(" · ");
+
+  const keywordPlaceholder = (content.keyword?.value as string | undefined) ?? "Search by name, location...";
+
+  const keywordInput = (fullWidth: boolean) => (
+    <div className={`relative ${fullWidth ? "w-full" : "min-w-36 flex-1"}`}>
+      <TextSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input
+        type="text"
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        placeholder={keywordPlaceholder}
+        className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+      {keyword && (
+        <X
+          className="absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+          onClick={() => setKeyword("")}
+        />
+      )}
+    </div>
+  );
 
   if (isCompact) {
     const dateSection = (fullWidth: boolean) => (
@@ -195,6 +220,8 @@ export function SearchCard({
                 />
               </div>
 
+              {keywordInput(true)}
+
               {dateSection(true)}
 
               <GuestsSelect
@@ -226,6 +253,8 @@ export function SearchCard({
               className="h-10"
             />
           </div>
+
+          {keywordInput(false)}
 
           {dateSection(false)}
 
@@ -265,6 +294,25 @@ export function SearchCard({
           placeholder={content.destination.value as string}
           className="h-11"
         />
+      </div>
+
+      {/* Keyword search */}
+      <div className="relative h-11">
+        <TextSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder={keywordPlaceholder}
+          className="h-11 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        {keyword && (
+          <X
+            className="absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+            onClick={() => setKeyword("")}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
