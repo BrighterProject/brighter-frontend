@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, CalendarDays, X, ChevronDown } from "lucide-react";
+import { Search, CalendarDays, X, ChevronDown, TextSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestsSelect } from "@/components/ui/guests-select";
 import {
@@ -7,11 +7,13 @@ import {
   parseDateParam,
   isoDate,
 } from "@/components/ui/date-range-picker";
+import { SettlementCombobox } from "@/components/ui/settlement-combobox";
 import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 
 interface SearchCardContent {
   destination: { value: string };
   dates: { value: string };
+  keyword?: { value: string };
   button: React.ReactNode;
 }
 
@@ -37,6 +39,10 @@ export function SearchCard({
   const { navigate } = useSearchParams();
 
   const [city, setCity] = useState(defaultValues?.city ?? "");
+  const [settlementEkatte, setSettlementEkatte] = useState<string | undefined>(
+    defaultValues?.settlement_ekatte,
+  );
+  const [keyword, setKeyword] = useState(defaultValues?.q ?? "");
   const [checkIn, setCheckIn] = useState<string | undefined>(
     defaultValues?.checkIn,
   );
@@ -78,6 +84,8 @@ export function SearchCard({
   const handleSearch = () => {
     navigate({
       city: city.trim() || undefined,
+      settlement_ekatte: settlementEkatte,
+      q: keyword.trim() || undefined,
       checkIn,
       checkOut,
       adults: adults > 1 ? adults : undefined,
@@ -95,6 +103,28 @@ export function SearchCard({
   ]
     .filter(Boolean)
     .join(" · ");
+
+  const keywordPlaceholder = (content.keyword?.value as string | undefined) ?? "Search by name, location...";
+
+  const keywordInput = (fullWidth: boolean) => (
+    <div className={`relative ${fullWidth ? "w-full" : "min-w-36 flex-1"}`}>
+      <TextSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input
+        type="text"
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        placeholder={keywordPlaceholder}
+        className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+      {keyword && (
+        <X
+          className="absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+          onClick={() => setKeyword("")}
+        />
+      )}
+    </div>
+  );
 
   if (isCompact) {
     const dateSection = (fullWidth: boolean) => (
@@ -177,17 +207,20 @@ export function SearchCard({
                 <ChevronDown className="size-4 rotate-180" />
               </button>
 
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
+              <div className="relative h-10 w-full">
+                <SettlementCombobox
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  ekatte={settlementEkatte}
+                  onChange={(name, ekatte) => {
+                    setCity(name);
+                    setSettlementEkatte(ekatte);
+                  }}
                   placeholder={content.destination.value as string}
-                  className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="h-10"
                 />
               </div>
+
+              {keywordInput(true)}
 
               {dateSection(true)}
 
@@ -208,17 +241,20 @@ export function SearchCard({
 
         {/* Desktop: always visible inline form */}
         <div className="hidden sm:flex flex-wrap items-center gap-2">
-          <div className="relative min-w-40 flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
+          <div className="relative h-10 min-w-40 flex-1">
+            <SettlementCombobox
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              ekatte={settlementEkatte}
+              onChange={(name, ekatte) => {
+                setCity(name);
+                setSettlementEkatte(ekatte);
+              }}
               placeholder={content.destination.value as string}
-              className="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className="h-10"
             />
           </div>
+
+          {keywordInput(false)}
 
           {dateSection(false)}
 
@@ -247,16 +283,36 @@ export function SearchCard({
   return (
     <div className="relative flex flex-col gap-4 md:rounded-lg md:border md:border-border md:px-6 md:pb-12 md:pt-6 md:shadow-sm">
       {/* Destination */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="relative h-11">
+        <SettlementCombobox
+          value={city}
+          ekatte={settlementEkatte}
+          onChange={(name, ekatte) => {
+            setCity(name);
+            setSettlementEkatte(ekatte);
+          }}
+          placeholder={content.destination.value as string}
+          className="h-11"
+        />
+      </div>
+
+      {/* Keyword search */}
+      <div className="relative h-11">
+        <TextSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder={content.destination.value as string}
-          className="h-11 w-full rounded-md border border-input bg-background pl-10 pr-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder={keywordPlaceholder}
+          className="h-11 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
+        {keyword && (
+          <X
+            className="absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+            onClick={() => setKeyword("")}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3">

@@ -5,6 +5,8 @@ import { LOCALE_ROUTE } from "@/components/ui/localized-link";
 
 export interface SearchParams {
   city?: string;
+  settlement_ekatte?: string;
+  q?: string;
   checkIn?: string;
   checkOut?: string;
   adults?: number;

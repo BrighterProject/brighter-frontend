@@ -67,9 +67,11 @@ export function PropertiesList() {
   const roomsC = useIntlayer("rooms");
   const formatRooms = useFormatRooms();
 
-  // Read search params from URL (city, checkIn, checkOut, adults)
+  // Read search params from URL (city, settlement_ekatte, checkIn, checkOut, adults)
   const searchParams = useSearch({ strict: false }) as SearchParams;
   const urlCity = searchParams.city ?? "";
+  const urlSettlementEkatte = searchParams.settlement_ekatte;
+  const urlQ = searchParams.q;
   const urlAdults = searchParams.adults;
   const urlChildren = searchParams.children;
   const urlCheckIn = searchParams.checkIn;
@@ -86,6 +88,8 @@ export function PropertiesList() {
 
   const apiParams = buildParams(queryFilters, {
     city: urlCity,
+    settlement_ekatte: urlSettlementEkatte,
+    q: urlQ,
     min_guests: urlAdults !== undefined || urlChildren !== undefined
       ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
       : undefined,
@@ -173,6 +177,8 @@ export function PropertiesList() {
             content={searchCardContent as any}
             defaultValues={{
               city: urlCity,
+              settlement_ekatte: urlSettlementEkatte,
+              q: urlQ,
               checkIn: urlCheckIn,
               checkOut: urlCheckOut,
               adults: urlAdults,
