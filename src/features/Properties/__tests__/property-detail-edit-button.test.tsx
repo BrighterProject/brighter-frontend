@@ -73,6 +73,7 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   min_nights: 1,
   max_nights: 30,
   cancellation_policy: 'free',
+  payment_config: null,
   rating: '4.5',
   total_reviews: 10,
   updated_at: '2026-01-01T00:00:00Z',

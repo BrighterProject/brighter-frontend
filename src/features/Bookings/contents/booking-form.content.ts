@@ -18,6 +18,24 @@ const bookingFormContent = {
     sections: {
       guestInfo: t({ en: "Guest information", bg: "Информация за госта" }),
       stayDetails: t({ en: "Stay details", bg: "Детайли за престоя" }),
+      paymentMethod: t({ en: "Payment method", bg: "Метод на плащане" }),
+    },
+    payment: {
+      card: t({ en: "Credit / Debit Card", bg: "Кредитна / дебитна карта" }),
+      cardFee: t({
+        en: "Online payment via Stripe (1.5% + €0.25 processing fee)",
+        bg: "Онлайн плащане чрез Stripe (такса 1.5% + €0.25)",
+      }),
+      bankTransfer: t({ en: "Bank Transfer", bg: "Банков превод" }),
+      bankTransferNote: t({
+        en: "Transfer to our bank account. Booking confirmed after receipt.",
+        bg: "Превод по банкова сметка. Резервацията се потвърждава след получаване.",
+      }),
+      cash: t({ en: "Cash (on arrival)", bg: "Брой (при пристигане)" }),
+      cashNote: t({
+        en: "Pay cash directly at the property on arrival.",
+        bg: "Платете на място при пристигане.",
+      }),
     },
     form: {
       fullName: {

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
+  BankTransferResponse,
   BookingCreate,
   BookingResponse,
   CheckoutResponse,
@@ -77,6 +78,17 @@ export const useCreateCheckout = (locale?: string) =>
       const { data } = await apiClient.post<CheckoutResponse>(
         "/payments/checkout",
         { booking_id: bookingId, locale: locale ?? null },
+      );
+      return data;
+    },
+  });
+
+export const useCreateBankTransferIntent = () =>
+  useMutation({
+    mutationFn: async (bookingId: string) => {
+      const { data } = await apiClient.post<BankTransferResponse>(
+        "/payments/bank-transfer",
+        { booking_id: bookingId },
       );
       return data;
     },

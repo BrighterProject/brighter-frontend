@@ -41,6 +41,23 @@ export interface BookingCreate {
   guest_phone?: string | null;
   guest_country?: string | null;
   special_requests?: string | null;
+  payment_method?: string | null;
+}
+
+export type BankTransferStatus = "pending" | "confirmed" | "cancelled";
+
+export interface BankTransferResponse {
+  id: string;
+  booking_id: string;
+  status: BankTransferStatus;
+  amount: string;
+  currency: string;
+  bank_iban: string;
+  bank_bic: string;
+  bank_name: string;
+  account_holder: string;
+  reference: string;
+  updated_at: string;
 }
 
 export interface BookingResponse {

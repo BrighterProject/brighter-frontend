@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, Plus, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import apiClient from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { useProperty } from "@/features/Properties/api/hooks";
 import {

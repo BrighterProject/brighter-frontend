@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as Char123LocaleChar125ContactsRouteImport } from './routes/{-$locale}/contacts'
+import { Route as Char123LocaleChar125BankTransferInstructionsRouteImport } from './routes/{-$locale}/bank-transfer-instructions'
 import { Route as Char123LocaleChar125AboutUsRouteImport } from './routes/{-$locale}/about-us'
 import { Route as Char123LocaleChar125404RouteImport } from './routes/{-$locale}/404'
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
@@ -41,6 +42,12 @@ const Char123LocaleChar125ContactsRoute =
   Char123LocaleChar125ContactsRouteImport.update({
     id: '/contacts',
     path: '/contacts',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125BankTransferInstructionsRoute =
+  Char123LocaleChar125BankTransferInstructionsRouteImport.update({
+    id: '/bank-transfer-instructions',
+    path: '/bank-transfer-instructions',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125AboutUsRoute =
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
+  '/{-$locale}/bank-transfer-instructions': typeof Char123LocaleChar125BankTransferInstructionsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
@@ -136,6 +144,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
+  '/{-$locale}/bank-transfer-instructions': typeof Char123LocaleChar125BankTransferInstructionsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
@@ -154,6 +163,7 @@ export interface FileRoutesById {
   '/{-$locale}/$': typeof Char123LocaleChar125SplatRoute
   '/{-$locale}/404': typeof Char123LocaleChar125404Route
   '/{-$locale}/about-us': typeof Char123LocaleChar125AboutUsRoute
+  '/{-$locale}/bank-transfer-instructions': typeof Char123LocaleChar125BankTransferInstructionsRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/$'
     | '/{-$locale}/404'
     | '/{-$locale}/about-us'
+    | '/{-$locale}/bank-transfer-instructions'
     | '/{-$locale}/contacts'
     | '/{-$locale}/'
     | '/{-$locale}/auth/check-email'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/$'
     | '/{-$locale}/404'
     | '/{-$locale}/about-us'
+    | '/{-$locale}/bank-transfer-instructions'
     | '/{-$locale}/contacts'
     | '/{-$locale}'
     | '/{-$locale}/auth/check-email'
@@ -206,6 +218,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/$'
     | '/{-$locale}/404'
     | '/{-$locale}/about-us'
+    | '/{-$locale}/bank-transfer-instructions'
     | '/{-$locale}/contacts'
     | '/{-$locale}/'
     | '/{-$locale}/auth/check-email'
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       path: '/contacts'
       fullPath: '/{-$locale}/contacts'
       preLoaderRoute: typeof Char123LocaleChar125ContactsRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/bank-transfer-instructions': {
+      id: '/{-$locale}/bank-transfer-instructions'
+      path: '/bank-transfer-instructions'
+      fullPath: '/{-$locale}/bank-transfer-instructions'
+      preLoaderRoute: typeof Char123LocaleChar125BankTransferInstructionsRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/about-us': {
@@ -337,6 +357,7 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125SplatRoute: typeof Char123LocaleChar125SplatRoute
   Char123LocaleChar125404Route: typeof Char123LocaleChar125404Route
   Char123LocaleChar125AboutUsRoute: typeof Char123LocaleChar125AboutUsRoute
+  Char123LocaleChar125BankTransferInstructionsRoute: typeof Char123LocaleChar125BankTransferInstructionsRoute
   Char123LocaleChar125ContactsRoute: typeof Char123LocaleChar125ContactsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
   Char123LocaleChar125AuthCheckEmailRoute: typeof Char123LocaleChar125AuthCheckEmailRoute
@@ -355,6 +376,8 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125SplatRoute: Char123LocaleChar125SplatRoute,
     Char123LocaleChar125404Route: Char123LocaleChar125404Route,
     Char123LocaleChar125AboutUsRoute: Char123LocaleChar125AboutUsRoute,
+    Char123LocaleChar125BankTransferInstructionsRoute:
+      Char123LocaleChar125BankTransferInstructionsRoute,
     Char123LocaleChar125ContactsRoute: Char123LocaleChar125ContactsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
     Char123LocaleChar125AuthCheckEmailRoute:
