@@ -18,6 +18,8 @@ import { Route as Char123LocaleChar125404RouteImport } from './routes/{-$locale}
 import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$locale}/$'
 import { Route as Char123LocaleChar125PropertiesIndexRouteImport } from './routes/{-$locale}/properties/index'
 import { Route as Char123LocaleChar125BookingsIndexRouteImport } from './routes/{-$locale}/bookings/index'
+import { Route as Char123LocaleChar125BookingsSuccessRouteImport } from './routes/{-$locale}/bookings/success'
+import { Route as Char123LocaleChar125BookingsCancelRouteImport } from './routes/{-$locale}/bookings/cancel'
 import { Route as Char123LocaleChar125AuthVerifyEmailRouteImport } from './routes/{-$locale}/auth/verify-email'
 import { Route as Char123LocaleChar125AuthSignupRouteImport } from './routes/{-$locale}/auth/signup'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/auth/login'
@@ -25,7 +27,6 @@ import { Route as Char123LocaleChar125AuthCheckEmailRouteImport } from './routes
 import { Route as Char123LocaleChar125PropertiesPropertyIdIndexRouteImport } from './routes/{-$locale}/properties/$propertyId/index'
 import { Route as Char123LocaleChar125PropertiesPropertyIdBookRouteImport } from './routes/{-$locale}/properties/$propertyId/book'
 import { Route as Char123LocaleChar125OwnerPropertiesPropertyIdPricingRouteImport } from './routes/{-$locale}/owner/properties/$propertyId/pricing'
-import { Route as Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRouteImport } from './routes/{-$locale}/owner/properties/$propertyId/payment-settings'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -80,6 +81,18 @@ const Char123LocaleChar125BookingsIndexRoute =
     path: '/bookings/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125BookingsSuccessRoute =
+  Char123LocaleChar125BookingsSuccessRouteImport.update({
+    id: '/bookings/success',
+    path: '/bookings/success',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125BookingsCancelRoute =
+  Char123LocaleChar125BookingsCancelRouteImport.update({
+    id: '/bookings/cancel',
+    path: '/bookings/cancel',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125AuthVerifyEmailRoute =
   Char123LocaleChar125AuthVerifyEmailRouteImport.update({
     id: '/auth/verify-email',
@@ -122,14 +135,6 @@ const Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute =
     path: '/owner/properties/$propertyId/pricing',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute =
-  Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRouteImport.update(
-    {
-      id: '/owner/properties/$propertyId/payment-settings',
-      path: '/owner/properties/$propertyId/payment-settings',
-      getParentRoute: () => Char123LocaleChar125RouteRoute,
-    } as any,
-  )
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
@@ -143,11 +148,12 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
+  '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
-  '/{-$locale}/owner/properties/$propertyId/payment-settings': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute
   '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRoutesByTo {
@@ -161,11 +167,12 @@ export interface FileRoutesByTo {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
+  '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
-  '/{-$locale}/owner/properties/$propertyId/payment-settings': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute
   '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRoutesById {
@@ -181,11 +188,12 @@ export interface FileRoutesById {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
+  '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
   '/{-$locale}/properties/$propertyId/book': typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   '/{-$locale}/properties/$propertyId/': typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
-  '/{-$locale}/owner/properties/$propertyId/payment-settings': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute
   '/{-$locale}/owner/properties/$propertyId/pricing': typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 export interface FileRouteTypes {
@@ -202,11 +210,12 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/cancel'
+    | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId/'
-    | '/{-$locale}/owner/properties/$propertyId/payment-settings'
     | '/{-$locale}/owner/properties/$propertyId/pricing'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -220,11 +229,12 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/cancel'
+    | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings'
     | '/{-$locale}/properties'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId'
-    | '/{-$locale}/owner/properties/$propertyId/payment-settings'
     | '/{-$locale}/owner/properties/$propertyId/pricing'
   id:
     | '__root__'
@@ -239,11 +249,12 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/cancel'
+    | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
     | '/{-$locale}/properties/$propertyId/book'
     | '/{-$locale}/properties/$propertyId/'
-    | '/{-$locale}/owner/properties/$propertyId/payment-settings'
     | '/{-$locale}/owner/properties/$propertyId/pricing'
   fileRoutesById: FileRoutesById
 }
@@ -316,6 +327,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125BookingsIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/bookings/success': {
+      id: '/{-$locale}/bookings/success'
+      path: '/bookings/success'
+      fullPath: '/{-$locale}/bookings/success'
+      preLoaderRoute: typeof Char123LocaleChar125BookingsSuccessRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/bookings/cancel': {
+      id: '/{-$locale}/bookings/cancel'
+      path: '/bookings/cancel'
+      fullPath: '/{-$locale}/bookings/cancel'
+      preLoaderRoute: typeof Char123LocaleChar125BookingsCancelRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/auth/verify-email': {
       id: '/{-$locale}/auth/verify-email'
       path: '/auth/verify-email'
@@ -365,13 +390,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/owner/properties/$propertyId/payment-settings': {
-      id: '/{-$locale}/owner/properties/$propertyId/payment-settings'
-      path: '/owner/properties/$propertyId/payment-settings'
-      fullPath: '/{-$locale}/owner/properties/$propertyId/payment-settings'
-      preLoaderRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
   }
 }
 
@@ -386,11 +404,12 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
   Char123LocaleChar125AuthSignupRoute: typeof Char123LocaleChar125AuthSignupRoute
   Char123LocaleChar125AuthVerifyEmailRoute: typeof Char123LocaleChar125AuthVerifyEmailRoute
+  Char123LocaleChar125BookingsCancelRoute: typeof Char123LocaleChar125BookingsCancelRoute
+  Char123LocaleChar125BookingsSuccessRoute: typeof Char123LocaleChar125BookingsSuccessRoute
   Char123LocaleChar125BookingsIndexRoute: typeof Char123LocaleChar125BookingsIndexRoute
   Char123LocaleChar125PropertiesIndexRoute: typeof Char123LocaleChar125PropertiesIndexRoute
   Char123LocaleChar125PropertiesPropertyIdBookRoute: typeof Char123LocaleChar125PropertiesPropertyIdBookRoute
   Char123LocaleChar125PropertiesPropertyIdIndexRoute: typeof Char123LocaleChar125PropertiesPropertyIdIndexRoute
-  Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute
   Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute: typeof Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute
 }
 
@@ -409,6 +428,10 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125AuthSignupRoute: Char123LocaleChar125AuthSignupRoute,
     Char123LocaleChar125AuthVerifyEmailRoute:
       Char123LocaleChar125AuthVerifyEmailRoute,
+    Char123LocaleChar125BookingsCancelRoute:
+      Char123LocaleChar125BookingsCancelRoute,
+    Char123LocaleChar125BookingsSuccessRoute:
+      Char123LocaleChar125BookingsSuccessRoute,
     Char123LocaleChar125BookingsIndexRoute:
       Char123LocaleChar125BookingsIndexRoute,
     Char123LocaleChar125PropertiesIndexRoute:
@@ -417,8 +440,6 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
       Char123LocaleChar125PropertiesPropertyIdBookRoute,
     Char123LocaleChar125PropertiesPropertyIdIndexRoute:
       Char123LocaleChar125PropertiesPropertyIdIndexRoute,
-    Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute:
-      Char123LocaleChar125OwnerPropertiesPropertyIdPaymentSettingsRoute,
     Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute:
       Char123LocaleChar125OwnerPropertiesPropertyIdPricingRoute,
   }

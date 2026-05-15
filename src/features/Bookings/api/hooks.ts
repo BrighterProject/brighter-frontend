@@ -107,6 +107,22 @@ export const useBookingPayment = (bookingId: string) =>
     retry: false,
   });
 
+export const usePaymentBySession = (sessionId: string | undefined) =>
+  useQuery({
+    queryKey: ["payments", "session", sessionId],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PaymentResponse>(
+        `/payments/session/${sessionId}`,
+      );
+      return data;
+    },
+    enabled: !!sessionId,
+    retry: false,
+    // Poll every 2 s while pending — stops once Stripe webhook marks it paid/failed
+    refetchInterval: (query) =>
+      query.state.data?.status === "pending" ? 2000 : false,
+  });
+
 export const useCancelBooking = () => {
   const queryClient = useQueryClient();
   return useMutation({
