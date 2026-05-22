@@ -20,6 +20,7 @@ import { Route as Char123LocaleChar125PropertiesIndexRouteImport } from './route
 import { Route as Char123LocaleChar125BookingsIndexRouteImport } from './routes/{-$locale}/bookings/index'
 import { Route as Char123LocaleChar125BookingsSuccessRouteImport } from './routes/{-$locale}/bookings/success'
 import { Route as Char123LocaleChar125BookingsCancelRouteImport } from './routes/{-$locale}/bookings/cancel'
+import { Route as Char123LocaleChar125BookingsBookingIdRouteImport } from './routes/{-$locale}/bookings/$bookingId'
 import { Route as Char123LocaleChar125AuthVerifyEmailRouteImport } from './routes/{-$locale}/auth/verify-email'
 import { Route as Char123LocaleChar125AuthSignupRouteImport } from './routes/{-$locale}/auth/signup'
 import { Route as Char123LocaleChar125AuthLoginRouteImport } from './routes/{-$locale}/auth/login'
@@ -93,6 +94,12 @@ const Char123LocaleChar125BookingsCancelRoute =
     path: '/bookings/cancel',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125BookingsBookingIdRoute =
+  Char123LocaleChar125BookingsBookingIdRouteImport.update({
+    id: '/bookings/$bookingId',
+    path: '/bookings/$bookingId',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125AuthVerifyEmailRoute =
   Char123LocaleChar125AuthVerifyEmailRouteImport.update({
     id: '/auth/verify-email',
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings': typeof Char123LocaleChar125BookingsIndexRoute
@@ -188,6 +197,7 @@ export interface FileRoutesById {
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
   '/{-$locale}/auth/signup': typeof Char123LocaleChar125AuthSignupRoute
   '/{-$locale}/auth/verify-email': typeof Char123LocaleChar125AuthVerifyEmailRoute
+  '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings/'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings'
@@ -249,6 +261,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/auth/login'
     | '/{-$locale}/auth/signup'
     | '/{-$locale}/auth/verify-email'
+    | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
     | '/{-$locale}/bookings/'
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125BookingsCancelRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/bookings/$bookingId': {
+      id: '/{-$locale}/bookings/$bookingId'
+      path: '/bookings/$bookingId'
+      fullPath: '/{-$locale}/bookings/$bookingId'
+      preLoaderRoute: typeof Char123LocaleChar125BookingsBookingIdRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/auth/verify-email': {
       id: '/{-$locale}/auth/verify-email'
       path: '/auth/verify-email'
@@ -404,6 +424,7 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
   Char123LocaleChar125AuthSignupRoute: typeof Char123LocaleChar125AuthSignupRoute
   Char123LocaleChar125AuthVerifyEmailRoute: typeof Char123LocaleChar125AuthVerifyEmailRoute
+  Char123LocaleChar125BookingsBookingIdRoute: typeof Char123LocaleChar125BookingsBookingIdRoute
   Char123LocaleChar125BookingsCancelRoute: typeof Char123LocaleChar125BookingsCancelRoute
   Char123LocaleChar125BookingsSuccessRoute: typeof Char123LocaleChar125BookingsSuccessRoute
   Char123LocaleChar125BookingsIndexRoute: typeof Char123LocaleChar125BookingsIndexRoute
@@ -428,6 +449,8 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125AuthSignupRoute: Char123LocaleChar125AuthSignupRoute,
     Char123LocaleChar125AuthVerifyEmailRoute:
       Char123LocaleChar125AuthVerifyEmailRoute,
+    Char123LocaleChar125BookingsBookingIdRoute:
+      Char123LocaleChar125BookingsBookingIdRoute,
     Char123LocaleChar125BookingsCancelRoute:
       Char123LocaleChar125BookingsCancelRoute,
     Char123LocaleChar125BookingsSuccessRoute:

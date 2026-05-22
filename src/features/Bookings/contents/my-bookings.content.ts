@@ -26,6 +26,8 @@ const myBookingsContent = {
     paying: t({ en: "Loading...", bg: "Зарежда..." }),
     property: t({ en: "Property", bg: "Имот" }),
     total: t({ en: "Total", bg: "Общо" }),
+    upcoming: t({ en: "Upcoming", bg: "Предстоящи" }),
+    past: t({ en: "Past", bg: "Минали" }),
     toasts: {
       paymentSuccess: t({
         en: "Payment successful! Your booking will be confirmed shortly.",

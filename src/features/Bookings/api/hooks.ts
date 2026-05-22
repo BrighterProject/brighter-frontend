@@ -21,6 +21,26 @@ export const useOccupiedSlots = (propertyId: string) =>
     enabled: !!propertyId,
   });
 
+export const useBooking = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["bookings", bookingId],
+    queryFn: async () => {
+      const { data } = await apiClient.get<BookingResponse>(
+        `/bookings/${bookingId}`,
+      );
+      return data;
+    },
+    initialData: () =>
+      queryClient
+        .getQueryData<BookingResponse[]>(["bookings", "mine"])
+        ?.find((b) => b.id === bookingId),
+    initialDataUpdatedAt: () =>
+      queryClient.getQueryState(["bookings", "mine"])?.dataUpdatedAt,
+    enabled: !!bookingId,
+  });
+};
+
 export const useMyBookings = () =>
   useQuery({
     queryKey: ["bookings", "mine"],
