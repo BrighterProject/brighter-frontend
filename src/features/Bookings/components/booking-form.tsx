@@ -373,76 +373,6 @@ export function BookingForm({
                 </div>
               </div>
 
-              {acceptedMethods.length > 1 && (
-                <div className="rounded-2xl border bg-card p-6 shadow-sm">
-                  <h2 className="mb-4 font-display text-base font-semibold text-foreground">
-                    {c.sections.paymentMethod}
-                  </h2>
-                  <div className="space-y-3">
-                    {acceptedMethods.includes("card") && (
-                      <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          value="card"
-                          checked={paymentMethod === "card"}
-                          onChange={() => setPaymentMethod("card")}
-                          className="mt-0.5"
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {c.payment.card}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {c.payment.cardFee}
-                          </p>
-                        </div>
-                      </label>
-                    )}
-                    {acceptedMethods.includes("bank_transfer") && (
-                      <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          value="bank_transfer"
-                          checked={paymentMethod === "bank_transfer"}
-                          onChange={() => setPaymentMethod("bank_transfer")}
-                          className="mt-0.5"
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {c.payment.bankTransfer}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {c.payment.bankTransferNote}
-                          </p>
-                        </div>
-                      </label>
-                    )}
-                    {acceptedMethods.includes("cash") && (
-                      <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          value="cash"
-                          checked={paymentMethod === "cash"}
-                          onChange={() => setPaymentMethod("cash")}
-                          className="mt-0.5"
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {c.payment.cash}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {c.payment.cashNote}
-                          </p>
-                        </div>
-                      </label>
-                    )}
-                  </div>
-                </div>
-              )}
-
               {error && (
                 <p className="rounded-lg bg-destructive/10 px-4 py-2 text-sm text-destructive">
                   {error}
@@ -530,6 +460,74 @@ export function BookingForm({
                       basePricePerNight={property.price_per_night}
                       currency={property.currency}
                     />
+                  )}
+
+                  {acceptedMethods.length > 1 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        {c.sections.paymentMethod}
+                      </p>
+                      {acceptedMethods.includes("card") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="card"
+                            checked={paymentMethod === "card"}
+                            onChange={() => setPaymentMethod("card")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.card}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.cardFee}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                      {acceptedMethods.includes("bank_transfer") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="bank_transfer"
+                            checked={paymentMethod === "bank_transfer"}
+                            onChange={() => setPaymentMethod("bank_transfer")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.bankTransfer}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.bankTransferNote}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                      {acceptedMethods.includes("cash") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="cash"
+                            checked={paymentMethod === "cash"}
+                            onChange={() => setPaymentMethod("cash")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.cash}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.cashNote}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                    </div>
                   )}
 
                   <Button

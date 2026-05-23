@@ -11,6 +11,7 @@ import {
   useCancelBooking,
   useMyPayments,
   useCreateCheckout,
+  useCreateBankTransferIntent,
   useAbandonPayment,
 } from "../api/hooks";
 import type { BookingResponse, BookingStatus, PaymentStatus } from "../api/types";
@@ -140,7 +141,11 @@ function BookingCard({
 }: BookingCardProps) {
   const status = booking.status as BookingStatus;
   const isPending = status === "pending";
-  const needsPayment = isPending && !isLoadingPayments && !payment;
+  const needsPayment =
+    isPending &&
+    !isLoadingPayments &&
+    !payment &&
+    booking.payment_method !== "cash";
   const nights = nightCount(booking.start_date, booking.end_date);
 
   const translation = property
@@ -289,6 +294,7 @@ export function MyBookings() {
   const { data: payments = [], isLoading: isLoadingPayments } = useMyPayments();
   const cancelBooking = useCancelBooking();
   const createCheckout = useCreateCheckout(locale);
+  const createBankTransferIntent = useCreateBankTransferIntent();
   const abandonPayment = useAbandonPayment();
   const queryClient = useQueryClient();
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
@@ -336,8 +342,17 @@ export function MyBookings() {
   }, []);
 
   const handlePayNow = async (bookingId: string) => {
+    const booking = bookings?.find((b) => b.id === bookingId);
     setPayingBookingId(bookingId);
     try {
+      if (booking?.payment_method === "bank_transfer") {
+        const intent = await createBankTransferIntent.mutateAsync(bookingId);
+        navigate({
+          to: "/{-$locale}/bank-transfer-instructions" as any,
+          search: { intentId: intent.id } as any,
+        } as any);
+        return;
+      }
       const { checkout_url, payment_id } =
         await createCheckout.mutateAsync(bookingId);
       if (!checkout_url.startsWith("https://checkout.stripe.com/")) {
@@ -346,7 +361,6 @@ export function MyBookings() {
       sessionStorage.setItem("pending_payment_id", payment_id);
       window.location.href = checkout_url;
     } catch (err: unknown) {
-      console.error("[checkout]", err);
       toast.error(c.toasts.paymentCancelled.value as string);
     } finally {
       setPayingBookingId(null);

@@ -118,7 +118,7 @@ export function BookingDetailsSheet({
 
   const status = booking?.status as BookingStatus | undefined;
   const isPending = status === "pending";
-  const needsPayment = isPending && !payment;
+  const needsPayment = isPending && !payment && booking?.payment_method !== "cash";
   const propertyHref = `/${locale ? `${locale}/` : ""}properties/${booking?.property_id}`;
 
   return (

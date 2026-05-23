@@ -1,8 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { CheckCircle2, Copy } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { useIntlayer } from "react-intlayer";
 import apiClient from "@/lib/api-client";
 import type { BankTransferResponse } from "@/features/Bookings/api/types";
 
@@ -12,6 +13,18 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/{-$locale}/bank-transfer-instructions")({
   validateSearch: searchSchema,
+  beforeLoad: async ({ location }) => {
+    if (typeof window === "undefined") return;
+    try {
+      await apiClient.get("/users/@me/get");
+    } catch {
+      throw redirect({
+        to: "/{-$locale}/auth/login",
+        params: { locale: location.pathname.split("/")[1] || "bg" },
+        search: { redirect: location.href },
+      });
+    }
+  },
   component: BankTransferInstructionsPage,
 });
 
@@ -53,12 +66,13 @@ function CopyButton({ value }: { value: string }) {
 function BankTransferInstructionsPage() {
   const { intentId } = Route.useSearch();
   const navigate = useNavigate();
+  const content = useIntlayer("bank-transfer-instructions");
   const { data: intent, isLoading, isError } = useBankTransferIntent(intentId);
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground text-sm">
-        Loading…
+        {content.loading}
       </div>
     );
   }
@@ -66,21 +80,19 @@ function BankTransferInstructionsPage() {
   if (isError || !intent) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive text-sm">
-          Could not load payment details.
-        </p>
+        <p className="text-destructive text-sm">{content.error}</p>
       </div>
     );
   }
 
-  const rows: { label: string; value: string; mono?: boolean }[] = [
-    { label: "Bank", value: intent.bank_name },
-    { label: "Account holder", value: intent.account_holder },
-    { label: "IBAN", value: intent.bank_iban, mono: true },
-    { label: "BIC / SWIFT", value: intent.bank_bic, mono: true },
-    { label: "Reference", value: intent.reference, mono: true },
+  const rows: { label: string | ReactNode; value: string; mono?: boolean }[] = [
+    { label: content.labels.bank, value: intent.bank_name },
+    { label: content.labels.accountHolder, value: intent.account_holder },
+    { label: content.labels.iban, value: intent.bank_iban, mono: true },
+    { label: content.labels.bic, value: intent.bank_bic, mono: true },
+    { label: content.labels.reference, value: intent.reference, mono: true },
     {
-      label: "Amount",
+      label: content.labels.amount,
       value: `${Number(intent.amount).toFixed(2)} ${intent.currency}`,
     },
   ];
@@ -93,18 +105,16 @@ function BankTransferInstructionsPage() {
         </div>
 
         <h1 className="mb-2 font-display text-2xl font-bold tracking-tight">
-          Bank Transfer Instructions
+          {content.heading}
         </h1>
         <p className="mb-8 text-sm text-muted-foreground">
-          Your booking is reserved. Please transfer the amount below within{" "}
-          <strong>48 hours</strong> to confirm it. Always include the reference
-          number.
+          {content.body}
         </p>
 
         <div className="rounded-2xl border bg-card shadow-sm">
           <dl className="divide-y">
-            {rows.map(({ label, value, mono }) => (
-              <div key={label} className="flex items-center justify-between px-5 py-4">
+            {rows.map(({ label, value, mono }, i) => (
+              <div key={i} className="flex items-center justify-between px-5 py-4">
                 <dt className="text-sm text-muted-foreground">{label}</dt>
                 <dd className={`flex items-center text-sm font-medium ${mono ? "font-mono" : ""}`}>
                   {value}
@@ -115,17 +125,14 @@ function BankTransferInstructionsPage() {
           </dl>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground">
-          Your booking will be confirmed once the property owner verifies
-          receipt. You will be notified by email.
-        </p>
+        <p className="mt-6 text-xs text-muted-foreground">{content.footer}</p>
 
         <button
           type="button"
           onClick={() => navigate({ to: "/{-$locale}/bookings" as any } as any)}
           className="mt-8 text-sm text-primary hover:underline"
         >
-          View my bookings →
+          {content.viewBookings}
         </button>
       </div>
     </div>

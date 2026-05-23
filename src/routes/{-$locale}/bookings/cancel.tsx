@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { XCircle, ArrowLeft, ArrowRight } from "lucide-react";
+import { useIntlayer } from "react-intlayer";
 import { useAbandonPayment } from "@/features/Bookings/api/hooks";
 
 export const Route = createFileRoute("/{-$locale}/bookings/cancel")({
@@ -11,6 +12,7 @@ function BookingCancelPage() {
   const { locale } = Route.useParams();
   const abandonPayment = useAbandonPayment();
   const didAbandon = useRef(false);
+  const c = useIntlayer("booking-cancel");
 
   // Expire the pending Checkout Session so the booking is cleaned up.
   // Runs once — guarded by ref to survive React StrictMode double-invocation.
@@ -36,12 +38,9 @@ function BookingCancelPage() {
         </div>
 
         <h1 className="mb-2 font-display text-2xl font-bold tracking-tight">
-          Payment cancelled
+          {c.heading}
         </h1>
-        <p className="mb-8 text-sm text-muted-foreground">
-          You cancelled the payment. Your reservation has been released — no
-          charge was made.
-        </p>
+        <p className="mb-8 text-sm text-muted-foreground">{c.body}</p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
@@ -49,13 +48,13 @@ function BookingCancelPage() {
             className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             <ArrowLeft className="size-3.5" />
-            Browse properties
+            {c.browseProperties}
           </Link>
           <Link
             to={bookingsHref as any}
             className="inline-flex items-center justify-center gap-1.5 rounded-xl border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
           >
-            My bookings <ArrowRight className="size-3.5" />
+            {c.myBookings} <ArrowRight className="size-3.5" />
           </Link>
         </div>
       </div>

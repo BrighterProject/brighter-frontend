@@ -76,6 +76,7 @@ export interface BookingResponse {
   guest_phone: string | null;
   guest_country: string | null;
   special_requests: string | null;
+  payment_method: string | null;
   updated_at: string;
   gap_adjustment_pct?: number;
 }

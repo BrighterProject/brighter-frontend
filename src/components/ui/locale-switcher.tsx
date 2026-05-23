@@ -56,6 +56,7 @@ export const LocaleSwitcher: FC = () => {
               onClick={() => setLocale(localeEl)}
               params={{ locale: getPrefix(localeEl).localePrefix }}
               to={pathWithoutLocale as To}
+              search={(prev) => prev}
               className="flex w-full cursor-pointer items-center gap-2"
             >
               <span className="text-base">
