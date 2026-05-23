@@ -66,6 +66,44 @@ const signupContent = {
       en: "Continue with Google",
       bg: "Продължи с Google",
     }),
+    errors: {
+      nameTooShort: t({
+        en: "Name must be at least 2 characters.",
+        bg: "Името трябва да е поне 2 символа.",
+      }),
+      emailRequired: t({
+        en: "Email is required.",
+        bg: "Имейлът е задължителен.",
+      }),
+      emailInvalid: t({
+        en: "Please enter a valid email address.",
+        bg: "Моля въведете валиден имейл адрес.",
+      }),
+      passwordTooShort: t({
+        en: "Password must be at least 8 characters.",
+        bg: "Паролата трябва да е поне 8 символа.",
+      }),
+      passwordNoNumber: t({
+        en: "Password must contain at least one number.",
+        bg: "Паролата трябва да съдържа поне едно число.",
+      }),
+      passwordNoSymbol: t({
+        en: "Password must contain at least one special symbol.",
+        bg: "Паролата трябва да съдържа поне един специален символ.",
+      }),
+      passwordsMismatch: t({
+        en: "Passwords don't match.",
+        bg: "Паролите не съвпадат.",
+      }),
+      emailExists: t({
+        en: "An account with this email already exists.",
+        bg: "Акаунт с този имейл вече съществува.",
+      }),
+      generic: t({
+        en: "Something went wrong. Please try again.",
+        bg: "Нещо се обърка. Моля, опитайте отново.",
+      }),
+    },
     loginPrompt: {
       text: t({ en: "Already have an account? ", bg: "Вече имате профил? " }),
       link: t({ en: "Sign in", bg: "Вход" }),
