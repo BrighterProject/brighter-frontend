@@ -4,6 +4,16 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Building2, Calendar, CalendarSearch, ChevronRight, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -14,7 +24,7 @@ import {
   useCreateBankTransferIntent,
   useAbandonPayment,
 } from "../api/hooks";
-import type { BookingResponse, BookingStatus, PaymentStatus } from "../api/types";
+import type { BookingResponse, BookingStatus, PaymentResponse, PaymentStatus } from "../api/types";
 import { usePropertiesForBookings } from "@Properties/api/hooks";
 import { resolveTranslation } from "@Properties/api/types";
 import type { PropertyResponse } from "@Properties/api/types";
@@ -113,7 +123,7 @@ interface BookingCardProps {
   isCancelPending: boolean;
   onNavigate: () => void;
   onPayNow: (id: string) => void;
-  onCancel: (id: string) => void;
+  onCancelRequest: (id: string) => void;
   labels: {
     status: Record<BookingStatus, React.ReactNode>;
     paymentStatus: Record<PaymentStatus, React.ReactNode>;
@@ -136,11 +146,12 @@ function BookingCard({
   isCancelPending,
   onNavigate,
   onPayNow,
-  onCancel,
+  onCancelRequest,
   labels,
 }: BookingCardProps) {
   const status = booking.status as BookingStatus;
   const isPending = status === "pending";
+  const isConfirmed = status === "confirmed";
   const needsPayment =
     isPending &&
     !isLoadingPayments &&
@@ -254,7 +265,7 @@ function BookingCard({
       </div>
 
       {/* Action footer */}
-      {(needsPayment || isPending) && (
+      {(needsPayment || isPending || isConfirmed) && (
         <div
           className="flex gap-2 border-t px-4 py-3"
           onClick={(e) => e.stopPropagation()}
@@ -269,13 +280,13 @@ function BookingCard({
               {payingBookingId === booking.id ? labels.paying : labels.payNow}
             </Button>
           )}
-          {isPending && (
+          {(isPending || isConfirmed) && (
             <Button
               variant="outline"
               size="sm"
               className="flex-1 rounded-lg border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
               disabled={isCancelPending}
-              onClick={() => onCancel(booking.id)}
+              onClick={() => onCancelRequest(booking.id)}
             >
               {isCancelPending ? labels.cancelling : labels.cancel}
             </Button>
@@ -284,6 +295,25 @@ function BookingCard({
       )}
     </div>
   );
+}
+
+function getCancelMessage(
+  booking: BookingResponse,
+  payment: PaymentResponse | undefined,
+  c: ReturnType<typeof useIntlayer<"my-bookings">>,
+): React.ReactNode {
+  if (!payment || payment.status === "failed") {
+    return c.cancelDialog.noPayment;
+  }
+  switch (booking.cancellation_policy) {
+    case "free":
+      return c.cancelDialog.free;
+    case "strict":
+      return c.cancelDialog.strict;
+    case "moderate":
+    default:
+      return c.cancelDialog.moderate;
+  }
 }
 
 export function MyBookings() {
@@ -298,6 +328,7 @@ export function MyBookings() {
   const abandonPayment = useAbandonPayment();
   const queryClient = useQueryClient();
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   const propertyIds = bookings?.map((b) => b.property_id) ?? [];
   const { propertiesById, isLoading: isLoadingProperties } =
@@ -436,7 +467,7 @@ export function MyBookings() {
                         })
                       }
                       onPayNow={handlePayNow}
-                      onCancel={(id) => cancelBooking.mutate(id)}
+                      onCancelRequest={setCancelTarget}
                       labels={cardLabels}
                     />
                   ))}
@@ -465,7 +496,7 @@ export function MyBookings() {
                         })
                       }
                       onPayNow={handlePayNow}
-                      onCancel={(id) => cancelBooking.mutate(id)}
+                      onCancelRequest={setCancelTarget}
                       labels={cardLabels}
                     />
                   ))}
@@ -475,6 +506,38 @@ export function MyBookings() {
           </div>
         )}
       </div>
+
+      <AlertDialog
+        open={cancelTarget !== null}
+        onOpenChange={(open) => { if (!open) setCancelTarget(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{c.cancelDialog.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelTarget
+                ? getCancelMessage(
+                    bookings!.find((b) => b.id === cancelTarget)!,
+                    paymentByBooking.get(cancelTarget),
+                    c,
+                  )
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{c.cancelDialog.abort}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (cancelTarget) cancelBooking.mutate(cancelTarget);
+                setCancelTarget(null);
+              }}
+            >
+              {c.cancelDialog.confirm}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
