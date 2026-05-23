@@ -305,7 +305,8 @@ function getCancelMessage(
   if (!payment || payment.status === "failed") {
     return c.cancelDialog.noPayment;
   }
-  switch (booking.cancellation_policy) {
+  const policy = booking.cancellation_policy ?? "moderate";
+  switch (policy) {
     case "free":
       return c.cancelDialog.free;
     case "strict":
