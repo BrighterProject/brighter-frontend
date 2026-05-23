@@ -515,13 +515,12 @@ export function MyBookings() {
           <AlertDialogHeader>
             <AlertDialogTitle>{c.cancelDialog.title}</AlertDialogTitle>
             <AlertDialogDescription>
-              {cancelTarget
-                ? getCancelMessage(
-                    bookings!.find((b) => b.id === cancelTarget)!,
-                    paymentByBooking.get(cancelTarget),
-                    c,
-                  )
-                : null}
+              {(() => {
+                if (!cancelTarget) return null;
+                const booking = bookings?.find((b) => b.id === cancelTarget);
+                if (!booking) return null;
+                return getCancelMessage(booking, paymentByBooking.get(cancelTarget), c);
+              })()}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
