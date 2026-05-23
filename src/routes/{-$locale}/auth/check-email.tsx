@@ -50,6 +50,12 @@ function CheckEmailCard() {
       <p className="text-muted-foreground/60 text-xs">
         {content.spamHint}
       </p>
+      {typeof window !== "undefined" &&
+        localStorage.getItem("postVerifyRedirect") === "/pricing" && (
+          <p className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2 text-sm text-primary">
+            {content.pricingRedirectHint}
+          </p>
+        )}
       <p className="text-sm text-muted-foreground mt-2">
         {content.loginPrompt.text}
         <Link

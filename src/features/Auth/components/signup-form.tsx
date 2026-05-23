@@ -43,6 +43,7 @@ export function SignupForm({
       email: "",
       password: "",
       confirmPassword: "",
+      wantsToList: false,
     } as SignupValues,
     validators: {
       onChange: signupSchema,
@@ -57,6 +58,9 @@ export function SignupForm({
         },
         {
           onSuccess: () => {
+            if (value.wantsToList) {
+              localStorage.setItem("postVerifyRedirect", "/pricing");
+            }
             navigate("/auth/check-email");
           },
         },
@@ -164,6 +168,30 @@ export function SignupForm({
                 onChange={(e) => field.handleChange(e.target.value)}
               />
               <FieldErrors field={field} />
+            </Field>
+          )}
+        />
+
+        {/* --- Wants to List --- */}
+        <form.Field
+          name="wantsToList"
+          children={(field) => (
+            <Field>
+              <div className="flex items-center gap-2">
+                <input
+                  id={field.name}
+                  type="checkbox"
+                  checked={field.state.value as boolean}
+                  onChange={(e) => field.handleChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-input accent-primary"
+                />
+                <label
+                  htmlFor={field.name}
+                  className="text-sm text-muted-foreground cursor-pointer"
+                >
+                  {content.fields.wantsToList.label}
+                </label>
+              </div>
             </Field>
           )}
         />

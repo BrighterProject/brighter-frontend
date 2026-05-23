@@ -15,6 +15,7 @@ export const signupSchema = z
         message: "Password must contain at least one special symbol",
       }),
     confirmPassword: z.string(),
+    wantsToList: z.boolean().default(false),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

@@ -40,6 +40,12 @@ const signupContent = {
       confirmPassword: {
         label: t({ en: "Confirm Password", bg: "Потвърдете паролата" }),
       },
+      wantsToList: {
+        label: t({
+          en: "I want to list a property",
+          bg: "Искам да публикувам имот",
+        }),
+      },
     },
     button: {
       idle: t({ en: "Create Account", bg: "Създаване на профил" }),

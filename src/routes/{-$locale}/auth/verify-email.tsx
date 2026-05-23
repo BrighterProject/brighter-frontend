@@ -39,8 +39,11 @@ function RouteComponent() {
   );
 }
 
+const SAFE_REDIRECTS = ["/pricing"];
+
 function VerifyEmailCard() {
   const { token } = Route.useSearch();
+  const { locale } = Route.useParams();
   const content = useIntlayer("verify-email");
   const verifyMutation = useVerifyEmail();
 
@@ -76,6 +79,25 @@ function VerifyEmailCard() {
         </Button>
       </div>
     );
+  }
+
+  if (verifyMutation.isSuccess) {
+    const stored =
+      typeof window !== "undefined"
+        ? localStorage.getItem("postVerifyRedirect")
+        : null;
+    const redirectTo =
+      stored && SAFE_REDIRECTS.includes(stored) ? stored : null;
+
+    if (redirectTo) {
+      localStorage.removeItem("postVerifyRedirect");
+      window.location.href = `/${locale}${redirectTo}`;
+      return null;
+    }
+
+    if (stored) {
+      localStorage.removeItem("postVerifyRedirect");
+    }
   }
 
   return (
