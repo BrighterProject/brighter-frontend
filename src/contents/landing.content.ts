@@ -48,6 +48,13 @@ const landingContent = {
       }),
       cta: t({ en: "See availability", bg: "Виж наличност" }),
     },
+    ownerBanner: {
+      label: t({
+        en: "You are a property owner.",
+        bg: "Вие сте собственик на имот.",
+      }),
+      cta: t({ en: "Add property →", bg: "Добави имот →" }),
+    },
   },
 } satisfies Dictionary;
 

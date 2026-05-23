@@ -54,13 +54,13 @@ export function Landing() {
           {isOwner && (
             <div className="flex items-center justify-between rounded-xl border bg-card px-4 py-3 text-sm shadow-sm">
               <span className="text-muted-foreground">
-                Вие сте собственик на имот.
+                {content.ownerBanner.label as string}
               </span>
               <a
                 href="/admin/properties/new"
                 className="font-medium text-primary hover:underline"
               >
-                Добави имот →
+                {content.ownerBanner.cta as string}
               </a>
             </div>
           )}
