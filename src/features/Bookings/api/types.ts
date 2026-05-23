@@ -1,3 +1,5 @@
+import type { CancellationPolicy } from "@Properties/api/types";
+
 export type PaymentStatus = "pending" | "paid" | "refunded" | "failed";
 
 export interface PaymentResponse {
@@ -77,6 +79,7 @@ export interface BookingResponse {
   guest_country: string | null;
   special_requests: string | null;
   payment_method: string | null;
+  cancellation_policy?: CancellationPolicy | null;
   updated_at: string;
   gap_adjustment_pct?: number;
 }
