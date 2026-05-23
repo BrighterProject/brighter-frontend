@@ -14,12 +14,16 @@ import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useIntlayer } from "react-intlayer";
 import { useEffect, useState } from "react";
 import { Settings } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
+import { usePortal } from "@/features/Subscriptions/api/hooks";
 
 export function UserNav({ onAction }: { onAction?: () => void }) {
   const [mounted, setMounted] = useState(false);
   const navigate = useLocalizedNavigate();
   const { data: user, isLoading } = useMe();
   const logout = useLogout();
+  const { locale } = useParams({ strict: false }) as { locale?: string };
+  const portal = usePortal();
 
   const content = useIntlayer("user-nav");
 
@@ -50,6 +54,8 @@ export function UserNav({ onAction }: { onAction?: () => void }) {
     );
   }
 
+  const isOwner = user?.scopes?.includes("properties:me") ?? false;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -77,6 +83,24 @@ export function UserNav({ onAction }: { onAction?: () => void }) {
             <a href="/admin/properties/new" onClick={onAction}>
               + Добави имот
             </a>
+          </DropdownMenuItem>
+        )}
+        {!isOwner && (
+          <DropdownMenuItem asChild>
+            <LocalizedLink to="/pricing" onClick={onAction}>
+              {content.labels.becomeOwner}
+            </LocalizedLink>
+          </DropdownMenuItem>
+        )}
+        {isOwner && (
+          <DropdownMenuItem
+            disabled={portal.isPending}
+            onClick={() => {
+              onAction?.();
+              portal.mutate({ locale: locale ?? "bg" });
+            }}
+          >
+            {portal.isPending ? "…" : content.labels.manageSubscription}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>

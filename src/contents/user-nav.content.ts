@@ -24,6 +24,14 @@ const userNavContent = {
         en: "Logout",
         bg: "Излез",
       }),
+      becomeOwner: t({
+        en: "Become an owner",
+        bg: "Станете собственик",
+      }),
+      manageSubscription: t({
+        en: "Manage subscription",
+        bg: "Управление на абонамент",
+      }),
     },
   },
 } satisfies Dictionary;
