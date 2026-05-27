@@ -5,8 +5,8 @@ const pricingContent = {
   content: {
     meta: {
       title: t({
-        en: "Pricing | Brighter.BG",
-        bg: "Ценови планове | Brighter.BG",
+        en: "Pricing | SeasideHoliday",
+        bg: "Ценови планове | Почивка на морето",
       }),
       description: t({
         en: "Choose a plan to start listing your properties.",

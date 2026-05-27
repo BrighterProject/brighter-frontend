@@ -5,8 +5,8 @@ const becomeOwnerContent = {
   content: {
     meta: {
       title: t({
-        en: "Become an Owner | Brighter.BG",
-        bg: "Станете собственик | Brighter.BG",
+        en: "Become an Owner | SeasideHoliday",
+        bg: "Станете собственик | Почивка на морето",
       }),
       description: t({
         en: "List your property and reach thousands of guests.",

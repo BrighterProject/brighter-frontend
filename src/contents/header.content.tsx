@@ -4,8 +4,8 @@ const headerContent = {
   key: "header",
   content: {
     brand: t({
-      en: "BrighterProject",
-      bg: "BrighterProject",
+      en: "SeasideHoliday",
+      bg: "Почивка на морето",
     }),
     signIn: t({ en: "Sign in", bg: "Вход" }),
     createAccount: t({ en: "Create account", bg: "Регистрация" }),

@@ -4,8 +4,8 @@ const footerContent = {
   key: "footer",
   content: {
     brand: t({
-      en: "Brighter.BG",
-      bg: "Brighter.BG",
+      en: "SeasideHoliday",
+      bg: "Почивка на морето",
     }),
     tagline: t({
       en: "Find and book properties near you.",
@@ -16,8 +16,8 @@ const footerContent = {
       bg: "изградено със shadcn/ui",
     }),
     copyright: t({
-      en: "\u00A9 2026 Brighter.BG. All rights reserved.",
-      bg: "\u00A9 2026 Brighter.BG. Всички права запазени.",
+      en: "\u00A9 2026 SeasideHoliday. All rights reserved.",
+      bg: "\u00A9 2026 Почивка на морето. Всички права запазени.",
     }),
     sections: {
       quickLinks: {

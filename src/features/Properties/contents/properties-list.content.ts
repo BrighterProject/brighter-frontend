@@ -5,8 +5,8 @@ const propertiesListContent = {
   content: {
     meta: {
       title: t({
-        en: "Browse Properties | Brighter.BG",
-        bg: "Разгледайте имоти | Brighter.BG",
+        en: "Browse Properties | SeasideHoliday",
+        bg: "Разгледайте имоти | Почивка на морето",
       }),
       description: t({
         en: "Find and book properties near you — apartments, houses, venues and more.",

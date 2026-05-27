@@ -5,8 +5,8 @@ const subscriptionSuccessContent = {
   content: {
     meta: {
       title: t({
-        en: "Subscription Confirmed | Brighter.BG",
-        bg: "Абонаментът е потвърден | Brighter.BG",
+        en: "Subscription Confirmed | SeasideHoliday",
+        bg: "Абонаментът е потвърден | Почивка на морето",
       }),
     },
     activating: {

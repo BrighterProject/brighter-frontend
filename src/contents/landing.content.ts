@@ -5,8 +5,8 @@ const landingContent = {
   content: {
     meta: {
       title: t({
-        en: "Brighter.BG | Book Properties Instantly",
-        bg: "Brighter.BG | Резервирайте имоти моментално",
+        en: "SeasideHoliday | Book Properties Instantly",
+        bg: "Почивка на морето | Резервирайте имоти моментално",
       }),
       description: t({
         en: "The easiest way to book apartments, houses, and venues near you.",

@@ -5,8 +5,8 @@ const propertyDetailContent = {
   content: {
     meta: {
       title: t({
-        en: "Property | Brighter.BG",
-        bg: "Имот | Brighter.BG",
+        en: "Property | SeasideHoliday",
+        bg: "Имот | Почивка на морето",
       }),
       description: t({
         en: "View property details, working hours, amenities and book your slot.",

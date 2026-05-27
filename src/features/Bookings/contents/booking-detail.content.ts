@@ -5,8 +5,8 @@ const bookingDetailContent = {
   content: {
     meta: {
       title: t({
-        en: "Booking Details | Brighter.BG",
-        bg: "Детайли за резервация | Brighter.BG",
+        en: "Booking Details | SeasideHoliday",
+        bg: "Детайли за резервация | Почивка на морето",
       }),
     },
     backToBookings: t({ en: "My Bookings", bg: "Моите резервации" }),

@@ -5,8 +5,8 @@ const rootContent = {
   content: {
     meta: {
       title: t({
-        en: "Book Properties in Bulgaria | Brighter.BG",
-        bg: "Резервирай имоти в България | Brighter.BG",
+        en: "Book Properties in Bulgaria | SeasideHoliday",
+        bg: "Резервирай имоти в България | Почивка на морето",
       }),
       description: t({
         en: "The easiest way to find and book apartments, houses, and venues. Discover great places across Bulgaria.",

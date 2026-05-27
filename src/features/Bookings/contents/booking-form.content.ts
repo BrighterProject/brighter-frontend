@@ -5,8 +5,8 @@ const bookingFormContent = {
   content: {
     meta: {
       title: t({
-        en: "Book Property | Brighter.BG",
-        bg: "Резервирай имот | Brighter.BG",
+        en: "Book Property | SeasideHoliday",
+        bg: "Резервирай имот | Почивка на морето",
       }),
       description: t({
         en: "Book your stay at this property.",
