@@ -7,7 +7,10 @@ import {
   parseDateParam,
   isoDate,
 } from "@/components/ui/date-range-picker";
-import { SettlementCombobox } from "@/components/ui/settlement-combobox";
+import {
+  SettlementCombobox,
+  type DestinationSelection,
+} from "@/components/ui/settlement-combobox";
 import { useSearchParams, type SearchParams } from "@/hooks/useSearchParams";
 
 interface SearchCardContent {
@@ -41,6 +44,9 @@ export function SearchCard({
   const [city, setCity] = useState(defaultValues?.city ?? "");
   const [settlementEkatte, setSettlementEkatte] = useState<string | undefined>(
     defaultValues?.settlement_ekatte,
+  );
+  const [regionCode, setRegionCode] = useState<string | undefined>(
+    defaultValues?.region_code,
   );
   const [keyword, setKeyword] = useState(defaultValues?.q ?? "");
   const [checkIn, setCheckIn] = useState<string | undefined>(
@@ -81,10 +87,17 @@ export function SearchCard({
 
   const hasDates = !!(checkIn && checkOut);
 
+  const handleDestination = (sel: DestinationSelection) => {
+    setCity(sel.name);
+    setSettlementEkatte(sel.settlement_ekatte);
+    setRegionCode(sel.region_code);
+  };
+
   const handleSearch = () => {
     navigate({
       city: city.trim() || undefined,
       settlement_ekatte: settlementEkatte,
+      region_code: regionCode,
       q: keyword.trim() || undefined,
       checkIn,
       checkOut,
@@ -211,10 +224,8 @@ export function SearchCard({
                 <SettlementCombobox
                   value={city}
                   ekatte={settlementEkatte}
-                  onChange={(name, ekatte) => {
-                    setCity(name);
-                    setSettlementEkatte(ekatte);
-                  }}
+                  regionCode={regionCode}
+                  onChange={handleDestination}
                   placeholder={content.destination.value as string}
                   className="h-10"
                 />
@@ -245,10 +256,8 @@ export function SearchCard({
             <SettlementCombobox
               value={city}
               ekatte={settlementEkatte}
-              onChange={(name, ekatte) => {
-                setCity(name);
-                setSettlementEkatte(ekatte);
-              }}
+              regionCode={regionCode}
+              onChange={handleDestination}
               placeholder={content.destination.value as string}
               className="h-10"
             />
@@ -287,10 +296,8 @@ export function SearchCard({
         <SettlementCombobox
           value={city}
           ekatte={settlementEkatte}
-          onChange={(name, ekatte) => {
-            setCity(name);
-            setSettlementEkatte(ekatte);
-          }}
+          regionCode={regionCode}
+          onChange={handleDestination}
           placeholder={content.destination.value as string}
           className="h-11"
         />

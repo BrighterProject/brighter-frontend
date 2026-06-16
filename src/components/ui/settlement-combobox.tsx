@@ -1,40 +1,58 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, X } from "lucide-react";
+import { MapPin, Map, X } from "lucide-react";
 import { useLocale } from "react-intlayer";
 import apiClient from "@/lib/api-client";
 import { useDebounce } from "@/hooks/useDebounce";
 
-interface Settlement {
-  ekatte: string;
-  tvm: string | null;
+interface Destination {
+  kind: "oblast" | "settlement";
+  code: string;
   name: string;
+  tvm: string | null;
+}
+
+export interface DestinationSelection {
+  name: string;
+  settlement_ekatte?: string;
+  region_code?: string;
 }
 
 interface SettlementComboboxProps {
   value: string;
-  ekatte: string | undefined;
-  onChange: (name: string, ekatte: string | undefined) => void;
+  /** Set when a settlement is currently selected. */
+  ekatte?: string;
+  /** Set when an oblast (region) is currently selected. */
+  regionCode?: string;
+  onChange: (selection: DestinationSelection) => void;
   placeholder?: string;
   className?: string;
 }
 
-async function fetchSettlements(q: string, lang: string): Promise<Settlement[]> {
-  const res = await apiClient.get<Settlement[]>("/regions/settlements/search", {
+async function fetchDestinations(q: string, lang: string): Promise<Destination[]> {
+  const res = await apiClient.get<Destination[]>("/regions/search", {
     params: { q, lang, limit: 10 },
   });
   return res.data;
 }
 
+function displayName(d: Destination): string {
+  return d.tvm ? `${d.tvm} ${d.name}` : d.name;
+}
+
 export function SettlementCombobox({
   value,
   ekatte,
+  regionCode,
   onChange,
   placeholder = "Enter destination",
   className = "",
 }: SettlementComboboxProps) {
   const { locale } = useLocale();
   const lang = locale === "en" ? "en" : "bg";
+  const oblastLabel = lang === "en" ? "Region" : "Област";
+
+  const hasSelection = !!(ekatte || regionCode);
 
   const [inputValue, setInputValue] = useState(value);
   const [open, setOpen] = useState(false);
@@ -46,11 +64,11 @@ export function SettlementCombobox({
   }, [value]);
 
   const debouncedQuery = useDebounce(inputValue, 350);
-  const shouldSearch = debouncedQuery.length >= 1 && !ekatte;
+  const shouldSearch = debouncedQuery.length >= 1 && !hasSelection;
 
   const { data: suggestions = [] } = useQuery({
-    queryKey: ["settlements", "search", debouncedQuery, lang],
-    queryFn: () => fetchSettlements(debouncedQuery, lang),
+    queryKey: ["destinations", "search", debouncedQuery, lang],
+    queryFn: () => fetchDestinations(debouncedQuery, lang),
     enabled: shouldSearch,
     staleTime: 60_000,
   });
@@ -69,28 +87,32 @@ export function SettlementCombobox({
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setInputValue(v);
-    if (ekatte) {
-      // User is typing again — clear the selected ekatte
-      onChange(v, undefined);
+    if (hasSelection) {
+      // User is typing again — clear the selected destination
+      onChange({ name: v });
     }
     setOpen(true);
   };
 
-  const handleSelect = (s: Settlement) => {
-    const name = s.tvm ? `${s.tvm} ${s.name}` : s.name;
+  const handleSelect = (d: Destination) => {
+    const name = displayName(d);
     setInputValue(name);
-    onChange(name, s.ekatte);
+    onChange(
+      d.kind === "oblast"
+        ? { name, region_code: d.code }
+        : { name, settlement_ekatte: d.code },
+    );
     setOpen(false);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     setInputValue("");
-    onChange("", undefined);
+    onChange({ name: "" });
     setOpen(false);
   };
 
-  const showDropdown = open && !ekatte && suggestions.length > 0;
+  const showDropdown = open && !hasSelection && suggestions.length > 0;
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
@@ -104,7 +126,7 @@ export function SettlementCombobox({
         className="h-full w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
         autoComplete="off"
       />
-      {(inputValue || ekatte) && (
+      {(inputValue || hasSelection) && (
         <button
           type="button"
           onClick={handleClear}
@@ -117,24 +139,33 @@ export function SettlementCombobox({
 
       {showDropdown && (
         <ul className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border border-border bg-popover shadow-md">
-          {suggestions.map((s) => (
-            <li key={s.ekatte}>
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(s)}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
-              >
-                <MapPin className="size-3.5 shrink-0 text-muted-foreground" />
-                <span>
-                  {s.tvm && (
-                    <span className="text-muted-foreground">{s.tvm} </span>
+          {suggestions.map((d) => {
+            const isOblast = d.kind === "oblast";
+            const Icon = isOblast ? Map : MapPin;
+            return (
+              <li key={`${d.kind}-${d.code}`}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect(d)}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Icon className="size-3.5 shrink-0 text-muted-foreground" />
+                  <span className="flex-1">
+                    {d.tvm && (
+                      <span className="text-muted-foreground">{d.tvm} </span>
+                    )}
+                    {d.name}
+                  </span>
+                  {isOblast && (
+                    <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                      {oblastLabel}
+                    </span>
                   )}
-                  {s.name}
-                </span>
-              </button>
-            </li>
-          ))}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

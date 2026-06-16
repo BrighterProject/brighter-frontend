@@ -7,6 +7,7 @@ export const Route = createFileRoute("/{-$locale}/properties/")({
   validateSearch: (search: Record<string, unknown>) => ({
     city: typeof search.city === "string" ? search.city : undefined,
     settlement_ekatte: typeof search.settlement_ekatte === "string" ? search.settlement_ekatte : undefined,
+    region_code: typeof search.region_code === "string" ? search.region_code : undefined,
     q: typeof search.q === "string" ? search.q : undefined,
     checkIn: typeof search.checkIn === "string" ? search.checkIn : undefined,
     checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
