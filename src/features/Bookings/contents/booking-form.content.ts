@@ -128,6 +128,28 @@ const bookingFormContent = {
       en: "Any additional notes...",
       bg: "Допълнителни бележки...",
     }),
+    cancellation: {
+      title: t({
+        en: "Cancellation policy",
+        bg: "Политика за отказ",
+        ru: "Политика отмены",
+      }),
+      free: t({
+        en: "Free cancellation: full refund up to 24 hours before check-in.",
+        bg: "Безплатен отказ: пълно връщане до 24 часа преди настаняване.",
+        ru: "Бесплатная отмена: полный возврат до 24 часов до заезда.",
+      }),
+      moderate: t({
+        en: "Moderate: full refund up to 5 days before check-in; 50% afterwards.",
+        bg: "Умерена: пълно връщане до 5 дни преди настаняване; 50% след това.",
+        ru: "Умеренная: полный возврат до 5 дней до заезда; 50% после.",
+      }),
+      strict: t({
+        en: "Strict: 50% refund up to 7 days before check-in; no refund afterwards.",
+        bg: "Строга: 50% връщане до 7 дни преди настаняване; без връщане след това.",
+        ru: "Строгая: 50% возврат до 7 дней до заезда; без возврата после.",
+      }),
+    },
   },
 } satisfies Dictionary;
 

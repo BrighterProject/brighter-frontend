@@ -8,11 +8,21 @@ import {
   useMySubscription,
   useCheckout,
 } from "@/features/Subscriptions/api/hooks";
-import type { SubscriptionPlan } from "@/features/Subscriptions/api/types";
+import type { SubscriptionPlan, SubscriptionPlanSlug } from "@/features/Subscriptions/api/types";
 import { LocalizedLink as Link } from "@/components/ui/localized-link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
-import { X } from "lucide-react";
+import {
+  Home,
+  Building2,
+  LayoutGrid,
+  Briefcase,
+  CreditCard,
+  RefreshCw,
+  Headphones,
+  X,
+} from "lucide-react";
 
 export const Route = createFileRoute("/{-$locale}/pricing")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -31,6 +41,22 @@ export const Route = createFileRoute("/{-$locale}/pricing")({
   component: PricingPage,
 });
 
+const PLAN_ICON: Record<SubscriptionPlanSlug, React.ReactNode> = {
+  starter: <Home className="size-5" />,
+  basic: <Building2 className="size-5" />,
+  pro: <LayoutGrid className="size-5" />,
+  business: <Briefcase className="size-5" />,
+  enterprise: null,
+};
+
+const MOST_POPULAR_SLUG: SubscriptionPlanSlug = "basic";
+
+function perPropertyEur(plan: SubscriptionPlan): string | null {
+  if (plan.max_listings <= 1) return null;
+  const eur = plan.price_eur_cents / 100 / plan.max_listings;
+  return `€${eur % 1 === 0 ? eur.toFixed(0) : eur.toFixed(2)}`;
+}
+
 function PricingPage() {
   const { status } = Route.useSearch();
   const content = useIntlayer("pricing-page");
@@ -46,26 +72,21 @@ function PricingPage() {
   const locale = localeParam ?? "bg";
 
   const handleCta = async (plan: SubscriptionPlan) => {
-    if (plan.stripe_price_id === null) {
+    if (plan.slug === "enterprise") {
       await localizedNavigate("/contacts");
       return;
     }
-
     if (!user) {
       localStorage.setItem("postVerifyRedirect", "/pricing");
       await localizedNavigate("/auth/signup");
       return;
     }
-
-    const result = await checkout.mutateAsync({
-      planSlug: plan.slug,
-      locale,
-    });
+    const result = await checkout.mutateAsync({ planSlug: plan.slug, locale });
     window.location.href = result.checkout_url;
   };
 
   const getCtaLabel = (plan: SubscriptionPlan): string => {
-    if (plan.stripe_price_id === null) {
+    if (plan.slug === "enterprise") {
       return content.plan.cta.contactUs.value as string;
     }
     if (!user) {
@@ -90,12 +111,34 @@ function PricingPage() {
     );
   };
 
+  const taglines = content.plan.taglines as Record<string, { value: string }>;
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* Cancelled banner */}
-        {status === "cancelled" && !dismissed && (
-          <div className="mb-8 flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 pb-14 pt-12 lg:pb-20 lg:pt-16">
+        <div className="pointer-events-none absolute -right-32 top-0 size-[500px] rounded-full bg-primary/5 blur-3xl" />
+        <div className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+          <Badge
+            variant="outline"
+            className="mb-4 border-primary/30 bg-primary/5 px-3 py-1 text-sm font-medium text-primary"
+          >
+            <CreditCard className="mr-1.5 size-3.5" />
+            {content.hero.badge}
+          </Badge>
+          <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            {content.hero.title}
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+            {content.hero.subtitle}
+          </p>
+        </div>
+      </section>
+
+      {/* Cancelled banner */}
+      {status === "cancelled" && !dismissed && (
+        <div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <span>{content.banner.cancelled}</span>
             <button
               type="button"
@@ -106,71 +149,98 @@ function PricingPage() {
               <X className="size-4" />
             </button>
           </div>
-        )}
-
-        {/* Hero */}
-        <div className="mb-12 text-center">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            {content.hero.title}
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            {content.hero.subtitle}
-          </p>
         </div>
+      )}
 
-        {/* Plan cards */}
+      {/* Plan cards */}
+      <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         {plansLoading ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-wrap justify-center gap-6">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse rounded-2xl border bg-card p-6"
+                className="w-full animate-pulse rounded-2xl border bg-card p-6 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
               >
-                <div className="mb-4 h-6 w-1/2 rounded bg-muted" />
-                <div className="mb-2 h-10 w-2/3 rounded bg-muted" />
-                <div className="mb-6 h-4 w-full rounded bg-muted" />
+                <div className="mb-4 size-11 rounded-xl bg-muted" />
+                <div className="mb-2 h-5 w-1/2 rounded bg-muted" />
+                <div className="mb-4 h-3 w-3/4 rounded bg-muted" />
+                <div className="mb-6 h-9 w-2/3 rounded bg-muted" />
                 <div className="h-10 w-full rounded bg-muted" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {plans?.map((plan) => {
+          <div className="flex flex-wrap justify-center gap-6">
+            {plans?.filter((p) => p.slug !== "enterprise").map((plan) => {
               const isCurrentPlan =
                 subscription?.plan.slug === plan.slug &&
                 (subscription.status === "active" ||
                   subscription.status === "trialing");
+              const isPopular = plan.slug === MOST_POPULAR_SLUG;
               const priceEur = (plan.price_eur_cents / 100).toFixed(0);
+              const perProp = perPropertyEur(plan);
+              const icon = PLAN_ICON[plan.slug];
+              const tagline = taglines[plan.slug]?.value;
 
               return (
                 <div
                   key={plan.id}
-                  className={`relative flex flex-col rounded-2xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-md ${
-                    isCurrentPlan
-                      ? "border-primary ring-2 ring-primary/20"
+                  className={`group relative flex w-full flex-col rounded-2xl border bg-card p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
+                    isCurrentPlan || isPopular
+                      ? "border-primary/30 ring-2 ring-primary/20"
                       : "border-border"
                   }`}
                 >
-                  <div className="mb-4">
-                    <h2 className="text-lg font-semibold text-foreground">
-                      {plan.name}
-                    </h2>
-                    <div className="mt-2 flex items-end gap-1">
-                      <span className="font-display text-4xl font-bold text-foreground">
-                        €{priceEur}
-                      </span>
-                      <span className="mb-1 text-sm text-muted-foreground">
-                        /mo
-                      </span>
+                  {isPopular && !isCurrentPlan && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/20">
+                        {content.plan.mostPopular}
+                      </Badge>
                     </div>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {plan.max_listings} {content.plan.listings}
+                  )}
+
+                  {icon && (
+                    <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                      {icon}
+                    </div>
+                  )}
+
+                  <h2 className="font-display text-lg font-semibold text-foreground">
+                    {plan.name}
+                  </h2>
+                  {tagline && (
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {tagline}
                     </p>
+                  )}
+
+                  <div className="mt-4 flex items-end gap-1.5">
+                    <span className="font-display text-4xl font-bold text-foreground">
+                      €{priceEur}
+                    </span>
+                    <span className="mb-1 text-sm text-muted-foreground">
+                      {content.plan.perMonth}
+                    </span>
                   </div>
 
-                  <div className="mt-auto pt-4">
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      {content.plan.upTo}{" "}
+                      <span className="font-medium text-foreground">
+                        {plan.max_listings}
+                      </span>{" "}
+                      {content.plan.properties}
+                    </span>
+                    {perProp && (
+                      <span className="rounded-full bg-primary/8 px-2 py-0.5 text-xs font-medium text-primary">
+                        {perProp} {content.plan.perProperty}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-auto pt-6">
                     <Button
-                      className="w-full"
+                      className={`w-full ${isPopular && !isCurrentPlan ? "shadow-md shadow-primary/20" : ""}`}
                       variant={isCurrentPlan ? "outline" : "default"}
                       disabled={isCtaDisabled(plan) || checkout.isPending}
                       onClick={() => handleCta(plan)}
@@ -183,25 +253,45 @@ function PricingPage() {
             })}
 
             {/* Enterprise card */}
-            <div className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold text-foreground">
-                  {content.enterprise.name}
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {content.enterprise.description}
-                </p>
+            <div className="flex w-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+              <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                <Briefcase className="size-5" />
               </div>
-              <div className="mt-auto pt-4">
+              <h2 className="font-display text-lg font-semibold text-foreground">
+                {content.enterprise.name}
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                {content.enterprise.tagline}
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {content.enterprise.description}
+              </p>
+              <div className="mt-auto pt-6">
                 <Button className="w-full" variant="outline" asChild>
-                  <Link to="/contacts">
-                    {content.plan.cta.contactUs}
-                  </Link>
+                  <Link to="/contacts">{content.plan.cta.contactUs}</Link>
                 </Button>
               </div>
             </div>
           </div>
         )}
+      </div>
+
+      {/* Trust bar */}
+      <div className="border-t bg-muted/30">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-8 sm:flex-row sm:justify-center sm:gap-10 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CreditCard className="size-4 text-primary" />
+            {content.trust.payments}
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <RefreshCw className="size-4 text-primary" />
+            {content.trust.cancel}
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Headphones className="size-4 text-primary" />
+            {content.trust.support}
+          </div>
+        </div>
       </div>
     </div>
   );

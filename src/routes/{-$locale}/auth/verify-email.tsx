@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
 import { useIntlayer } from "react-intlayer";
 import { LocalizedLink as Link } from "@/components/ui/localized-link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -46,12 +46,22 @@ function VerifyEmailCard() {
   const { locale } = Route.useParams();
   const content = useIntlayer("verify-email");
   const verifyMutation = useVerifyEmail();
+  const [loginRedirect, setLoginRedirect] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (token) {
       verifyMutation.mutate(token);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!verifyMutation.isSuccess) return;
+    const stored = localStorage.getItem("postVerifyRedirect");
+    if (stored && SAFE_REDIRECTS.includes(stored)) {
+      setLoginRedirect(`/${locale}${stored}`);
+    }
+    localStorage.removeItem("postVerifyRedirect");
+  }, [verifyMutation.isSuccess, locale]);
 
   if (verifyMutation.isPending || !token) {
     return (
@@ -81,25 +91,6 @@ function VerifyEmailCard() {
     );
   }
 
-  if (verifyMutation.isSuccess) {
-    const stored =
-      typeof window !== "undefined"
-        ? localStorage.getItem("postVerifyRedirect")
-        : null;
-    const redirectTo =
-      stored && SAFE_REDIRECTS.includes(stored) ? stored : null;
-
-    if (redirectTo) {
-      localStorage.removeItem("postVerifyRedirect");
-      window.location.href = `/${locale}${redirectTo}`;
-      return null;
-    }
-
-    if (stored) {
-      localStorage.removeItem("postVerifyRedirect");
-    }
-  }
-
   return (
     <div className="flex flex-col items-center gap-4 py-6 text-center">
       <div className="flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
@@ -112,7 +103,12 @@ function VerifyEmailCard() {
         {content.success.description}
       </p>
       <Button asChild className="mt-2">
-        <Link to="/auth/login">{content.success.button}</Link>
+        <Link
+          to="/auth/login"
+          search={loginRedirect ? { redirect: loginRedirect } : undefined}
+        >
+          {content.success.button}
+        </Link>
       </Button>
     </div>
   );

@@ -548,6 +548,14 @@ export function BookingForm({
                         ? c.submit.redirecting
                         : c.submit.idle}
                   </Button>
+
+                  {property.cancellation_policy && (
+                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                      {(c.cancellation as Record<string, any>)[
+                        property.cancellation_policy
+                      ]?.value ?? ""}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
