@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { SearchCard } from "@/components/ui/search-card";
 import { OfferCard, type OfferCardData } from "./offer-card";
 import { PropertiesSidebar } from "./properties-sidebar";
+import { PropertyMapModal } from "./property-map-modal";
 import {
   type Filters,
   INITIAL_FILTERS,
@@ -115,6 +116,17 @@ export function PropertiesList() {
   } = useInfiniteProperties(apiParams);
 
   const properties: PropertyListItem[] = data?.pages.flatMap((p) => p) ?? [];
+
+  const goToProperty = (propertyId: string) =>
+    navigate({
+      to: "/{-$locale}/properties/$propertyId" as any,
+      params: { propertyId } as any,
+      search: {
+        checkIn: urlCheckIn,
+        checkOut: urlCheckOut,
+        adults: urlAdults,
+      } as any,
+    });
 
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -238,13 +250,20 @@ export function PropertiesList() {
 
           <main className="min-w-0 flex-1">
             {!isLoading && !isError && properties.length > 0 && (
-              <p className="mb-3 text-sm text-muted-foreground">
-                {properties.length}{" "}
-                {properties.length === 1
-                  ? c.results.property
-                  : c.results.properties}{" "}
-                {c.results.found}
-              </p>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {properties.length}{" "}
+                  {properties.length === 1
+                    ? c.results.property
+                    : c.results.properties}{" "}
+                  {c.results.found}
+                </p>
+                <PropertyMapModal
+                  properties={properties}
+                  locale={locale}
+                  onSelect={goToProperty}
+                />
+              </div>
             )}
 
             {isLoading && (
@@ -284,16 +303,7 @@ export function PropertiesList() {
                       c.card,
                       roomsC,
                       formatRooms,
-                      () =>
-                        navigate({
-                          to: "/{-$locale}/properties/$propertyId" as any,
-                          params: { propertyId: property.id } as any,
-                          search: {
-                            checkIn: urlCheckIn,
-                            checkOut: urlCheckOut,
-                            adults: urlAdults,
-                          } as any,
-                        }),
+                      () => goToProperty(property.id),
                     )}
                   />
                 ))}

@@ -5,6 +5,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Leaflet custom divIcons: strip the default white box/border. */
+.leaflet-div-icon.property-price-pill {
+  background: transparent;
+  border: 0;
+  width: auto !important;
+  height: auto !important;
+}
+.property-price-pill > div {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+
 @theme inline {
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-display: 'Inria Serif', Georgia, serif;

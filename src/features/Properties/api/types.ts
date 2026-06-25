@@ -77,6 +77,8 @@ export interface PropertyListItem {
   name: string;
   description: string;
   city: string;
+  latitude?: string | null;
+  longitude?: string | null;
   property_type: PropertyType;
   status: PropertyStatus;
   price_per_night: string;
