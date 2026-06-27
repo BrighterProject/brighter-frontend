@@ -48,6 +48,8 @@ function priceIcon(label: string, highlighted: boolean): L.DivIcon {
 
 function popupHtml(p: PropertyListItem): string {
   const rating = Number(p.rating).toFixed(1);
+  const reviews = escapeHtml(String(p.total_reviews));
+  const price = escapeHtml(formatPrice(p.price_per_night, p.currency));
   const thumb = p.thumbnail
     ? `<img src="${escapeHtml(p.thumbnail)}" alt="" class="h-24 w-full rounded-md object-cover" />`
     : "";
@@ -55,8 +57,8 @@ function popupHtml(p: PropertyListItem): string {
     <div class="w-44 space-y-1">
       ${thumb}
       <div class="font-semibold leading-tight">${escapeHtml(p.name)}</div>
-      <div class="text-xs text-slate-500">★ ${rating} · ${p.total_reviews}</div>
-      <div class="font-bold">${formatPrice(p.price_per_night, p.currency)}</div>
+      <div class="text-xs text-slate-500">★ ${rating} · ${reviews}</div>
+      <div class="font-bold">${price}</div>
     </div>`;
 }
 
