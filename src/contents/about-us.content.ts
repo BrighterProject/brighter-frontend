@@ -5,12 +5,12 @@ const aboutUsContent = {
   content: {
     meta: {
       title: t({
-        en: "About Us | Brighter.BG",
-        bg: "За нас | Brighter.BG",
+        en: "About Us | SeasideHoliday",
+        bg: "За нас | Почивка на морето",
       }),
       description: t({
-        en: "Learn about the team behind Brighter.BG — two students from Bulgaria building an open-source property booking platform.",
-        bg: "Научете повече за екипа зад Brighter.BG — двама ученици от България, създаващи платформа за резервации на имоти с отворен код.",
+        en: "Learn about the team behind SeasideHoliday — two students from Bulgaria building an open-source property booking platform.",
+        bg: "Научете повече за екипа зад Почивка на морето — двама ученици от България, създаващи платформа за резервации на имоти с отворен код.",
       }),
     },
     hero: {
@@ -28,16 +28,16 @@ const aboutUsContent = {
       title: t({ en: "Who We Are", bg: "Кои сме ние" }),
       paragraphs: [
         t({
-          en: "We are Kirill from Burgas and Tsveti from Pernik — two students who share a love for technology. Brighter.BG started as our project for the National IT Olympiad — an opportunity to tackle a real problem we saw in our everyday lives.",
-          bg: "Ние сме Кирил от Бургас и Цвети от Перник — двама ученици, които споделят любовта си към технологиите. Brighter.BG започна като наш проект за Националната IT олимпиада — възможност да решим реален проблем от ежедневието ни.",
+          en: "We are Kirill from Burgas and Tsveti from Pernik — two students who share a love for technology. SeasideHoliday started as our project for the National IT Olympiad — an opportunity to tackle a real problem we saw in our everyday lives.",
+          bg: "Ние сме Кирил от Бургас и Цвети от Перник — двама ученици, които споделят любовта си към технологиите. Почивка на морето започна като наш проект за Националната IT олимпиада — възможност да решим реален проблем от ежедневието ни.",
         }),
         t({
           en: "Inspired by the technological advancements in other countries — where booking a property is as easy as ordering food online — we set out to bring that same convenience to Bulgaria. We noticed that most property bookings here still happen through phone calls, Facebook messages, or word of mouth. We wanted to change that.",
           bg: "Вдъхновени от технологичния напредък в други държави — където резервацията на имот е толкова лесна, колкото поръчката на храна онлайн — решихме да донесем същото удобство в България. Забелязахме, че повечето резервации тук все още стават по телефона, чрез Facebook съобщения или от уста на уста. Искахме да променим това.",
         }),
         t({
-          en: "Brighter.BG is fully open-source. We believe in transparency and community-driven development. Every line of code is public, and we welcome contributions from developers who share our vision.",
-          bg: "Brighter.BG е изцяло с отворен код. Вярваме в прозрачността и разработката, задвижвана от общността. Всеки ред код е публичен и приветстваме приноси от разработчици, споделящи нашата визия.",
+          en: "SeasideHoliday is fully open-source. We believe in transparency and community-driven development. Every line of code is public, and we welcome contributions from developers who share our vision.",
+          bg: "Почивка на морето е изцяло с отворен код. Вярваме в прозрачността и разработката, задвижвана от общността. Всеки ред код е публичен и приветстваме приноси от разработчици, споделящи нашата визия.",
         }),
       ],
     },
@@ -73,8 +73,8 @@ const aboutUsContent = {
         bg: "Искате да добавите вашия имот?",
       }),
       subtitle: t({
-        en: "Getting your property on Brighter.BG is simple. Here's how:",
-        bg: "Добавянето на вашия имот в Brighter.BG е лесно. Ето как:",
+        en: "Getting your property on SeasideHoliday is simple. Here's how:",
+        bg: "Добавянето на вашия имот в Почивка на морето е лесно. Ето как:",
       }),
       steps: [
         {

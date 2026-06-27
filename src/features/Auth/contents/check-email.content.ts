@@ -25,6 +25,10 @@ const checkEmailContent = {
       en: "Can't find it? Check your spam folder.",
       bg: "Не го намирате? Проверете папката за спам.",
     }),
+    pricingRedirectHint: t({
+      en: "After verifying, you'll be taken to choose a plan.",
+      bg: "След потвърждението ще бъдете насочени към избор на план.",
+    }),
     loginPrompt: {
       text: t({
         en: "Already verified? ",

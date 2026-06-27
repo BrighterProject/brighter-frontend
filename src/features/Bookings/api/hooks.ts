@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
+  BankTransferResponse,
   BookingCreate,
   BookingResponse,
   CheckoutResponse,
@@ -19,6 +20,26 @@ export const useOccupiedSlots = (propertyId: string) =>
     },
     enabled: !!propertyId,
   });
+
+export const useBooking = (bookingId: string) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["bookings", bookingId],
+    queryFn: async () => {
+      const { data } = await apiClient.get<BookingResponse>(
+        `/bookings/${bookingId}`,
+      );
+      return data;
+    },
+    initialData: () =>
+      queryClient
+        .getQueryData<BookingResponse[]>(["bookings", "mine"])
+        ?.find((b) => b.id === bookingId),
+    initialDataUpdatedAt: () =>
+      queryClient.getQueryState(["bookings", "mine"])?.dataUpdatedAt,
+    enabled: !!bookingId,
+  });
+};
 
 export const useMyBookings = () =>
   useQuery({
@@ -82,6 +103,17 @@ export const useCreateCheckout = (locale?: string) =>
     },
   });
 
+export const useCreateBankTransferIntent = () =>
+  useMutation({
+    mutationFn: async (bookingId: string) => {
+      const { data } = await apiClient.post<BankTransferResponse>(
+        "/payments/bank-transfer",
+        { booking_id: bookingId },
+      );
+      return data;
+    },
+  });
+
 export const useBookingPayment = (bookingId: string) =>
   useQuery({
     queryKey: ["payments", "booking", bookingId],
@@ -93,6 +125,22 @@ export const useBookingPayment = (bookingId: string) =>
     },
     enabled: !!bookingId,
     retry: false,
+  });
+
+export const usePaymentBySession = (sessionId: string | undefined) =>
+  useQuery({
+    queryKey: ["payments", "session", sessionId],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PaymentResponse>(
+        `/payments/session/${sessionId}`,
+      );
+      return data;
+    },
+    enabled: !!sessionId,
+    retry: false,
+    // Poll every 2 s while pending — stops once Stripe webhook marks it paid/failed
+    refetchInterval: (query) =>
+      query.state.data?.status === "pending" ? 2000 : false,
   });
 
 export const useCancelBooking = () => {

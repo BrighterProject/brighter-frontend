@@ -5,8 +5,8 @@ const landingContent = {
   content: {
     meta: {
       title: t({
-        en: "Brighter.BG | Book Properties Instantly",
-        bg: "Brighter.BG | Резервирайте имоти моментално",
+        en: "SeasideHoliday | Book Properties Instantly",
+        bg: "Почивка на морето | Резервирайте имоти моментално",
       }),
       description: t({
         en: "The easiest way to book apartments, houses, and venues near you.",
@@ -28,6 +28,10 @@ const landingContent = {
         bg: "Въведете дестинация или обект",
       }),
       dates: t({ en: "Select dates", bg: "Изберете дати" }),
+      keyword: t({
+        en: "Search by name, location...",
+        bg: "Търси по име на плаж, комплекс...",
+      }),
       button: t({ en: "Search", bg: "Търсене" }),
     },
     offers: {
@@ -43,6 +47,13 @@ const landingContent = {
         bg: "Включва данъци и такси",
       }),
       cta: t({ en: "See availability", bg: "Виж наличност" }),
+    },
+    ownerBanner: {
+      label: t({
+        en: "You are a property owner.",
+        bg: "Вие сте собственик на имот.",
+      }),
+      cta: t({ en: "Add property →", bg: "Добави имот →" }),
     },
   },
 } satisfies Dictionary;

@@ -8,6 +8,7 @@ React SSR-capable app (TanStack Start) serving the public-facing property bookin
 bun run dev      # Vite dev server on port 3000
 bun run build    # production build
 bun run test     # vitest (unit/component tests)
+bun run lint     # ESLint
 bunx intlayer build  # regenerate i18n types after editing *.content.ts files
 ```
 
@@ -164,3 +165,14 @@ Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in 
 - **Booking guest info**: `BookingForm` sends `guest_name`, `guest_email`, `guest_phone`, `special_requests` as top-level fields in `BookingCreate` — these are proper columns on the `Booking` model.
 - **Infinite scroll query key**: `useInfiniteProperties` uses `["properties", "infinite", params]`. When filters change the params object changes, which resets to page 1 automatically. Keep `buildParams()` output stable (don't create new object references unnecessarily inside render).
 - **`useOccupiedSlots` on property detail**: Called unconditionally — unauthenticated users get a 401 which the hook handles gracefully (returns empty array, no retry). Only authenticated users see booking-occupied dates.
+
+## Git & Branch Workflow
+
+- **Branch off `dev`**: all new work starts from `dev` — use `feat/<slug>` (or `fix/`, `chore/`, `test/`, `refactor/` as appropriate)
+- **PR targets `dev`**: never push directly to `dev` or `main`
+- **Approval required**: at least one human approval before merging
+- **CI must be green**: all checks must pass before merging
+- **Staging on green `dev`**: a passing `dev` triggers an automatic staging deployment
+- **`dev` → `main` is manual**: when `dev` is stable and ready to ship, open a PR from `dev` to `main` and merge manually
+- **Hotfixes bypass `dev`**: branch off `main` as `fix/<slug>`, PR directly to `main`, then backport to `dev`
+- **Branch cleanup**: delete merged branches periodically — keep them for a while for reference, then clean up

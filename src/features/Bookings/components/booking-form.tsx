@@ -4,7 +4,12 @@ import { useIntlayer, useLocaleStorage } from "react-intlayer";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateBooking, useCreateCheckout } from "../api/hooks";
+import {
+  useCreateBankTransferIntent,
+  useCreateBooking,
+  useCreateCheckout,
+} from "../api/hooks";
+import type { PaymentMethodOption } from "@/features/Properties/api/types";
 import { PriceBreakdown } from "./price-breakdown";
 import {
   type PropertyResponse,
@@ -69,9 +74,13 @@ export function BookingForm({
   const { getLocale } = useLocaleStorage();
   const locale = getLocale();
 
+  const acceptedMethods: PaymentMethodOption[] =
+    property.payment_config?.accepted_methods ?? ["card"];
+
   const { data: me } = useMe();
   const createBooking = useCreateBooking();
   const createCheckout = useCreateCheckout(locale);
+  const createBankTransferIntent = useCreateBankTransferIntent();
   const propertyName =
     resolveTranslation(property.translations, locale)?.name ?? "Untitled";
 
@@ -95,6 +104,9 @@ export function BookingForm({
   const [guest, setGuest] = useState<GuestInfo>(EMPTY_GUEST);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<GuestInfo>>({});
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOption>(
+    acceptedMethods[0] ?? "card",
+  );
 
   useEffect(() => {
     if (!me) return;
@@ -148,6 +160,7 @@ export function BookingForm({
         guest_phone: guest.phone.trim(),
         guest_country: guest.country || null,
         special_requests: guest.specialRequests.trim() || null,
+        payment_method: paymentMethod,
       });
     } catch (err: any) {
       const httpStatus = err?.response?.status;
@@ -156,6 +169,25 @@ export function BookingForm({
           ? (c.errors.conflict.value as string)
           : (c.errors.generic.value as string),
       );
+      return;
+    }
+
+    if (paymentMethod === "cash") {
+      navigate({ to: "/{-$locale}/bookings" as any } as any);
+      return;
+    }
+
+    if (paymentMethod === "bank_transfer") {
+      try {
+        const intent = await createBankTransferIntent.mutateAsync(booking.id);
+        navigate({
+          to: "/{-$locale}/bank-transfer-instructions" as any,
+          search: { intentId: intent.id } as any,
+        } as any);
+      } catch {
+        setError(c.errors.checkoutFailed.value as string);
+        navigate({ to: "/{-$locale}/bookings" as any } as any);
+      }
       return;
     }
 
@@ -430,6 +462,74 @@ export function BookingForm({
                     />
                   )}
 
+                  {acceptedMethods.length > 1 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        {c.sections.paymentMethod}
+                      </p>
+                      {acceptedMethods.includes("card") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="card"
+                            checked={paymentMethod === "card"}
+                            onChange={() => setPaymentMethod("card")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.card}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.cardFee}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                      {acceptedMethods.includes("bank_transfer") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="bank_transfer"
+                            checked={paymentMethod === "bank_transfer"}
+                            onChange={() => setPaymentMethod("bank_transfer")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.bankTransfer}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.bankTransferNote}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                      {acceptedMethods.includes("cash") && (
+                        <label className="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value="cash"
+                            checked={paymentMethod === "cash"}
+                            onChange={() => setPaymentMethod("cash")}
+                            className="mt-0.5"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {c.payment.cash}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.payment.cashNote}
+                            </p>
+                          </div>
+                        </label>
+                      )}
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     size="lg"
@@ -437,16 +537,25 @@ export function BookingForm({
                     disabled={
                       createBooking.isPending ||
                       createCheckout.isPending ||
+                      createBankTransferIntent.isPending ||
                       !checkIn ||
                       !checkOut
                     }
                   >
                     {createBooking.isPending
                       ? c.submit.submitting
-                      : createCheckout.isPending
+                      : createCheckout.isPending || createBankTransferIntent.isPending
                         ? c.submit.redirecting
                         : c.submit.idle}
                   </Button>
+
+                  {property.cancellation_policy && (
+                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                      {(c.cancellation as Record<string, any>)[
+                        property.cancellation_policy
+                      ]?.value ?? ""}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

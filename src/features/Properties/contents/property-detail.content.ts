@@ -5,8 +5,8 @@ const propertyDetailContent = {
   content: {
     meta: {
       title: t({
-        en: "Property | Brighter.BG",
-        bg: "Имот | Brighter.BG",
+        en: "Property | SeasideHoliday",
+        bg: "Имот | Почивка на морето",
       }),
       description: t({
         en: "View property details, working hours, amenities and book your slot.",
@@ -65,6 +65,39 @@ const propertyDetailContent = {
       garden:             t({ en: "Garden",                 bg: "Градина",                  ru: "Сад" }),
       pet_friendly:       t({ en: "Pet Friendly",           bg: "Домашни любимци",          ru: "Можно с питомцами" }),
       coffee_machine:     t({ en: "Coffee Machine",         bg: "Кафемашина",               ru: "Кофемашина" }),
+    },
+    cancellationPolicy: {
+      title: t({
+        en: "Cancellation policy",
+        bg: "Политика за отказ",
+        ru: "Политика отмены",
+      }),
+      labels: {
+        free: t({
+          en: "Free cancellation",
+          bg: "Безплатен отказ",
+          ru: "Бесплатная отмена",
+        }),
+        moderate: t({ en: "Moderate", bg: "Умерена", ru: "Умеренная" }),
+        strict: t({ en: "Strict", bg: "Строга", ru: "Строгая" }),
+      },
+      descriptions: {
+        free: t({
+          en: "Full refund up to 24 hours before check-in.",
+          bg: "Пълно връщане до 24 часа преди настаняване.",
+          ru: "Полный возврат до 24 часов до заезда.",
+        }),
+        moderate: t({
+          en: "Full refund up to 5 days before check-in; 50% afterwards.",
+          bg: "Пълно връщане до 5 дни преди настаняване; 50% след това.",
+          ru: "Полный возврат до 5 дней до заезда; 50% после.",
+        }),
+        strict: t({
+          en: "50% refund up to 7 days before check-in; no refund afterwards.",
+          bg: "50% връщане до 7 дни преди настаняване; без връщане след това.",
+          ru: "50% возврат до 7 дней до заезда; без возврата после.",
+        }),
+      },
     },
     bookingCard: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),

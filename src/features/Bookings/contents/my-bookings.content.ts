@@ -5,8 +5,8 @@ const myBookingsContent = {
   content: {
     meta: {
       title: t({
-        en: "My Bookings | Brighter.BG",
-        bg: "Моите резервации | Brighter.BG",
+        en: "My Bookings | SeasideHoliday",
+        bg: "Моите резервации | Почивка на морето",
       }),
       description: t({
         en: "View and manage your property bookings.",
@@ -26,6 +26,8 @@ const myBookingsContent = {
     paying: t({ en: "Loading...", bg: "Зарежда..." }),
     property: t({ en: "Property", bg: "Имот" }),
     total: t({ en: "Total", bg: "Общо" }),
+    upcoming: t({ en: "Upcoming", bg: "Предстоящи" }),
+    past: t({ en: "Past", bg: "Минали" }),
     toasts: {
       paymentSuccess: t({
         en: "Payment successful! Your booking will be confirmed shortly.",
@@ -67,6 +69,27 @@ const myBookingsContent = {
       viewProperty: t({ en: "View property \u2192", bg: "Вижте имота \u2192" }),
       close: t({ en: "Close", bg: "Затвори" }),
       updatedAt: t({ en: "Last updated", bg: "Последна промяна" }),
+    },
+    cancelDialog: {
+      title: t({ en: "Cancel booking", bg: "Откажи резервация" }),
+      confirm: t({ en: "Yes, cancel", bg: "Да, откажи" }),
+      abort: t({ en: "Keep booking", bg: "Запази резервацията" }),
+      free: t({
+        en: "You are eligible for a full refund upon cancellation.",
+        bg: "Имате право на пълно възстановяване при отказ.",
+      }),
+      moderate: t({
+        en: "Cancellations within 5 days of check-in are non-refundable. If your check-in is more than 5 days away you will receive a full refund.",
+        bg: "Отказите в рамките на 5 дни преди настаняване не подлежат на възстановяване. Ако настаняването е след повече от 5 дни, ще получите пълно възстановяване.",
+      }),
+      strict: t({
+        en: "Cancellations are non-refundable for this property. Your payment will not be returned.",
+        bg: "Резервациите за този имот не подлежат на възстановяване. Плащането ви няма да бъде върнато.",
+      }),
+      noPayment: t({
+        en: "No payment has been made. Cancelling is free.",
+        bg: "Не е направено плащане. Отказът е безплатен.",
+      }),
     },
   },
 } satisfies Dictionary;

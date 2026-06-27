@@ -67,6 +67,28 @@ const loginFormContent = {
       en: "Continue with Google",
       bg: "Продължи с Google",
     }),
+    errors: {
+      emailRequired: t({
+        en: "Email is required.",
+        bg: "Имейлът е задължителен.",
+      }),
+      emailInvalid: t({
+        en: "Please enter a valid email address.",
+        bg: "Моля въведете валиден имейл адрес.",
+      }),
+      passwordRequired: t({
+        en: "Password is required.",
+        bg: "Паролата е задължителна.",
+      }),
+      invalidCredentials: t({
+        en: "Incorrect email or password.",
+        bg: "Грешен имейл или парола.",
+      }),
+      generic: t({
+        en: "Something went wrong. Please try again.",
+        bg: "Нещо се обърка. Моля, опитайте отново.",
+      }),
+    },
     panel: {
       tagline: t({
         en: "Book your next game.",

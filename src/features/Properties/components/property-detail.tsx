@@ -552,6 +552,30 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                 </div>
               )}
 
+              {/* Cancellation policy */}
+              {property.cancellation_policy && (
+                <>
+                  <hr className="border-border" />
+                  <div>
+                    <h2 className="font-display text-lg font-semibold text-foreground">
+                      {c.cancellationPolicy.title}
+                    </h2>
+                    <div className="mt-3 rounded-lg border p-4">
+                      <p className="text-sm font-semibold text-foreground">
+                        {(c.cancellationPolicy.labels as Record<string, any>)[
+                          property.cancellation_policy
+                        ]?.value ?? property.cancellation_policy}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {(c.cancellationPolicy.descriptions as Record<string, any>)[
+                          property.cancellation_policy
+                        ]?.value ?? ""}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+
               {/* Today's unavailabilities */}
               {todayUnavailabilities.length > 0 && (
                 <div className="space-y-3">

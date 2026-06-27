@@ -5,8 +5,8 @@ const propertiesListContent = {
   content: {
     meta: {
       title: t({
-        en: "Browse Properties | Brighter.BG",
-        bg: "Разгледайте имоти | Brighter.BG",
+        en: "Browse Properties | SeasideHoliday",
+        bg: "Разгледайте имоти | Почивка на морето",
       }),
       description: t({
         en: "Find and book properties near you — apartments, houses, venues and more.",
@@ -27,6 +27,12 @@ const propertiesListContent = {
         label: t({ en: "Destination", bg: "Дестинация" }),
         placeholder: t({ en: "Where are you going?", bg: "Къде отивате?" }),
       },
+      keyword: t({
+        en: "Search by keywords",
+        bg: "Търси по ключови думи",
+      }),
+      dates: t({ en: "Select dates", bg: "Изберете дати" }),
+
       price: {
         label: t({ en: "Your budget (per night)", bg: "Бюджет (на нощувка)" }),
         currency: t({ en: "EUR", bg: "EUR" }),

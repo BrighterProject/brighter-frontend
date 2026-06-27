@@ -27,6 +27,16 @@ const Header: FC = () => {
 
           {/* Desktop right side */}
           <div className="hidden items-center gap-6 md:flex">
+            {/* Nav links */}
+            <nav aria-label={content.aria.nav.value as string}>
+              <LocalizedLink
+                to="/pricing"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {content.pricing}
+              </LocalizedLink>
+            </nav>
+
             {/* Actions: help + locale */}
             <div className="flex items-center gap-4">
               <button
@@ -110,6 +120,14 @@ const Header: FC = () => {
                     </Button>
                   </>
                 )}
+
+                <LocalizedLink
+                  to="/pricing"
+                  onClick={() => setOpen(false)}
+                  className="block text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {content.pricing}
+                </LocalizedLink>
 
                 <div className="flex items-center justify-between border-t pt-3">
                   <LocaleSwitcher />

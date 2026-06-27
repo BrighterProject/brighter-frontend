@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
 import { useIntlayer } from "react-intlayer";
 import { LocalizedLink as Link } from "@/components/ui/localized-link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -39,16 +39,29 @@ function RouteComponent() {
   );
 }
 
+const SAFE_REDIRECTS = ["/pricing"];
+
 function VerifyEmailCard() {
   const { token } = Route.useSearch();
+  const { locale } = Route.useParams();
   const content = useIntlayer("verify-email");
   const verifyMutation = useVerifyEmail();
+  const [loginRedirect, setLoginRedirect] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (token) {
       verifyMutation.mutate(token);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!verifyMutation.isSuccess) return;
+    const stored = localStorage.getItem("postVerifyRedirect");
+    if (stored && SAFE_REDIRECTS.includes(stored)) {
+      setLoginRedirect(`/${locale}${stored}`);
+    }
+    localStorage.removeItem("postVerifyRedirect");
+  }, [verifyMutation.isSuccess, locale]);
 
   if (verifyMutation.isPending || !token) {
     return (
@@ -90,7 +103,12 @@ function VerifyEmailCard() {
         {content.success.description}
       </p>
       <Button asChild className="mt-2">
-        <Link to="/auth/login">{content.success.button}</Link>
+        <Link
+          to="/auth/login"
+          search={loginRedirect ? { redirect: loginRedirect } : undefined}
+        >
+          {content.success.button}
+        </Link>
       </Button>
     </div>
   );

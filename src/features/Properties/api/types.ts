@@ -77,6 +77,8 @@ export interface PropertyListItem {
   name: string;
   description: string;
   city: string;
+  latitude?: string | null;
+  longitude?: string | null;
   property_type: PropertyType;
   status: PropertyStatus;
   price_per_night: string;
@@ -87,6 +89,14 @@ export interface PropertyListItem {
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;
+}
+
+export type PaymentMethodOption = "card" | "bank_transfer" | "cash";
+
+export interface PaymentConfig {
+  accepted_methods: PaymentMethodOption[];
+  deposit_pct: number;
+  remaining_method: PaymentMethodOption | null;
 }
 
 export interface PropertyResponse {
@@ -110,6 +120,7 @@ export interface PropertyResponse {
   min_nights: number;
   max_nights: number;
   cancellation_policy: CancellationPolicy;
+  payment_config: PaymentConfig | null;
   rating: string;
   total_reviews: number;
   updated_at: string;

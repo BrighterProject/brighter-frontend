@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { SearchCard } from "@/components/ui/search-card";
 import { OfferCard, type OfferCardData } from "./offer-card";
 import { PropertiesSidebar } from "./properties-sidebar";
+import { PropertyMapModal } from "./property-map-modal";
 import {
   type Filters,
   INITIAL_FILTERS,
@@ -32,7 +33,10 @@ function propertyToOfferData(
   property: PropertyListItem,
   c: ReturnType<typeof useIntlayer<"properties-list">>["card"],
   roomsC: ReturnType<typeof useIntlayer<"rooms">>,
-  formatRooms: (rooms: PropertyListItem["rooms"]) => { roomLine: string; bedLine: string },
+  formatRooms: (rooms: PropertyListItem["rooms"]) => {
+    roomLine: string;
+    bedLine: string;
+  },
   onClick: () => void,
 ): OfferCardData {
   const rating = Number(property.rating);
@@ -41,7 +45,8 @@ function propertyToOfferData(
     title: property.name,
     location: property.city,
     description: property.description,
-    roomType: roomsC.propertyTypes[property.property_type as PropertyType].value as string,
+    roomType: roomsC.propertyTypes[property.property_type as PropertyType]
+      .value as string,
     roomDetails: roomLine,
     bedInfo: bedLine,
     bedrooms: property.bedrooms,
@@ -67,9 +72,12 @@ export function PropertiesList() {
   const roomsC = useIntlayer("rooms");
   const formatRooms = useFormatRooms();
 
-  // Read search params from URL (city, checkIn, checkOut, adults)
+  // Read search params from URL (city, settlement_ekatte, checkIn, checkOut, adults)
   const searchParams = useSearch({ strict: false }) as SearchParams;
   const urlCity = searchParams.city ?? "";
+  const urlSettlementEkatte = searchParams.settlement_ekatte;
+  const urlRegionCode = searchParams.region_code;
+  const urlQ = searchParams.q;
   const urlAdults = searchParams.adults;
   const urlChildren = searchParams.children;
   const urlCheckIn = searchParams.checkIn;
@@ -86,9 +94,13 @@ export function PropertiesList() {
 
   const apiParams = buildParams(queryFilters, {
     city: urlCity,
-    min_guests: urlAdults !== undefined || urlChildren !== undefined
-      ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
-      : undefined,
+    settlement_ekatte: urlSettlementEkatte,
+    region_code: urlRegionCode,
+    q: urlQ,
+    min_guests:
+      urlAdults !== undefined || urlChildren !== undefined
+        ? (urlAdults ?? 0) + (urlChildren ?? 0) || undefined
+        : undefined,
     checkIn: urlCheckIn,
     checkOut: urlCheckOut,
     lang: locale,
@@ -104,6 +116,17 @@ export function PropertiesList() {
   } = useInfiniteProperties(apiParams);
 
   const properties: PropertyListItem[] = data?.pages.flatMap((p) => p) ?? [];
+
+  const goToProperty = (propertyId: string) =>
+    navigate({
+      to: "/{-$locale}/properties/$propertyId" as any,
+      params: { propertyId } as any,
+      search: {
+        checkIn: urlCheckIn,
+        checkOut: urlCheckOut,
+        adults: urlAdults,
+      } as any,
+    });
 
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -159,7 +182,8 @@ export function PropertiesList() {
 
   const searchCardContent = {
     destination: { value: c.filters.city.placeholder.value as string },
-    dates: { value: "Select dates" },
+    dates: { value: c.filters.dates.value },
+    keyword: { value: c.filters.keyword.value },
     button: c.filters.heading,
   };
 
@@ -173,6 +197,9 @@ export function PropertiesList() {
             content={searchCardContent as any}
             defaultValues={{
               city: urlCity,
+              settlement_ekatte: urlSettlementEkatte,
+              region_code: urlRegionCode,
+              q: urlQ,
               checkIn: urlCheckIn,
               checkOut: urlCheckOut,
               adults: urlAdults,
@@ -223,13 +250,20 @@ export function PropertiesList() {
 
           <main className="min-w-0 flex-1">
             {!isLoading && !isError && properties.length > 0 && (
-              <p className="mb-3 text-sm text-muted-foreground">
-                {properties.length}{" "}
-                {properties.length === 1
-                  ? c.results.property
-                  : c.results.properties}{" "}
-                {c.results.found}
-              </p>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {properties.length}{" "}
+                  {properties.length === 1
+                    ? c.results.property
+                    : c.results.properties}{" "}
+                  {c.results.found}
+                </p>
+                <PropertyMapModal
+                  properties={properties}
+                  locale={locale}
+                  onSelect={goToProperty}
+                />
+              </div>
             )}
 
             {isLoading && (
@@ -269,22 +303,16 @@ export function PropertiesList() {
                       c.card,
                       roomsC,
                       formatRooms,
-                      () =>
-                        navigate({
-                          to: "/{-$locale}/properties/$propertyId" as any,
-                          params: { propertyId: property.id } as any,
-                          search: {
-                            checkIn: urlCheckIn,
-                            checkOut: urlCheckOut,
-                            adults: urlAdults,
-                          } as any,
-                        }),
+                      () => goToProperty(property.id),
                     )}
                   />
                 ))}
 
                 {/* Infinite scroll sentinel */}
-                <div ref={sentinelRef} className="py-4 text-center text-sm text-muted-foreground">
+                <div
+                  ref={sentinelRef}
+                  className="py-4 text-center text-sm text-muted-foreground"
+                >
                   {isFetchingNextPage
                     ? c.loadingMore
                     : hasNextPage

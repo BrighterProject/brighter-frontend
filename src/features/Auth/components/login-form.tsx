@@ -1,4 +1,4 @@
-import { loginSchema, type LoginValues } from "@Auth/schemas/login.schema";
+import { type LoginValues } from "@Auth/schemas/login.schema";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,8 @@ import { useIntlayer } from "react-intlayer";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { GoogleLogin } from "@react-oauth/google";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { regexes } from "zod";
 import { useLogin, useGoogleLogin } from "../api/hooks";
 
 export function LoginForm({ className }: { className?: string }) {
@@ -35,7 +36,10 @@ export function LoginForm({ className }: { className?: string }) {
     orSeparator,
     signupButton,
     googleButton,
+    errors: e,
   } = useIntlayer("login");
+
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +55,7 @@ export function LoginForm({ className }: { className?: string }) {
       password: "",
     } as LoginValues,
     onSubmit: async ({ value }) => {
+      setServerError(null);
       const formData = new FormData();
       formData.append("username", value.email);
       formData.append("password", value.password);
@@ -63,8 +68,13 @@ export function LoginForm({ className }: { className?: string }) {
             navigate({ to: "/" });
           }
         },
-        onError: (error) => {
-          console.error("Login failed:", error);
+        onError: (err: any) => {
+          const status = err?.response?.status;
+          setServerError(
+            status === 401 || status === 422
+              ? (e.invalidCredentials.value as string)
+              : (e.generic.value as string),
+          );
         },
       });
     },
@@ -92,7 +102,13 @@ export function LoginForm({ className }: { className?: string }) {
         {/* Email Field */}
         <form.Field
           name="email"
-          validators={{ onBlur: loginSchema.shape.email }}
+          validators={{
+            onBlur: ({ value }) => {
+              if (!value.trim()) return e.emailRequired.value as string;
+              if (!regexes.unicodeEmail.test(value)) return e.emailInvalid.value as string;
+              return undefined;
+            },
+          }}
         >
           {(field) => (
             <Field>
@@ -116,7 +132,12 @@ export function LoginForm({ className }: { className?: string }) {
         {/* Password Field */}
         <form.Field
           name="password"
-          validators={{ onBlur: loginSchema.shape.password }}
+          validators={{
+            onBlur: ({ value }) => {
+              if (!value) return e.passwordRequired.value as string;
+              return undefined;
+            },
+          }}
         >
           {(field) => (
             <Field>
@@ -141,6 +162,15 @@ export function LoginForm({ className }: { className?: string }) {
             </Field>
           )}
         </form.Field>
+
+        {serverError && (
+          <p
+            role="alert"
+            className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            {serverError}
+          </p>
+        )}
 
         <form.Subscribe
           selector={(s) => [s.canSubmit, loginMutation.isPending]}

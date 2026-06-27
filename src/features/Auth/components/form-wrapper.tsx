@@ -38,7 +38,7 @@ export default function FormWrapper({
               <MapPin className="size-5" strokeWidth={2.5} />
             </div>
             <span className="font-display text-2xl font-bold tracking-tight">
-              Brighter.BG
+              SeasideHoliday
             </span>
           </LocalizedLink>
 

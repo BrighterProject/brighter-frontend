@@ -5,12 +5,12 @@ const contactsContent = {
   content: {
     meta: {
       title: t({
-        en: "Contact Us | Brighter.BG",
-        bg: "Контакти | Brighter.BG",
+        en: "Contact Us | SeasideHoliday",
+        bg: "Контакти | Почивка на морето",
       }),
       description: t({
-        en: "Get in touch with the Brighter.BG team. We'd love to hear from you.",
-        bg: "Свържете се с екипа на Brighter.BG. Ще се радваме да чуем от вас.",
+        en: "Get in touch with the SeasideHoliday team. We'd love to hear from you.",
+        bg: "Свържете се с екипа на Почивка на морето. Ще се радваме да чуем от вас.",
       }),
     },
     title: t({ en: "Contact Us", bg: "Свържете се с нас" }),

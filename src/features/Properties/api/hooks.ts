@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient, useQueries } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
   DatePriceOverride,
@@ -101,6 +101,32 @@ export const useProperty = (propertyId: string, lang?: string) => {
 // };
 //
 // // --- UNAVAILABILITIES ---
+
+export const usePropertiesForBookings = (
+  propertyIds: string[],
+  locale?: string,
+) => {
+  const uniqueIds = [...new Set(propertyIds.filter(Boolean))];
+  const results = useQueries({
+    queries: uniqueIds.map((id) => ({
+      queryKey: ["properties", id, locale],
+      queryFn: async () => {
+        const { data } = await apiClient.get<PropertyResponse>(
+          `/properties/${id}`,
+          { params: locale ? { lang: locale } : undefined },
+        );
+        return data;
+      },
+      staleTime: 5 * 60 * 1000,
+    })),
+  });
+  return {
+    propertiesById: new Map(
+      uniqueIds.map((id, i) => [id, results[i]?.data ?? null]),
+    ),
+    isLoading: results.some((r) => r.isLoading),
+  };
+};
 
 export const useInfiniteProperties = (params?: Record<string, any>) => {
   return useInfiniteQuery({

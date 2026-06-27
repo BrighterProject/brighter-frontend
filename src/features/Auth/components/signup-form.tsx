@@ -11,10 +11,11 @@ import { Input } from "@/components/ui/input";
 import { LocalizedLink as Link } from "@/components/ui/localized-link";
 import { FieldErrors } from "@/components/ui/field-errors";
 import { useForm } from "@tanstack/react-form";
-import { signupSchema, type SignupValues } from "../schemas/signup.schema";
+import { type SignupValues } from "../schemas/signup.schema";
 import { useIntlayer } from "react-intlayer";
 import { GoogleLogin } from "@react-oauth/google";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { regexes } from "zod";
 import { useRegisterUser, useGoogleLogin } from "../api/hooks";
 import { useLocalizedNavigate } from "@/hooks/useLocalizedNavigate";
 import { useParams } from "@tanstack/react-router";
@@ -28,6 +29,9 @@ export function SignupForm({
   const googleLoginMutation = useGoogleLogin();
   const navigate = useLocalizedNavigate();
   const content = useIntlayer("signup");
+  const e = content.errors;
+
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -43,11 +47,10 @@ export function SignupForm({
       email: "",
       password: "",
       confirmPassword: "",
+      wantsToList: false,
     } as SignupValues,
-    validators: {
-      onChange: signupSchema,
-    },
     onSubmit: async ({ value }) => {
+      setServerError(null);
       registerMutation.mutate(
         {
           username: value.email,
@@ -57,7 +60,18 @@ export function SignupForm({
         },
         {
           onSuccess: () => {
+            if (value.wantsToList) {
+              localStorage.setItem("postVerifyRedirect", "/pricing");
+            }
             navigate("/auth/check-email");
+          },
+          onError: (err: any) => {
+            const status = err?.response?.status;
+            setServerError(
+              status === 409
+                ? (e.emailExists.value as string)
+                : (e.generic.value as string),
+            );
           },
         },
       );
@@ -87,6 +101,13 @@ export function SignupForm({
         {/* --- Full Name Field --- */}
         <form.Field
           name="name"
+          validators={{
+            onBlur: ({ value }) => {
+              if ((value ?? "").trim().length < 2)
+                return e.nameTooShort.value as string;
+              return undefined;
+            },
+          }}
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>
@@ -107,6 +128,14 @@ export function SignupForm({
         {/* --- Email Field --- */}
         <form.Field
           name="email"
+          validators={{
+            onBlur: ({ value }) => {
+              if (!value.trim()) return e.emailRequired.value as string;
+              if (!regexes.unicodeEmail.test(value))
+                return e.emailInvalid.value as string;
+              return undefined;
+            },
+          }}
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>
@@ -128,6 +157,15 @@ export function SignupForm({
         {/* --- Password Field --- */}
         <form.Field
           name="password"
+          validators={{
+            onBlur: ({ value }) => {
+              if (value.length < 8) return e.passwordTooShort.value as string;
+              if (!/[0-9]/.test(value)) return e.passwordNoNumber.value as string;
+              if (!/[^a-zA-Z0-9]/.test(value))
+                return e.passwordNoSymbol.value as string;
+              return undefined;
+            },
+          }}
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>
@@ -151,6 +189,14 @@ export function SignupForm({
         {/* --- Confirm Password --- */}
         <form.Field
           name="confirmPassword"
+          validators={{
+            onBlurListenTo: ["password"],
+            onBlur: ({ value, fieldApi }) => {
+              if (value !== fieldApi.form.getFieldValue("password"))
+                return e.passwordsMismatch.value as string;
+              return undefined;
+            },
+          }}
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>
@@ -167,6 +213,39 @@ export function SignupForm({
             </Field>
           )}
         />
+
+        {/* --- Wants to List --- */}
+        <form.Field
+          name="wantsToList"
+          children={(field) => (
+            <Field>
+              <div className="flex items-center gap-2">
+                <input
+                  id={field.name}
+                  type="checkbox"
+                  checked={field.state.value as boolean}
+                  onChange={(e) => field.handleChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-input accent-primary"
+                />
+                <label
+                  htmlFor={field.name}
+                  className="text-sm text-muted-foreground cursor-pointer"
+                >
+                  {content.fields.wantsToList.label}
+                </label>
+              </div>
+            </Field>
+          )}
+        />
+
+        {serverError && (
+          <p
+            role="alert"
+            className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            {serverError}
+          </p>
+        )}
 
         <form.Subscribe
           selector={(state) => [state.canSubmit, registerMutation.isPending]}
