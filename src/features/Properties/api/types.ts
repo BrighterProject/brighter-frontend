@@ -89,6 +89,10 @@ export interface PropertyListItem {
   rating: string;
   total_reviews: number;
   thumbnail?: string | null;
+  // Present only when the search carried a date range: the resolved total for
+  // the whole stay and the number of nights it covers.
+  stay_total?: string | null;
+  stay_nights?: number | null;
 }
 
 export type PaymentMethodOption = "card" | "bank_transfer" | "cash";
