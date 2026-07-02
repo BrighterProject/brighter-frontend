@@ -16,19 +16,8 @@ import {
   resolveTranslation,
 } from "@/features/Properties/api/types";
 import { isoDate, parseDateParam } from "@/components/ui/date-range-picker";
+import { buildCountryOptions } from "@/lib/countries";
 import { useMe } from "@/features/Auth/api/hooks";
-
-const COUNTRY_CODES = [
-  "AF", "AL", "DZ", "AD", "AO", "AR", "AM", "AU", "AT", "AZ", "BH", "BD",
-  "BY", "BE", "BA", "BR", "BG", "KH", "CA", "CL", "CN", "CO", "HR", "CY",
-  "CZ", "DK", "EG", "EE", "ET", "FI", "FR", "GE", "DE", "GH", "GR", "HU",
-  "IS", "IN", "ID", "IR", "IQ", "IE", "IL", "IT", "JP", "JO", "KZ", "KE",
-  "XK", "KW", "LV", "LB", "LY", "LI", "LT", "LU", "MY", "MT", "MX", "MD",
-  "MC", "ME", "MA", "NL", "NZ", "NG", "MK", "NO", "PK", "PS", "PH", "PL",
-  "PT", "QA", "RO", "RU", "SA", "RS", "SG", "SK", "SI", "ZA", "KR", "ES",
-  "SE", "CH", "SY", "TW", "TH", "TN", "TR", "UA", "AE", "GB", "US", "UZ",
-  "VN",
-];
 
 interface BookingFormProps {
   property: PropertyResponse;
@@ -84,12 +73,7 @@ export function BookingForm({
   const propertyName =
     resolveTranslation(property.translations, locale)?.name ?? "Untitled";
 
-  const countryOptions = (() => {
-    const dn = new Intl.DisplayNames([locale], { type: "region" });
-    return COUNTRY_CODES
-      .map((code) => ({ code, name: dn.of(code) ?? code }))
-      .sort((a, b) => a.name.localeCompare(b.name, locale));
-  })();
+  const countryOptions = buildCountryOptions(locale);
 
   const checkIn = parseDateParam(checkInParam);
   const checkOut = parseDateParam(checkOutParam);
