@@ -45,9 +45,9 @@ interface DateRangePickerProps {
   onError?: (msg: string) => void;
   locale?: string;
   labels?: DateRangePickerLabels;
-  /** ISO date → price string. When provided, shows the price below each non-past day number. */
+  /** ISO date → price string. When provided, shows the price below each bookable day number. */
   pricingMap?: Record<string, string>;
-  /** Latest bookable date (inclusive). Dates after it are greyed and non-selectable. */
+  /** End of the booking window (exclusive). This date and any after are greyed and non-selectable. */
   maxDate?: Date;
 }
 
@@ -110,6 +110,17 @@ const DAY_CLASSES: Record<DayState, string> = {
     "bg-primary text-primary-foreground cursor-pointer rounded-r-full font-semibold active:scale-95",
   "in-range": "bg-primary/10 text-foreground cursor-pointer",
 };
+
+// States for days that are actually bookable at the shown price — booked,
+// unavailable (incl. price-gap), mine, past, and turnover-start days never show a price.
+const PRICE_VISIBLE_STATES = new Set<DayState>([
+  "available",
+  "today",
+  "check-in",
+  "check-out",
+  "in-range",
+  "out-of-reach",
+]);
 
 // Small dot rendered below the date number for turnover days
 const TURNOVER_DOT_CLASS: Partial<Record<DayState, string>> = {
@@ -180,7 +191,7 @@ export function DateRangePicker({
     (d: Date): boolean => {
       const ds = isoDate(d);
       if (ds < isoDate(today)) return true;
-      if (maxDate && ds > isoDate(maxDate)) return true;
+      if (maxDate && ds >= isoDate(maxDate)) return true;
       // Night-based: booking [start, end) — checkout date is free for next check-in.
       for (const b of myPropertyBookings) {
         if (ds >= b.start_date && ds < b.end_date) return true;
@@ -234,7 +245,8 @@ export function DateRangePicker({
     const ts = isoDate(today);
     if (ds < ts) return "past";
     // Beyond the booking window: greyed like past dates and non-selectable.
-    if (maxDate && ds > isoDate(maxDate)) return "past";
+    // maxDate itself is excluded too — a boundary day is not a useful checkout target.
+    if (maxDate && ds >= isoDate(maxDate)) return "past";
     if (checkIn && ds === isoDate(checkIn)) return "check-in";
     if (checkOut && ds === isoDate(checkOut)) return "check-out";
     if (checkIn && checkOut && ds > isoDate(checkIn) && ds < isoDate(checkOut)) return "in-range";
@@ -247,17 +259,21 @@ export function DateRangePicker({
       if (outOfReachFrom && ds >= outOfReachFrom) return "out-of-reach";
     }
 
-    // Static occupancy states — turnover (-start) days get a dot, not a background
+    // Static occupancy states — turnover (-start) days get a dot, not a background.
+    // A block is only a "turnover" if it starts after today: that implies a valid
+    // night existed right before it, so checkout there is meaningful. A block that
+    // already covers today (e.g. a price gap with no prior bookable night) is just
+    // plain unavailable — no special checkout-only day, no dot, no tooltip.
     for (const b of myPropertyBookings) {
-      if (ds === b.start_date) return "mine-start";
+      if (ds === b.start_date) return ds > ts ? "mine-start" : "mine";
       if (ds > b.start_date && ds < b.end_date) return "mine";
     }
     for (const b of occupiedSlots) {
-      if (ds === b.start_date) return "booked-start";
+      if (ds === b.start_date) return ds > ts ? "booked-start" : "booked";
       if (ds > b.start_date && ds < b.end_date) return "booked";
     }
     for (const u of unavailabilities) {
-      if (ds === u.start_date) return "unavailable-start";
+      if (ds === u.start_date) return ds > ts ? "unavailable-start" : "unavailable";
       if (ds > u.start_date && ds < u.end_date) return "unavailable";
     }
 
@@ -265,9 +281,13 @@ export function DateRangePicker({
     return "available";
   }
 
-  /** Returns true if d is exactly the first day of any occupied block (turnover day). */
+  /**
+   * Returns true if d is exactly the first day of an occupied block AND that
+   * block starts after today — matches the turnover-state rule in getDayState.
+   */
   function isTurnoverStart(d: Date): boolean {
     const ds = isoDate(d);
+    if (ds <= isoDate(today)) return false;
     return (
       myPropertyBookings.some((b) => b.start_date === ds) ||
       occupiedSlots.some((b) => b.start_date === ds) ||
@@ -386,7 +406,9 @@ export function DateRangePicker({
             state !== "out-of-reach";
           const ds = isoDate(d);
           const dayPrice =
-            pricingMap && state !== "past" ? pricingMap[ds] : undefined;
+            pricingMap && PRICE_VISIBLE_STATES.has(state)
+              ? pricingMap[ds]
+              : undefined;
           return (
             <div
               key={ds}
