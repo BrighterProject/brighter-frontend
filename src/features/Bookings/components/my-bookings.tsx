@@ -152,11 +152,14 @@ function BookingCard({
   const status = booking.status as BookingStatus;
   const isPending = status === "pending";
   const isConfirmed = status === "confirmed";
+  // "Pay now" is an online Stripe (card) checkout — only meaningful for a card
+  // booking whose property still accepts card. Cash/bank-transfer and
+  // card-disabled properties must not show a pay button (it would just error).
+  const canPayOnline =
+    booking.payment_method === "card" &&
+    (property?.payment_config?.accepted_methods.includes("card") ?? false);
   const needsPayment =
-    isPending &&
-    !isLoadingPayments &&
-    !payment &&
-    booking.payment_method !== "cash";
+    isPending && !isLoadingPayments && !payment && canPayOnline;
   const nights = nightCount(booking.start_date, booking.end_date);
 
   const translation = property
