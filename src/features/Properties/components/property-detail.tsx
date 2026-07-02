@@ -301,6 +301,13 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
         )
       : 0;
 
+  const maxBookableDate = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + property.booking_window_days);
+    return d;
+  }, [property.booking_window_days]);
+
   const pricingMap = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -652,6 +659,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       onError={setDateError}
                       locale={locale}
                       pricingMap={pricingMap}
+                      maxDate={maxBookableDate}
                       labels={{
                         myBooking: c.bookingCard.calendar.myBooking.value as string,
                         booked: c.bookingCard.calendar.booked.value as string,

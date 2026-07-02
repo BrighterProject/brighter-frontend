@@ -129,6 +129,8 @@ export interface PropertyResponse {
   unavailabilities: PropertyUnavailabilityResponse[];
   weekday_prices: WeekdayPriceOut[];
   date_price_overrides: DatePriceOverride[];
+  /** How many days in advance this property can be booked. */
+  booking_window_days: number;
 }
 
 /**

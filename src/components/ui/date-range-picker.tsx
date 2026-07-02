@@ -47,6 +47,8 @@ interface DateRangePickerProps {
   labels?: DateRangePickerLabels;
   /** ISO date → price string. When provided, shows the price below each non-past day number. */
   pricingMap?: Record<string, string>;
+  /** Latest bookable date (inclusive). Dates after it are greyed and non-selectable. */
+  maxDate?: Date;
 }
 
 export function isoDate(d: Date): string {
@@ -90,8 +92,8 @@ const DAY_CLASSES: Record<DayState, string> = {
     "text-foreground cursor-pointer hover:bg-primary/10 rounded-full active:scale-95",
   // Dates unreachable as checkout once checkIn is selected: muted, non-interactive
   "out-of-reach": "text-muted-foreground/40 cursor-default",
-  unavailable:
-    "text-amber-600/50 cursor-default bg-amber-50/70 dark:bg-amber-950/20",
+  // Unavailable days (incl. days with no price set) are greyed like past dates.
+  unavailable: "text-muted-foreground/30 cursor-default",
   // Turnover days look nearly normal — a small dot below the number carries the hint.
   // The preceding night is free so checkout here is valid; check-in is still blocked.
   "unavailable-start":
@@ -113,7 +115,7 @@ const DAY_CLASSES: Record<DayState, string> = {
 const TURNOVER_DOT_CLASS: Partial<Record<DayState, string>> = {
   "booked-start": "bg-rose-400/60",
   "mine-start": "bg-blue-400/60",
-  "unavailable-start": "bg-amber-400/60",
+  "unavailable-start": "bg-muted-foreground/40",
 };
 
 export function DateRangePicker({
@@ -129,6 +131,7 @@ export function DateRangePicker({
   locale = "en",
   labels: labelsProp,
   pricingMap,
+  maxDate,
 }: DateRangePickerProps) {
   const L = { ...DEFAULT_LABELS, ...labelsProp };
   const { checkIn, checkOut } = value;
@@ -177,6 +180,7 @@ export function DateRangePicker({
     (d: Date): boolean => {
       const ds = isoDate(d);
       if (ds < isoDate(today)) return true;
+      if (maxDate && ds > isoDate(maxDate)) return true;
       // Night-based: booking [start, end) — checkout date is free for next check-in.
       for (const b of myPropertyBookings) {
         if (ds >= b.start_date && ds < b.end_date) return true;
@@ -189,7 +193,7 @@ export function DateRangePicker({
       }
       return false;
     },
-    [today, myPropertyBookings, occupiedSlots, unavailabilities],
+    [today, maxDate, myPropertyBookings, occupiedSlots, unavailabilities],
   );
 
   const rangeHasBlocked = useCallback(
@@ -229,6 +233,8 @@ export function DateRangePicker({
     const ds = isoDate(d);
     const ts = isoDate(today);
     if (ds < ts) return "past";
+    // Beyond the booking window: greyed like past dates and non-selectable.
+    if (maxDate && ds > isoDate(maxDate)) return "past";
     if (checkIn && ds === isoDate(checkIn)) return "check-in";
     if (checkOut && ds === isoDate(checkOut)) return "check-out";
     if (checkIn && checkOut && ds > isoDate(checkIn) && ds < isoDate(checkOut)) return "in-range";
@@ -342,6 +348,11 @@ export function DateRangePicker({
           type="button"
           variant="outline"
           size="icon"
+          disabled={
+            !!maxDate &&
+            new Date(viewYear, viewMonth, 1) >=
+              new Date(maxDate.getFullYear(), maxDate.getMonth(), 1)
+          }
           onClick={() => setMonthOffset((o) => o + 1)}
         >
           <ChevronRight className="size-4" />
