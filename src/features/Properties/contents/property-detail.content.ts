@@ -23,6 +23,7 @@ const propertyDetailContent = {
     sections: {
       about: t({ en: "About this property", bg: "За този имот" }),
       amenities: t({ en: "Amenities", bg: "Удобства" }),
+      houseRules: t({ en: "House rules", bg: "Правила на обекта" }),
       workingHours: t({ en: "Working hours", bg: "Работно време" }),
       unavailableToday: t({
         en: "Currently Unavailable",

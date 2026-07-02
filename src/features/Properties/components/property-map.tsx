@@ -19,6 +19,16 @@ function formatPrice(amount: string, currency: string): string {
   return `${value} ${currency}`;
 }
 
+/**
+ * Pin/popup price: the resolved stay total when the search carried dates,
+ * otherwise the per-night "from" price — mirrors the card behaviour.
+ */
+function pinPrice(p: PropertyListItem): string {
+  return p.stay_total != null
+    ? formatPrice(p.stay_total, p.currency)
+    : formatPrice(p.price_per_night, p.currency);
+}
+
 function escapeHtml(value: string): string {
   return value.replace(
     /[&<>"']/g,
@@ -49,7 +59,7 @@ function priceIcon(label: string, highlighted: boolean): L.DivIcon {
 function popupHtml(p: PropertyListItem): string {
   const rating = Number(p.rating).toFixed(1);
   const reviews = escapeHtml(String(p.total_reviews));
-  const price = escapeHtml(formatPrice(p.price_per_night, p.currency));
+  const price = escapeHtml(pinPrice(p));
   const thumb = p.thumbnail
     ? `<img src="${escapeHtml(p.thumbnail)}" alt="" class="h-24 w-full rounded-md object-cover" />`
     : "";
@@ -125,7 +135,7 @@ export function PropertyMap({
     for (const p of located) {
       const lat = Number(p.latitude);
       const lon = Number(p.longitude);
-      const label = formatPrice(p.price_per_night, p.currency);
+      const label = pinPrice(p);
       labelsRef.current.set(p.id, label);
 
       const marker = L.marker([lat, lon], {
@@ -172,4 +182,4 @@ export function PropertyMap({
   );
 }
 
-export { formatPrice };
+export { formatPrice, pinPrice };

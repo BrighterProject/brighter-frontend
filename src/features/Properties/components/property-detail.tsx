@@ -263,6 +263,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
   const name = t?.name ?? "Untitled";
   const description = t?.description ?? "";
   const address = t?.address ?? "";
+  const houseRules = t?.house_rules?.trim() ?? "";
 
   const images = property.images.length > 0 ? property.images : [];
   const mainImage = images[selectedImage];
@@ -579,6 +580,21 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                         ]?.value ?? ""}
                       </p>
                     </div>
+                  </div>
+                </>
+              )}
+
+              {/* House rules — shown before booking */}
+              {houseRules && (
+                <>
+                  <hr className="border-border" />
+                  <div>
+                    <h2 className="font-display text-lg font-semibold text-foreground">
+                      {c.sections.houseRules}
+                    </h2>
+                    <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
+                      {houseRules}
+                    </p>
                   </div>
                 </>
               )}

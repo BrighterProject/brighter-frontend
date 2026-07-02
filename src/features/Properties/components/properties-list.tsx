@@ -61,8 +61,8 @@ function propertyToOfferData(
       property.stay_total != null && property.stay_nights != null
         ? `${property.stay_nights} ${
             property.stay_nights === 1
-              ? (c.night as string)
-              : (c.nights as string)
+              ? (c.night.value as string)
+              : (c.nights.value as string)
           }`
         : undefined,
     price: `${Number(
