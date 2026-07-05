@@ -94,8 +94,8 @@ const privacyPolicyContent = {
         title: t({ en: "7. Cookies", bg: "7. Бисквитки" }),
         paragraphs: [
           t({
-            en: "We use essential cookies required for the Platform to function (e.g. keeping you logged in). We do not currently use third-party advertising or tracking cookies.",
-            bg: "Използваме единствено необходими бисквитки, нужни за функционирането на Платформата (напр. поддържане на вход в профила ви). В момента не използваме рекламни бисквитки на трети страни или проследяващи бисквитки.",
+            en: "We use essential cookies required for the Platform to function (e.g. keeping you logged in). With your consent, given via the cookie banner shown on your first visit, we may also use analytics cookies to understand how the Platform is used. You can change your choice at any time by clearing your browser's site data for this domain. We do not use third-party advertising cookies.",
+            bg: "Използваме необходими бисквитки, нужни за функционирането на Платформата (напр. поддържане на вход в профила ви). С вашето съгласие, дадено чрез банера за бисквитки при първото ви посещение, е възможно да използваме и аналитични бисквитки, за да разберем как се използва Платформата. Можете да промените избора си по всяко време, като изчистите данните за сайта в браузъра си за този домейн. Не използваме рекламни бисквитки на трети страни.",
           }),
         ],
       },
