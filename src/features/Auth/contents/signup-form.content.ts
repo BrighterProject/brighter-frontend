@@ -60,6 +60,8 @@ const signupContent = {
         bg: "Продължавайки, вие се съгласявате с нашите ",
       }),
       link: t({ en: "Terms and Conditions", bg: "Общи условия" }),
+      and: t({ en: " and ", bg: " и " }),
+      privacyLink: t({ en: "Privacy Policy", bg: "Политика за поверителност" }),
     },
     separator: t({ en: "Or", bg: "Или" }),
     googleButton: t({

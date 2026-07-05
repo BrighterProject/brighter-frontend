@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as Char123LocaleChar125TermsAndConditionsRouteImport } from './routes/{-$locale}/terms-and-conditions'
+import { Route as Char123LocaleChar125PrivacyPolicyRouteImport } from './routes/{-$locale}/privacy-policy'
 import { Route as Char123LocaleChar125PricingRouteImport } from './routes/{-$locale}/pricing'
 import { Route as Char123LocaleChar125ContactsRouteImport } from './routes/{-$locale}/contacts'
 import { Route as Char123LocaleChar125BecomeOwnerRouteImport } from './routes/{-$locale}/become-owner'
@@ -41,6 +43,18 @@ const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125TermsAndConditionsRoute =
+  Char123LocaleChar125TermsAndConditionsRouteImport.update({
+    id: '/terms-and-conditions',
+    path: '/terms-and-conditions',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125PrivacyPolicyRoute =
+  Char123LocaleChar125PrivacyPolicyRouteImport.update({
+    id: '/privacy-policy',
+    path: '/privacy-policy',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125PricingRoute =
@@ -166,6 +180,8 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/become-owner': typeof Char123LocaleChar125BecomeOwnerRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
+  '/{-$locale}/privacy-policy': typeof Char123LocaleChar125PrivacyPolicyRoute
+  '/{-$locale}/terms-and-conditions': typeof Char123LocaleChar125TermsAndConditionsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
@@ -188,6 +204,8 @@ export interface FileRoutesByTo {
   '/{-$locale}/become-owner': typeof Char123LocaleChar125BecomeOwnerRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
+  '/{-$locale}/privacy-policy': typeof Char123LocaleChar125PrivacyPolicyRoute
+  '/{-$locale}/terms-and-conditions': typeof Char123LocaleChar125TermsAndConditionsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
@@ -212,6 +230,8 @@ export interface FileRoutesById {
   '/{-$locale}/become-owner': typeof Char123LocaleChar125BecomeOwnerRoute
   '/{-$locale}/contacts': typeof Char123LocaleChar125ContactsRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
+  '/{-$locale}/privacy-policy': typeof Char123LocaleChar125PrivacyPolicyRoute
+  '/{-$locale}/terms-and-conditions': typeof Char123LocaleChar125TermsAndConditionsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/auth/check-email': typeof Char123LocaleChar125AuthCheckEmailRoute
   '/{-$locale}/auth/login': typeof Char123LocaleChar125AuthLoginRoute
@@ -237,6 +257,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/become-owner'
     | '/{-$locale}/contacts'
     | '/{-$locale}/pricing'
+    | '/{-$locale}/privacy-policy'
+    | '/{-$locale}/terms-and-conditions'
     | '/{-$locale}/'
     | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
@@ -259,6 +281,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/become-owner'
     | '/{-$locale}/contacts'
     | '/{-$locale}/pricing'
+    | '/{-$locale}/privacy-policy'
+    | '/{-$locale}/terms-and-conditions'
     | '/{-$locale}'
     | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
@@ -282,6 +306,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/become-owner'
     | '/{-$locale}/contacts'
     | '/{-$locale}/pricing'
+    | '/{-$locale}/privacy-policy'
+    | '/{-$locale}/terms-and-conditions'
     | '/{-$locale}/'
     | '/{-$locale}/auth/check-email'
     | '/{-$locale}/auth/login'
@@ -315,6 +341,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/terms-and-conditions': {
+      id: '/{-$locale}/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/{-$locale}/terms-and-conditions'
+      preLoaderRoute: typeof Char123LocaleChar125TermsAndConditionsRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/privacy-policy': {
+      id: '/{-$locale}/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/{-$locale}/privacy-policy'
+      preLoaderRoute: typeof Char123LocaleChar125PrivacyPolicyRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/pricing': {
@@ -461,6 +501,8 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125BecomeOwnerRoute: typeof Char123LocaleChar125BecomeOwnerRoute
   Char123LocaleChar125ContactsRoute: typeof Char123LocaleChar125ContactsRoute
   Char123LocaleChar125PricingRoute: typeof Char123LocaleChar125PricingRoute
+  Char123LocaleChar125PrivacyPolicyRoute: typeof Char123LocaleChar125PrivacyPolicyRoute
+  Char123LocaleChar125TermsAndConditionsRoute: typeof Char123LocaleChar125TermsAndConditionsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
   Char123LocaleChar125AuthCheckEmailRoute: typeof Char123LocaleChar125AuthCheckEmailRoute
   Char123LocaleChar125AuthLoginRoute: typeof Char123LocaleChar125AuthLoginRoute
@@ -486,6 +528,10 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
     Char123LocaleChar125BecomeOwnerRoute: Char123LocaleChar125BecomeOwnerRoute,
     Char123LocaleChar125ContactsRoute: Char123LocaleChar125ContactsRoute,
     Char123LocaleChar125PricingRoute: Char123LocaleChar125PricingRoute,
+    Char123LocaleChar125PrivacyPolicyRoute:
+      Char123LocaleChar125PrivacyPolicyRoute,
+    Char123LocaleChar125TermsAndConditionsRoute:
+      Char123LocaleChar125TermsAndConditionsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
     Char123LocaleChar125AuthCheckEmailRoute:
       Char123LocaleChar125AuthCheckEmailRoute,

@@ -55,6 +55,11 @@ const loginFormContent = {
       en: "Terms and Conditions",
       bg: "Общи условия",
     }),
+    termsAnd: t({ en: "and", bg: "и" }),
+    privacyLink: t({
+      en: "Privacy Policy",
+      bg: "Политика за поверителност",
+    }),
     orSeparator: t({
       en: "Or",
       bg: "Или",
