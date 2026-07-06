@@ -24,6 +24,7 @@ import {
   CalendarCheck,
   X,
   Expand,
+  ExternalLink,
 } from "lucide-react";
 
 const STATUS_VARIANT: Record<
@@ -469,6 +470,17 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                     <MapPin className="size-3.5" />
                     {address}, {property.city}
                   </span>
+                  {property.latitude != null && property.longitude != null && (
+                    <a
+                      href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-primary hover:underline"
+                    >
+                      <ExternalLink className="size-3.5" />
+                      {c.openInMaps}
+                    </a>
+                  )}
                   <span className="flex items-center gap-1.5">
                     <Star className="size-3.5 fill-yellow-500 text-yellow-500" />
                     {Number(property.rating).toFixed(1)}
