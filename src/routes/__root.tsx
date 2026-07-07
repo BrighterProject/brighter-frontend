@@ -18,6 +18,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import Header from "@/components/templates/header";
 import Footer from "@/components/templates/footer";
+import { CookieConsentBanner } from "@/components/templates/cookie-consent-banner";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 export const Route = createRootRoute({
@@ -69,6 +70,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 <Footer />
               </ErrorBoundary>
               <Toaster richColors position="top-right" />
+              <CookieConsentBanner />
               <ReactQueryDevtools
                 initialIsOpen={false}
                 buttonPosition="bottom-left"
