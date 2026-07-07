@@ -5,7 +5,7 @@ import { LocalizedLink } from "@/components/ui/localized-link";
 import { getCookieConsent, setCookieConsent } from "@/lib/cookie-consent";
 
 export function CookieConsentBanner() {
-  const content = useIntlayer("cookie-consent");
+  const content = useIntlayer("consent-banner");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

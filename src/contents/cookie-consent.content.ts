@@ -1,7 +1,7 @@
 import { t, type Dictionary } from "intlayer";
 
 const cookieConsentContent = {
-  key: "cookie-consent",
+  key: "consent-banner",
   content: {
     text: t({
       en: "We use essential cookies to make the Platform work. With your consent, we'd also like to use analytics cookies to understand how the Platform is used. See our",
