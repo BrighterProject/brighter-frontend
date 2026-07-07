@@ -285,6 +285,7 @@ function BookingCard({
             <CheckinLinkButton
               bookingId={booking.id}
               locale={locale}
+              endDate={booking.end_date}
               className="flex-1 rounded-lg"
             />
           )}
