@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useIntlayer } from "react-intlayer";
 import {
   CheckCircle2,
   Loader2,
@@ -38,12 +39,13 @@ export function CheckinLobby({ token, locale }: CheckinLobbyProps) {
   const addGuest = useAddGuest(token);
   const clearGuest = useClearGuest(token);
   const [addingIndex, setAddingIndex] = useState<number | null>(null);
+  const c = useIntlayer("checkin-lobby");
 
   if (isPending) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-center">
         <Loader2 className="size-10 animate-spin text-primary" />
-        <p className="text-muted-foreground text-sm">Loading your check-in…</p>
+        <p className="text-muted-foreground text-sm">{c.loading}</p>
       </div>
     );
   }
@@ -55,11 +57,10 @@ export function CheckinLobby({ token, locale }: CheckinLobbyProps) {
           <XCircle className="size-8 text-destructive" />
         </div>
         <h1 className="font-display text-2xl font-bold tracking-tight">
-          This check-in link is invalid or has expired
+          {c.invalid.title}
         </h1>
         <p className="max-w-sm text-balance text-sm text-muted-foreground">
-          Please ask the person who made the booking for an up-to-date link, or
-          contact our support team.
+          {c.invalid.description}
         </p>
       </div>
     );
@@ -74,7 +75,7 @@ export function CheckinLobby({ token, locale }: CheckinLobbyProps) {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <header className="mb-6">
         <h1 className="font-display text-3xl font-bold tracking-tight">
-          Complete your check-in
+          {c.heading}
         </h1>
         <p className="mt-1 text-muted-foreground">
           {data.property_name}
@@ -82,17 +83,15 @@ export function CheckinLobby({ token, locale }: CheckinLobbyProps) {
           {formatDateRange(data.start_date, data.end_date, locale)}
         </p>
         <p className="mt-2 text-sm font-medium">
-          {data.filled_slots} of {data.total_slots} guests completed
+          {c.guestsCompleted.value
+            .replace("{filled}", String(data.filled_slots))
+            .replace("{total}", String(data.total_slots))}
         </p>
       </header>
 
       <div className="mb-6 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-muted-foreground">
         <Lock className="mt-0.5 size-4 shrink-0 text-primary" />
-        <span>
-          This page is served over an encrypted connection and your ID and EGN
-          numbers are encrypted at rest. Share this link with your travel
-          companions so each guest can add their own details.
-        </span>
+        <span>{c.encryptionNotice}</span>
       </div>
 
       <ul className="space-y-3">
@@ -143,6 +142,8 @@ function RosterRow({
   onSubmit,
   locale,
 }: RosterRowProps) {
+  const c = useIntlayer("checkin-lobby");
+
   if (slot.filled) {
     const name = [slot.first_name, slot.middle_name, slot.last_name]
       .filter(Boolean)
@@ -159,7 +160,7 @@ function RosterRow({
           onClick={onClear}
           disabled={clearing}
         >
-          Remove
+          {c.remove}
         </Button>
       </Card>
     );
@@ -170,7 +171,9 @@ function RosterRow({
       <Card className="p-4">
         <div className="mb-4 flex items-center gap-2">
           <ShieldCheck className="size-5 text-primary" />
-          <h2 className="font-semibold">Guest {index + 1} details</h2>
+          <h2 className="font-semibold">
+            {c.guestDetailsLabel.value.replace("{n}", String(index + 1))}
+          </h2>
         </div>
         <GuestForm
           locale={locale}
@@ -184,10 +187,12 @@ function RosterRow({
 
   return (
     <Card className="flex flex-row items-center justify-between gap-3 p-4">
-      <span className="text-muted-foreground">Guest {index + 1}</span>
+      <span className="text-muted-foreground">
+        {c.guestLabel.value.replace("{n}", String(index + 1))}
+      </span>
       <Button variant="outline" size="sm" onClick={onOpenAdd}>
         <UserPlus className="mr-2 size-4" />
-        Add details
+        {c.addDetails}
       </Button>
     </Card>
   );

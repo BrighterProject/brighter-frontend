@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import axios from "axios";
 import { useForm } from "@tanstack/react-form";
+import { useIntlayer } from "react-intlayer";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,6 +71,7 @@ export function GuestForm({
 }: GuestFormProps) {
   const [consent, setConsent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const c = useIntlayer("guest-form");
 
   const countryOptions = useMemo(() => {
     const dn = new Intl.DisplayNames([locale], { type: "region" });
@@ -103,11 +105,9 @@ export function GuestForm({
         // The backend EGN-vs-DOB/gender cross-check (and any other server-side
         // rule) surfaces here as a form-level 422 — never a field-level error.
         if (axios.isAxiosError(err) && err.response?.status === 409) {
-          setFormError("All guest slots for this booking are already filled.");
+          setFormError(c.errors.duplicateSlot.value);
         } else {
-          setFormError(
-            "We could not save these details. Please double-check the ID number, EGN, date of birth, and gender, then try again.",
-          );
+          setFormError(c.errors.generic.value);
         }
       }
     },
@@ -140,7 +140,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>First name</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.firstName}</FieldLabel>
               <Input
                 id={field.name}
                 value={field.state.value}
@@ -172,7 +172,7 @@ export function GuestForm({
             return (
               <Field>
                 <FieldLabel htmlFor={field.name}>
-                  Middle name{" "}
+                  {c.fields.middleName}{" "}
                   {isBG && <span className="text-destructive">*</span>}
                 </FieldLabel>
                 <Input
@@ -203,7 +203,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Last name</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.lastName}</FieldLabel>
               <Input
                 id={field.name}
                 value={field.state.value}
@@ -233,7 +233,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Date of birth</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.dateOfBirth}</FieldLabel>
               <Input
                 id={field.name}
                 type="date"
@@ -262,7 +262,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Gender</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.gender}</FieldLabel>
               <select
                 id={field.name}
                 className={inputCls}
@@ -272,10 +272,10 @@ export function GuestForm({
                   field.handleChange(e.target.value as Gender | "")
                 }
               >
-                <option value="">Select…</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="">{c.select.value}</option>
+                <option value="male">{c.genderOptions.male.value}</option>
+                <option value="female">{c.genderOptions.female.value}</option>
+                <option value="other">{c.genderOptions.other.value}</option>
               </select>
               <FieldErrors field={field} />
             </Field>
@@ -300,7 +300,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Citizenship</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.citizenship}</FieldLabel>
               <select
                 id={field.name}
                 className={inputCls}
@@ -308,10 +308,10 @@ export function GuestForm({
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
               >
-                <option value="">Select…</option>
-                {countryOptions.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.name}
+                <option value="">{c.select.value}</option>
+                {countryOptions.map((opt) => (
+                  <option key={opt.code} value={opt.code}>
+                    {opt.name}
                   </option>
                 ))}
               </select>
@@ -343,7 +343,7 @@ export function GuestForm({
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>
-                Document issuing country
+                {c.fields.documentIssuingCountry}
               </FieldLabel>
               <select
                 id={field.name}
@@ -352,10 +352,10 @@ export function GuestForm({
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
               >
-                <option value="">Select…</option>
-                {countryOptions.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.name}
+                <option value="">{c.select.value}</option>
+                {countryOptions.map((opt) => (
+                  <option key={opt.code} value={opt.code}>
+                    {opt.name}
                   </option>
                 ))}
               </select>
@@ -382,7 +382,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Document type</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.documentType}</FieldLabel>
               <select
                 id={field.name}
                 className={inputCls}
@@ -392,9 +392,9 @@ export function GuestForm({
                   field.handleChange(e.target.value as DocumentType | "")
                 }
               >
-                <option value="">Select…</option>
-                <option value="id_card">ID card</option>
-                <option value="passport">Passport</option>
+                <option value="">{c.select.value}</option>
+                <option value="id_card">{c.documentTypeOptions.idCard.value}</option>
+                <option value="passport">{c.documentTypeOptions.passport.value}</option>
               </select>
               <FieldErrors field={field} />
             </Field>
@@ -417,7 +417,7 @@ export function GuestForm({
           }}
           children={(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Document number</FieldLabel>
+              <FieldLabel htmlFor={field.name}>{c.fields.documentNumber}</FieldLabel>
               <Input
                 id={field.name}
                 value={field.state.value}
@@ -452,9 +452,7 @@ export function GuestForm({
               }}
               children={(field) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>
-                    EGN (national ID number)
-                  </FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{c.fields.egn}</FieldLabel>
                   <Input
                     id={field.name}
                     inputMode="numeric"
@@ -479,19 +477,19 @@ export function GuestForm({
           className="mt-0.5"
         />
         <span>
-          I agree to the{" "}
+          {c.consent.prefix}{" "}
           <Link
             to={"/terms-and-conditions" as never}
             className="text-primary underline underline-offset-2"
           >
-            Terms of Service
+            {c.consent.terms}
           </Link>{" "}
-          and{" "}
+          {c.consent.and}{" "}
           <Link
             to={"/privacy-policy" as never}
             className="text-primary underline underline-offset-2"
           >
-            Privacy Policy
+            {c.consent.privacy}
           </Link>
           .
         </span>
@@ -506,10 +504,10 @@ export function GuestForm({
       <div className="flex gap-3">
         <Button type="submit" disabled={!consent || submitting}>
           {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-          Save details
+          {c.submit}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {c.cancel}
         </Button>
       </div>
     </form>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useIntlayer } from "react-intlayer";
 import { Check, Copy, Loader2, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckinLink } from "../api/hooks";
@@ -38,6 +39,7 @@ export function CheckinLinkButton({
 }: CheckinLinkButtonProps) {
   const { mutateAsync, isPending } = useCheckinLink();
   const [copied, setCopied] = useState(false);
+  const c = useIntlayer("checkin-link-button");
 
   if (isCheckinLinkExpired(endDate)) return null;
 
@@ -47,10 +49,10 @@ export function CheckinLinkButton({
       const url = `${window.location.origin}/${locale}/checkin/${token}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success("Check-in link copied to clipboard");
+      toast.success(c.copiedToast.value);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Check-in link is not available for this booking yet");
+      toast.error(c.unavailableToast.value);
     }
   };
 
@@ -69,7 +71,7 @@ export function CheckinLinkButton({
       ) : (
         <Ticket className="mr-2 size-4" />
       )}
-      {copied ? "Copied" : "Check-in link"}
+      {copied ? c.copied : c.button}
       {!isPending && !copied && <Copy className="ml-2 size-3.5 opacity-60" />}
     </Button>
   );
