@@ -265,11 +265,12 @@ export function SignupForm({
         <Field>
           <span className="text-center text-xs underline-offset-4 -mt-5 text-muted-foreground">
             {content.legal.text}
-            <Link
-              to={"/terms-and-conditions" as any}
-              className="underline hover:text-primary"
-            >
+            <Link to="/terms-and-conditions" className="underline hover:text-primary">
               {content.legal.link}
+            </Link>
+            {content.legal.and}
+            <Link to="/privacy-policy" className="underline hover:text-primary">
+              {content.legal.privacyLink}
             </Link>
           </span>
         </Field>

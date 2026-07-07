@@ -36,6 +36,10 @@ const footerContent = {
         contact: t({ en: "Contact Us", bg: "Свържи се с нас" }),
       },
     },
+    legal: {
+      terms: t({ en: "Terms and Conditions", bg: "Общи условия" }),
+      privacy: t({ en: "Privacy Policy", bg: "Политика за поверителност" }),
+    },
   },
 } satisfies Dictionary;
 

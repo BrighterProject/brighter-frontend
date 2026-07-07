@@ -136,9 +136,23 @@ const Footer: FC = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col gap-2 border-t pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>{content.copyright}</span>
-          <span className="text-muted-foreground/40">{content.builtWith}</span>
+          <div className="flex items-center gap-4">
+            <LocalizedLink
+              to="/terms-and-conditions"
+              className="transition-colors hover:text-foreground"
+            >
+              {content.legal.terms}
+            </LocalizedLink>
+            <LocalizedLink
+              to="/privacy-policy"
+              className="transition-colors hover:text-foreground"
+            >
+              {content.legal.privacy}
+            </LocalizedLink>
+            <span className="text-muted-foreground/40">{content.builtWith}</span>
+          </div>
         </div>
       </div>
     </footer>
