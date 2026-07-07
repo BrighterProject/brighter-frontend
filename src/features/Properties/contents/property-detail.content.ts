@@ -14,6 +14,7 @@ const propertyDetailContent = {
       }),
     },
     back: t({ en: "Browse properties", bg: "Разгледайте имоти" }),
+    openInMaps: t({ en: "Open in Maps", bg: "Отвори в Maps" }),
     noImages: t({ en: "No images", bg: "Няма снимки" }),
     upTo: t({ en: "Up to", bg: "До" }),
     people: t({ en: "people", bg: "човека" }),
