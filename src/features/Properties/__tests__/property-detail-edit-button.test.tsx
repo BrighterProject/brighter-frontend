@@ -25,6 +25,7 @@ vi.mock('react-intlayer', () => ({
     checkInOut: 'Check-in/out',
     upTo: 'Up to',
     people: 'people',
+    cancellationPolicy: { title: 'Cancellation policy', labels: {}, descriptions: {} },
     bookingCard: {
       perNight: '/ night',
       bookNow: 'Book now',
