@@ -12,6 +12,7 @@ import { LocalizedLink as Link } from "@/components/ui/localized-link";
 import { guestIdentitySchema } from "../schemas/guest-identity";
 import type { DocumentType, Gender, GuestIdentityCreate } from "../api/types";
 import { COUNTRY_CODES } from "../lib/countries";
+import { bgDigitsToIso, formatBgDigits, isoToBgDigits } from "../lib/bg-date";
 
 interface GuestFormProps {
   locale: string;
@@ -52,7 +53,15 @@ const inputCls =
 // Cross-field rules (middle_name/pin_egn required when citizenship === "BG")
 // mean a single field's validity depends on sibling values — re-parse the
 // whole object on every field's validator and pick out that field's issue.
-function fieldError(values: FormValues, name: keyof FormValues) {
+//
+// The schema's `message` is an error CODE (e.g. "name_too_short"), not
+// user-facing text, so it can be translated here via `messages` before
+// reaching FieldErrors — otherwise Zod's raw default message leaks untranslated.
+function fieldError(
+  values: FormValues,
+  name: keyof FormValues,
+  messages: Record<string, string>,
+) {
   const parsed = guestIdentitySchema.safeParse({
     ...values,
     middle_name: values.middle_name || undefined,
@@ -60,7 +69,44 @@ function fieldError(values: FormValues, name: keyof FormValues) {
   });
   if (parsed.success) return undefined;
   const issue = parsed.error.issues.find((i) => i.path[0] === name);
-  return issue?.message;
+  if (!issue) return undefined;
+  return messages[issue.message] ?? issue.message;
+}
+
+// Day-first (DD.MM.YYYY) masked input over an ISO `YYYY-MM-DD` field value, so
+// Bulgarian users read/enter dates in the local order while the form and API
+// keep the canonical ISO string. A partial or impossible date maps to "",
+// which fails the schema's date validation.
+interface BgDateInputProps {
+  id: string;
+  value: string;
+  placeholder: string;
+  onChange: (iso: string) => void;
+  onBlur: () => void;
+}
+
+function BgDateInput({
+  id,
+  value,
+  placeholder,
+  onChange,
+  onBlur,
+}: BgDateInputProps) {
+  const [digits, setDigits] = useState(() => isoToBgDigits(value));
+  return (
+    <Input
+      id={id}
+      inputMode="numeric"
+      placeholder={placeholder}
+      value={formatBgDigits(digits)}
+      onChange={(e) => {
+        const next = e.target.value.replace(/\D/g, "").slice(0, 8);
+        setDigits(next);
+        onChange(bgDigitsToIso(next));
+      }}
+      onBlur={onBlur}
+    />
+  );
 }
 
 export function GuestForm({
@@ -72,6 +118,29 @@ export function GuestForm({
   const [consent, setConsent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const c = useIntlayer("guest-form");
+
+  const validationMessages: Record<string, string> = useMemo(
+    () => ({
+      name_too_short: c.errors.validation.nameTooShort.value,
+      name_too_long: c.errors.validation.nameTooLong.value,
+      name_invalid_format: c.errors.validation.nameInvalidFormat.value,
+      dob_required: c.errors.validation.dobRequired.value,
+      dob_future: c.errors.validation.dobFuture.value,
+      dob_too_early: c.errors.validation.dobTooEarly.value,
+      country_invalid: c.errors.validation.countryInvalid.value,
+      selection_required: c.errors.validation.selectionRequired.value,
+      document_number_too_short:
+        c.errors.validation.documentNumberTooShort.value,
+      document_number_too_long:
+        c.errors.validation.documentNumberTooLong.value,
+      document_number_invalid_format:
+        c.errors.validation.documentNumberInvalidFormat.value,
+      middle_name_required_bg: c.errors.validation.middleNameRequiredBg.value,
+      egn_required_bg: c.errors.validation.egnRequiredBg.value,
+      egn_invalid_bg: c.errors.validation.egnInvalidBg.value,
+    }),
+    [c],
+  );
 
   const countryOptions = useMemo(() => {
     const dn = new Intl.DisplayNames([locale], { type: "region" });
@@ -85,7 +154,7 @@ export function GuestForm({
     defaultValues: EMPTY,
     onSubmit: async ({ value }) => {
       setFormError(null);
-      const isBG = value.citizenship === "BG";
+      const isBgIssued = value.document_issuing_country === "BG";
       const payload: GuestIdentityCreate = {
         first_name: value.first_name.trim(),
         middle_name: value.middle_name.trim() || null,
@@ -96,7 +165,7 @@ export function GuestForm({
         document_type: value.document_type as DocumentType,
         document_number: value.document_number.trim(),
         document_issuing_country: value.document_issuing_country,
-        pin_egn: isBG ? value.pin_egn.trim() : null,
+        pin_egn: isBgIssued ? value.pin_egn.trim() : null,
       };
 
       try {
@@ -131,11 +200,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, first_name: value },
                 "first_name",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, first_name: value },
                 "first_name",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -160,11 +231,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, middle_name: value },
                 "middle_name",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, middle_name: value },
                 "middle_name",
+                validationMessages,
               ),
           }}
           children={(field) => {
@@ -194,11 +267,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, last_name: value },
                 "last_name",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, last_name: value },
                 "last_name",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -224,22 +299,26 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, date_of_birth: value },
                 "date_of_birth",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, date_of_birth: value },
                 "date_of_birth",
+                validationMessages,
               ),
           }}
           children={(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>{c.fields.dateOfBirth}</FieldLabel>
-              <Input
+              <BgDateInput
                 id={field.name}
-                type="date"
                 value={field.state.value}
+                placeholder={
+                  locale.startsWith("bg") ? "ДД.ММ.ГГГГ" : "DD.MM.YYYY"
+                }
+                onChange={(iso) => field.handleChange(iso)}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
               />
               <FieldErrors field={field} />
             </Field>
@@ -253,11 +332,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, gender: value },
                 "gender",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, gender: value },
                 "gender",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -291,11 +372,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, citizenship: value },
                 "citizenship",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, citizenship: value },
                 "citizenship",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -330,6 +413,7 @@ export function GuestForm({
                   document_issuing_country: value,
                 },
                 "document_issuing_country",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
@@ -338,6 +422,7 @@ export function GuestForm({
                   document_issuing_country: value,
                 },
                 "document_issuing_country",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -373,11 +458,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, document_type: value },
                 "document_type",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, document_type: value },
                 "document_type",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -408,11 +495,13 @@ export function GuestForm({
               fieldError(
                 { ...fieldApi.form.state.values, document_number: value },
                 "document_number",
+                validationMessages,
               ),
             onSubmit: ({ value, fieldApi }) =>
               fieldError(
                 { ...fieldApi.form.state.values, document_number: value },
                 "document_number",
+                validationMessages,
               ),
           }}
           children={(field) => (
@@ -432,22 +521,24 @@ export function GuestForm({
       </div>
 
       <form.Subscribe
-        selector={(state) => state.values.citizenship === "BG"}
-        children={(isBG) =>
-          isBG && (
+        selector={(state) => state.values.document_issuing_country === "BG"}
+        children={(isBgIssued) =>
+          isBgIssued && (
             <form.Field
               name="pin_egn"
               validators={{
-                onChangeListenTo: ["citizenship"],
+                onChangeListenTo: ["document_issuing_country"],
                 onBlur: ({ value, fieldApi }) =>
                   fieldError(
                     { ...fieldApi.form.state.values, pin_egn: value },
                     "pin_egn",
+                    validationMessages,
                   ),
                 onSubmit: ({ value, fieldApi }) =>
                   fieldError(
                     { ...fieldApi.form.state.values, pin_egn: value },
                     "pin_egn",
+                    validationMessages,
                   ),
               }}
               children={(field) => (
