@@ -264,6 +264,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
   const name = t?.name ?? "Untitled";
   const description = t?.description ?? "";
   const address = t?.address ?? "";
+  const houseRules = t?.house_rules?.trim() ?? "";
 
   const images = property.images.length > 0 ? property.images : [];
   const mainImage = images[selectedImage];
@@ -301,6 +302,13 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
             86_400_000,
         )
       : 0;
+
+  const maxBookableDate = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + property.booking_window_days);
+    return d;
+  }, [property.booking_window_days]);
 
   const pricingMap = useMemo(() => {
     const today = new Date();
@@ -588,6 +596,21 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                 </>
               )}
 
+              {/* House rules — shown before booking */}
+              {houseRules && (
+                <>
+                  <hr className="border-border" />
+                  <div>
+                    <h2 className="font-display text-lg font-semibold text-foreground">
+                      {c.sections.houseRules}
+                    </h2>
+                    <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
+                      {houseRules}
+                    </p>
+                  </div>
+                </>
+              )}
+
               {/* Today's unavailabilities */}
               {todayUnavailabilities.length > 0 && (
                 <div className="space-y-3">
@@ -664,6 +687,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                       onError={setDateError}
                       locale={locale}
                       pricingMap={pricingMap}
+                      maxDate={maxBookableDate}
                       labels={{
                         myBooking: c.bookingCard.calendar.myBooking.value as string,
                         booked: c.bookingCard.calendar.booked.value as string,

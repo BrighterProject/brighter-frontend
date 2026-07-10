@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Map as MapIcon, X } from "lucide-react";
 import type { PropertyListItem } from "../api/types";
-import { PropertyMap, formatPrice } from "./property-map";
+import { PropertyMap, pinPrice } from "./property-map";
 
 type Locale = "bg" | "en" | "ru";
 
@@ -103,7 +103,7 @@ export function PropertyMapModal({
                       ★ {Number(p.rating).toFixed(1)} · {p.total_reviews}
                     </p>
                     <p className="text-sm font-bold">
-                      {formatPrice(p.price_per_night, p.currency)}
+                      {pinPrice(p)}
                     </p>
                   </div>
                 </li>

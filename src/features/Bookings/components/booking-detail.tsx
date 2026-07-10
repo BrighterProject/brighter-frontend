@@ -146,7 +146,13 @@ export function BookingDetail({ bookingId, locale }: BookingDetailProps) {
 
   const status = booking.status as BookingStatus;
   const isPending = status === "pending";
-  const needsPayment = isPending && !payment;
+  // "Pay now" is an online Stripe (card) checkout. Only offer it for a card
+  // booking whose property still accepts card — otherwise checkout just errors
+  // (cash-only properties, or owners who disabled card/bank transfer).
+  const canPayOnline =
+    booking.payment_method === "card" &&
+    (property?.payment_config?.accepted_methods.includes("card") ?? false);
+  const needsPayment = isPending && !payment && canPayOnline;
   const nights = nightCount(booking.start_date, booking.end_date);
 
   const translation = property

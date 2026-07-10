@@ -100,12 +100,12 @@ const loginFormContent = {
     },
     panel: {
       tagline: t({
-        en: "Book your next game.",
-        bg: "Резервирай следващата си игра.",
+        en: "Book your next getaway.",
+        bg: "Резервирайте следващата си почивка.",
       }),
       subtitle: t({
-        en: "Find and reserve sports properties across Bulgaria in seconds.",
-        bg: "Намерете и резервирайте спортни обекти в цяла България за секунди.",
+        en: "Find and book properties across Bulgaria in seconds.",
+        bg: "Намерете и резервирайте имоти в цяла България за секунди.",
       }),
     },
   },

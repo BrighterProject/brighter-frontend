@@ -26,7 +26,14 @@ export function Landing() {
   const { data: allProperties, isLoading } = useProperties({
     status: "active",
   });
-  const properties = allProperties?.slice(0, 3) ?? [];
+  const properties = [...(allProperties ?? [])]
+    .sort((a, b) => {
+      if (b.total_reviews !== a.total_reviews) {
+        return b.total_reviews - a.total_reviews;
+      }
+      return parseFloat(b.rating) - parseFloat(a.rating);
+    })
+    .slice(0, 3);
   const { data: me } = useMe();
   const isOwner =
     (me?.scopes?.includes("properties:me") ?? false) &&

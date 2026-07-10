@@ -55,7 +55,21 @@ function propertyToOfferData(
     isNew: property.total_reviews === 0,
     rating: getRatingLabel(rating, c),
     ratingScore: rating.toFixed(1),
-    price: `${Number(property.price_per_night).toFixed(0)} ${property.currency}`,
+    // With a searched date range the API returns the resolved stay total; show
+    // it (labelled "N nights") instead of the per-night "from" price.
+    priceLabel:
+      property.stay_total != null && property.stay_nights != null
+        ? `${property.stay_nights} ${
+            property.stay_nights === 1
+              ? (c.night.value as string)
+              : (c.nights.value as string)
+          }`
+        : undefined,
+    price: `${Number(
+      property.stay_total != null
+        ? property.stay_total
+        : property.price_per_night,
+    ).toFixed(0)} ${property.currency}`,
     priceNote: c.includedTaxes as string,
     cta: c.seeAvailability as string,
     image: property.thumbnail,

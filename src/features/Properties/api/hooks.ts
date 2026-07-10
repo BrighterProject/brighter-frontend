@@ -147,8 +147,11 @@ export const usePropertyUnavailabilities = (propertyId: string) => {
   return useQuery({
     queryKey: ["properties", propertyId, "unavailabilities"],
     queryFn: async () => {
+      // include_price_gaps: days with no price set are returned as unavailable,
+      // so the date picker blocks them (unpriced day = not bookable).
       const { data } = await apiClient.get<PropertyUnavailabilityResponse[]>(
         `/properties/${propertyId}/unavailabilities`,
+        { params: { include_price_gaps: true } },
       );
       return data;
     },

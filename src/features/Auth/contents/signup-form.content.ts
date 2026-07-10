@@ -120,8 +120,8 @@ const signupContent = {
         bg: "Присъединете се към общността.",
       }),
       subtitle: t({
-        en: "Create an account to start booking sports properties across Bulgaria.",
-        bg: "Създайте профил, за да започнете да резервирате спортни обекти в цяла България.",
+        en: "Create an account to start booking properties across Bulgaria.",
+        bg: "Създайте профил, за да започнете да резервирате имоти в цяла България.",
       }),
     },
   },

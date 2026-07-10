@@ -28,8 +28,8 @@ const aboutUsContent = {
       title: t({ en: "Who We Are", bg: "Кои сме ние" }),
       paragraphs: [
         t({
-          en: "We are Kirill from Burgas and Tsveti from Pernik — two students who share a love for technology. SeasideHoliday started as our project for the National IT Olympiad — an opportunity to tackle a real problem we saw in our everyday lives.",
-          bg: "Ние сме Кирил от Бургас и Цвети от Перник — двама ученици, които споделят любовта си към технологиите. Почивка на морето започна като наш проект за Националната IT олимпиада — възможност да решим реален проблем от ежедневието ни.",
+          en: "We are a small team that shares a love for technology. SeasideHoliday started as a project for the National IT Olympiad — an opportunity to tackle a real problem we saw in our everyday lives.",
+          bg: "Ние сме малък екип, който споделя любовта си към технологиите. Почивка на морето започна като проект за Националната IT олимпиада — възможност да решим реален проблем от ежедневието ни.",
         }),
         t({
           en: "Inspired by the technological advancements in other countries — where booking a property is as easy as ordering food online — we set out to bring that same convenience to Bulgaria. We noticed that most property bookings here still happen through phone calls, Facebook messages, or word of mouth. We wanted to change that.",

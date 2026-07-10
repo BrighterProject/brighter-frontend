@@ -85,6 +85,7 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   ],
   weekday_prices: [],
   date_price_overrides: [],
+  booking_window_days: 180,
 });
 
 const { useMe } = await import('@Auth/api/hooks');
