@@ -101,6 +101,10 @@ const signupContent = {
         en: "An account with this email already exists.",
         bg: "Акаунт с този имейл вече съществува.",
       }),
+      googleFailed: t({
+        en: "Google sign-in failed. Please try again or sign up with email and password.",
+        bg: "Влизането с Google не бе успешно. Моля, опитайте отново или се регистрирайте с имейл и парола.",
+      }),
       generic: t({
         en: "Something went wrong. Please try again.",
         bg: "Нещо се обърка. Моля, опитайте отново.",
