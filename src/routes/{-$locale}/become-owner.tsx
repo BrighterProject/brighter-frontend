@@ -77,7 +77,7 @@ function BecomeOwnerPage() {
           {content.benefits.title}
         </h2>
         <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from(content.benefits.items).map((item: any, idx: number) => (
+          {content.benefits.items.map((item, idx) => (
             <div
               key={idx}
               className="rounded-lg border border-border bg-card p-6 shadow-sm"
@@ -97,7 +97,7 @@ function BecomeOwnerPage() {
           {content.howItWorks.title}
         </h2>
         <div className="mt-12 space-y-8">
-          {Array.from(content.howItWorks.steps).map((step: any, idx: number) => (
+          {content.howItWorks.steps.map((step, idx) => (
             <div key={idx} className="flex gap-6">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/20">
                 <span className="font-display font-bold text-primary">
@@ -121,7 +121,7 @@ function BecomeOwnerPage() {
           {content.testimonials.title}
         </h2>
         <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
-          {Array.from(content.testimonials.items).map((item: any, idx: number) => (
+          {content.testimonials.items.map((item, idx) => (
             <blockquote
               key={idx}
               className="rounded-lg border border-border bg-card p-6 italic text-muted-foreground shadow-sm"

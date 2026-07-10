@@ -23,6 +23,7 @@ import { Route as Char123LocaleChar125SplatRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125PropertiesIndexRouteImport } from './routes/{-$locale}/properties/index'
 import { Route as Char123LocaleChar125BookingsIndexRouteImport } from './routes/{-$locale}/bookings/index'
 import { Route as Char123LocaleChar125SubscriptionSuccessRouteImport } from './routes/{-$locale}/subscription/success'
+import { Route as Char123LocaleChar125CheckinTokenRouteImport } from './routes/{-$locale}/checkin/$token'
 import { Route as Char123LocaleChar125BookingsSuccessRouteImport } from './routes/{-$locale}/bookings/success'
 import { Route as Char123LocaleChar125BookingsCancelRouteImport } from './routes/{-$locale}/bookings/cancel'
 import { Route as Char123LocaleChar125BookingsBookingIdRouteImport } from './routes/{-$locale}/bookings/$bookingId'
@@ -116,6 +117,12 @@ const Char123LocaleChar125SubscriptionSuccessRoute =
     path: '/subscription/success',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125CheckinTokenRoute =
+  Char123LocaleChar125CheckinTokenRouteImport.update({
+    id: '/checkin/$token',
+    path: '/checkin/$token',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const Char123LocaleChar125BookingsSuccessRoute =
   Char123LocaleChar125BookingsSuccessRouteImport.update({
     id: '/bookings/success',
@@ -190,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
+  '/{-$locale}/checkin/$token': typeof Char123LocaleChar125CheckinTokenRoute
   '/{-$locale}/subscription/success': typeof Char123LocaleChar125SubscriptionSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
+  '/{-$locale}/checkin/$token': typeof Char123LocaleChar125CheckinTokenRoute
   '/{-$locale}/subscription/success': typeof Char123LocaleChar125SubscriptionSuccessRoute
   '/{-$locale}/bookings': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties': typeof Char123LocaleChar125PropertiesIndexRoute
@@ -240,6 +249,7 @@ export interface FileRoutesById {
   '/{-$locale}/bookings/$bookingId': typeof Char123LocaleChar125BookingsBookingIdRoute
   '/{-$locale}/bookings/cancel': typeof Char123LocaleChar125BookingsCancelRoute
   '/{-$locale}/bookings/success': typeof Char123LocaleChar125BookingsSuccessRoute
+  '/{-$locale}/checkin/$token': typeof Char123LocaleChar125CheckinTokenRoute
   '/{-$locale}/subscription/success': typeof Char123LocaleChar125SubscriptionSuccessRoute
   '/{-$locale}/bookings/': typeof Char123LocaleChar125BookingsIndexRoute
   '/{-$locale}/properties/': typeof Char123LocaleChar125PropertiesIndexRoute
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
+    | '/{-$locale}/checkin/$token'
     | '/{-$locale}/subscription/success'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
+    | '/{-$locale}/checkin/$token'
     | '/{-$locale}/subscription/success'
     | '/{-$locale}/bookings'
     | '/{-$locale}/properties'
@@ -316,6 +328,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/bookings/$bookingId'
     | '/{-$locale}/bookings/cancel'
     | '/{-$locale}/bookings/success'
+    | '/{-$locale}/checkin/$token'
     | '/{-$locale}/subscription/success'
     | '/{-$locale}/bookings/'
     | '/{-$locale}/properties/'
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125SubscriptionSuccessRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/checkin/$token': {
+      id: '/{-$locale}/checkin/$token'
+      path: '/checkin/$token'
+      fullPath: '/{-$locale}/checkin/$token'
+      preLoaderRoute: typeof Char123LocaleChar125CheckinTokenRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/{-$locale}/bookings/success': {
       id: '/{-$locale}/bookings/success'
       path: '/bookings/success'
@@ -511,6 +531,7 @@ interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125BookingsBookingIdRoute: typeof Char123LocaleChar125BookingsBookingIdRoute
   Char123LocaleChar125BookingsCancelRoute: typeof Char123LocaleChar125BookingsCancelRoute
   Char123LocaleChar125BookingsSuccessRoute: typeof Char123LocaleChar125BookingsSuccessRoute
+  Char123LocaleChar125CheckinTokenRoute: typeof Char123LocaleChar125CheckinTokenRoute
   Char123LocaleChar125SubscriptionSuccessRoute: typeof Char123LocaleChar125SubscriptionSuccessRoute
   Char123LocaleChar125BookingsIndexRoute: typeof Char123LocaleChar125BookingsIndexRoute
   Char123LocaleChar125PropertiesIndexRoute: typeof Char123LocaleChar125PropertiesIndexRoute
@@ -545,6 +566,8 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
       Char123LocaleChar125BookingsCancelRoute,
     Char123LocaleChar125BookingsSuccessRoute:
       Char123LocaleChar125BookingsSuccessRoute,
+    Char123LocaleChar125CheckinTokenRoute:
+      Char123LocaleChar125CheckinTokenRoute,
     Char123LocaleChar125SubscriptionSuccessRoute:
       Char123LocaleChar125SubscriptionSuccessRoute,
     Char123LocaleChar125BookingsIndexRoute:

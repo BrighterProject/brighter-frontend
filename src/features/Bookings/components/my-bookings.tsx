@@ -25,6 +25,7 @@ import {
   useAbandonPayment,
 } from "../api/hooks";
 import type { BookingResponse, BookingStatus, PaymentResponse, PaymentStatus } from "../api/types";
+import { CheckinLinkButton } from "@/features/Checkin/components/checkin-link-button";
 import { usePropertiesForBookings } from "@Properties/api/hooks";
 import { resolveTranslation } from "@Properties/api/types";
 import type { PropertyResponse } from "@Properties/api/types";
@@ -279,6 +280,14 @@ function BookingCard({
             >
               {payingBookingId === booking.id ? labels.paying : labels.payNow}
             </Button>
+          )}
+          {isConfirmed && (
+            <CheckinLinkButton
+              bookingId={booking.id}
+              locale={locale}
+              endDate={booking.end_date}
+              className="flex-1 rounded-lg"
+            />
           )}
           {(isPending || isConfirmed) && (
             <Button
