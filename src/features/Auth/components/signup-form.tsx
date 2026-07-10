@@ -281,11 +281,17 @@ export function SignupForm({
           <GoogleLogin
             onSuccess={({ credential }) => {
               if (!credential) return;
+              setServerError(null);
               googleLoginMutation.mutate(credential, {
                 onSuccess: () => navigate("/"),
+                onError: () => {
+                  setServerError(e.googleFailed.value as string);
+                },
               });
             }}
-            onError={() => {}}
+            onError={() => {
+              setServerError(e.googleFailed.value as string);
+            }}
           />
         </div>
 

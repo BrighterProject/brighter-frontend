@@ -89,6 +89,10 @@ const loginFormContent = {
         en: "Incorrect email or password.",
         bg: "Грешен имейл или парола.",
       }),
+      googleFailed: t({
+        en: "Google sign-in failed. Please try again or use email and password.",
+        bg: "Влизането с Google не бе успешно. Моля, опитайте отново или използвайте имейл и парола.",
+      }),
       generic: t({
         en: "Something went wrong. Please try again.",
         bg: "Нещо се обърка. Моля, опитайте отново.",

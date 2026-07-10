@@ -203,6 +203,7 @@ export function LoginForm({ className }: { className?: string }) {
           <GoogleLogin
             onSuccess={({ credential }) => {
               if (!credential) return;
+              setServerError(null);
               googleLoginMutation.mutate(credential, {
                 onSuccess: () => {
                   if (search.redirect) {
@@ -211,9 +212,14 @@ export function LoginForm({ className }: { className?: string }) {
                     navigate({ to: "/" });
                   }
                 },
+                onError: () => {
+                  setServerError(e.googleFailed.value as string);
+                },
               });
             }}
-            onError={() => {}}
+            onError={() => {
+              setServerError(e.googleFailed.value as string);
+            }}
           />
         </div>
 
