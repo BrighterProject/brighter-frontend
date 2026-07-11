@@ -139,6 +139,7 @@ export function PropertiesList() {
         checkIn: urlCheckIn,
         checkOut: urlCheckOut,
         adults: urlAdults,
+        children: urlChildren,
       } as any,
     });
 
@@ -217,6 +218,7 @@ export function PropertiesList() {
               checkIn: urlCheckIn,
               checkOut: urlCheckOut,
               adults: urlAdults,
+              children: urlChildren,
             }}
           />
         </div>
