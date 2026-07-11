@@ -3,6 +3,7 @@ import apiClient from "@/lib/api-client";
 import type {
   DatePriceOverride,
   PriceResolutionResponse,
+  PricingCoverageResponse,
   PropertyListItem,
   PropertyResponse,
   PropertyUnavailabilityResponse,
@@ -147,15 +148,36 @@ export const usePropertyUnavailabilities = (propertyId: string) => {
   return useQuery({
     queryKey: ["properties", propertyId, "unavailabilities"],
     queryFn: async () => {
-      // include_price_gaps: days with no price set are returned as unavailable,
-      // so the date picker blocks them (unpriced day = not bookable).
+      // Real owner-set blocks only. Unpriced days come from the pricing-coverage
+      // endpoint (usePricingCoverage) and are merged in by the caller.
       const { data } = await apiClient.get<PropertyUnavailabilityResponse[]>(
         `/properties/${propertyId}/unavailabilities`,
-        { params: { include_price_gaps: true } },
       );
       return data;
     },
     enabled: !!propertyId,
+  });
+};
+
+/**
+ * Unpriced-day windows for a property over `[start, end)`. Used to disable
+ * unbookable days in the date picker (a day with no price cannot be booked).
+ */
+export const usePricingCoverage = (
+  propertyId: string,
+  start: string,
+  end: string,
+) => {
+  return useQuery({
+    queryKey: ["properties", propertyId, "coverage", start, end],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PricingCoverageResponse>(
+        `/properties/${propertyId}/pricing/coverage`,
+        { params: { start, end } },
+      );
+      return data.unpriced_windows;
+    },
+    enabled: !!propertyId && !!start && !!end,
   });
 };
 

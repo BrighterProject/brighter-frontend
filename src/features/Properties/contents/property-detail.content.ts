@@ -103,6 +103,8 @@ const propertyDetailContent = {
     },
     bookingCard: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
+      priceFrom: t({ en: "from", bg: "от" }),
+      priceOnRequest: t({ en: "Price on request", bg: "Цена при запитване" }),
       today: t({ en: "Today", bg: "Днес" }),
       capacity: t({ en: "Capacity", bg: "Капацитет" }),
       people: t({ en: "people", bg: "човека" }),

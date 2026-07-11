@@ -81,7 +81,8 @@ export interface PropertyListItem {
   longitude?: string | null;
   property_type: PropertyType;
   status: PropertyStatus;
-  price_per_night: string;
+  /** Derived cheapest nightly rate ("from X"); null when no pricing is set. */
+  price_from: string | null;
   currency: string;
   max_guests: number;
   bedrooms: number;
@@ -111,7 +112,8 @@ export interface PropertyResponse {
   city: string;
   latitude?: string | null;
   longitude?: string | null;
-  price_per_night: string;
+  /** Derived cheapest nightly rate ("from X"); null when no pricing is set. */
+  price_from: string | null;
   currency: string;
   max_guests: number;
   bedrooms: number;
@@ -135,6 +137,16 @@ export interface PropertyResponse {
   date_price_overrides: DatePriceOverride[];
   /** How many days in advance this property can be booked. */
   booking_window_days: number;
+}
+
+/** A contiguous run of days with no price set (`[start_date, end_date)`, end-exclusive). */
+export interface UnpricedWindow {
+  start_date: string;
+  end_date: string;
+}
+
+export interface PricingCoverageResponse {
+  unpriced_windows: UnpricedWindow[];
 }
 
 /**

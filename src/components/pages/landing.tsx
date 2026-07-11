@@ -112,7 +112,10 @@ export function Landing() {
                         totalReviews: property.total_reviews,
                         rating: getRatingLabel(property.rating, locale),
                         ratingScore: parseFloat(property.rating).toFixed(1),
-                        price: `${property.currency} ${parseFloat(property.price_per_night).toFixed(0)}`,
+                        price:
+                          property.price_from != null
+                            ? `${content.offerCard.priceFrom.value as string} ${property.currency} ${parseFloat(property.price_from).toFixed(0)}`
+                            : (content.offerCard.priceOnRequest.value as string),
                         priceNote: content.offerCard.priceNote as string,
                         cta: content.offerCard.cta as string,
                         onClick: () =>

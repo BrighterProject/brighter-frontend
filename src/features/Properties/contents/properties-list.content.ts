@@ -96,6 +96,8 @@ const propertiesListContent = {
     }),
     card: {
       perNight: t({ en: "/night", bg: "/нощ" }),
+      priceFrom: t({ en: "from", bg: "от" }),
+      priceOnRequest: t({ en: "Price on request", bg: "Цена при запитване" }),
       night: t({ en: "night", bg: "нощувка" }),
       nights: t({ en: "nights", bg: "нощувки" }),
       seeAvailability: t({ en: "See availability", bg: "Виж наличност" }),

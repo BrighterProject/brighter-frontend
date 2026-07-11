@@ -12,6 +12,7 @@ vi.mock('@/features/Bookings/api/hooks', () => ({
 }));
 vi.mock('../api/hooks', () => ({
   usePropertyUnavailabilities: () => ({ data: [] }),
+  usePricingCoverage: () => ({ data: [] }),
 }));
 vi.mock('react-intlayer', () => ({
   useIntlayer: () => ({
@@ -61,7 +62,7 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   city: 'Sofia',
   latitude: null,
   longitude: null,
-  price_per_night: '150.00',
+  price_from: '150.00',
   currency: 'EUR',
   bedrooms: 2,
   bathrooms: 1,
