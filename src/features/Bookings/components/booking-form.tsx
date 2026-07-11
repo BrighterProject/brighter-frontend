@@ -199,6 +199,17 @@ export function BookingForm({
         })
       : "—";
 
+  const idleLabel = (() => {
+    switch (paymentMethod) {
+      case "bank_transfer":
+        return c.submit.idleBankTransfer;
+      case "cash":
+        return c.submit.idleCash;
+      default:
+        return c.submit.idleCard;
+    }
+  })();
+
   const guestsLabel = (() => {
     const adultStr = `${adults} ${adults === 1 ? (c.labels.adult.value as string) : (c.labels.adults.value as string)}`;
     if (children === 0) return adultStr;
@@ -446,7 +457,7 @@ export function BookingForm({
                     />
                   )}
 
-                  {acceptedMethods.length > 1 && (
+                  {acceptedMethods.length > 0 && (
                     <div className="mt-4 space-y-2">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         {c.sections.paymentMethod}
@@ -530,7 +541,7 @@ export function BookingForm({
                       ? c.submit.submitting
                       : createCheckout.isPending || createBankTransferIntent.isPending
                         ? c.submit.redirecting
-                        : c.submit.idle}
+                        : idleLabel}
                   </Button>
 
                   {property.cancellation_policy && (
