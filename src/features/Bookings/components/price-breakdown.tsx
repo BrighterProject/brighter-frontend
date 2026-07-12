@@ -9,8 +9,6 @@ interface PriceBreakdownProps {
   currency: string;
 }
 
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 function formatDate(iso: string): string {
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
@@ -58,39 +56,17 @@ export function PriceBreakdown({
     );
   }
 
-  const hasDynamicPrices = data.nights.some((n) => n.source !== "base");
-
+  // Every night is priced from its own calendar row — list them out.
   return (
     <div className="space-y-1 text-sm">
-      {hasDynamicPrices ? (
-        <>
-          {data.nights.map((night) => (
-            <div key={night.date} className="flex justify-between text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                {formatDate(night.date)}
-                {night.source === "date_override" && night.label && (
-                  <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary">
-                    {night.label}
-                  </span>
-                )}
-                {night.source === "weekday" && (
-                  <span className="text-xs text-muted-foreground/70">
-                    ({DAY_LABELS[new Date(night.date + "T00:00:00").getDay() === 0 ? 6 : new Date(night.date + "T00:00:00").getDay() - 1]})
-                  </span>
-                )}
-              </span>
-              <span className="font-medium text-foreground">
-                {Number(night.price).toFixed(0)} {data.currency}
-              </span>
-            </div>
-          ))}
-        </>
-      ) : (
-        <div className="text-muted-foreground">
-          {nights} {nights === 1 ? "night" : "nights"} ×{" "}
-          {Number(data.nights[0]?.price ?? basePricePerNight).toFixed(0)} {data.currency}
+      {data.nights.map((night) => (
+        <div key={night.date} className="flex justify-between text-muted-foreground">
+          <span>{formatDate(night.date)}</span>
+          <span className="font-medium text-foreground">
+            {Number(night.price).toFixed(0)} {data.currency}
+          </span>
         </div>
-      )}
+      ))}
 
       <div className="flex justify-between border-t pt-2 text-base font-semibold text-foreground">
         <span>Total</span>

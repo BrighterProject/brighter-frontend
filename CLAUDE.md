@@ -141,6 +141,16 @@ Content declarations (`*.content.ts`) live next to the components they belong to
 
 After Stripe Checkout, Stripe redirects to `/en/bookings?payment=success` or `/en/bookings?payment=cancelled`. The `my-bookings` page reads this query param to show a toast/banner. payments-ms injects the locale prefix into the return URLs dynamically.
 
+### Pricing (guest-facing, per-date calendar)
+
+properties-ms prices the calendar **day by day** — there are no recurring weekday rules and no base-price fallback. The guest UI reflects that:
+
+- **"From X" price** (`property.price_from`, nullable): the cheapest priced night within the booking horizon. Shown on cards, the map, landing, and the detail header (`properties-list.tsx`, `property-map.tsx`, `property-detail.tsx`). When `null`, no price is shown.
+- **Per-night prices**: `useDatePrices(propertyId, from, to)` fetches `GET /pricing/dates` (one row per priced night). `buildPricingMap()` (`features/Properties/utils/pricing.ts`) turns those rows into an ISO-date → price map for the `DateRangePicker`; `resolveTotal()` sums the selected stay and returns `null` if any night is unpriced. A date absent from the map is unpriced — there is no weekday/base computation.
+- **Unpriced days are blocked**: `usePricingCoverage` (`GET /pricing/coverage`) returns `unpriced_windows` that the picker disables alongside real owner blocks. `PriceBreakdown` (`Bookings/`) lists each resolved night from `GET /pricing/resolve` (every night has `source: "date"`).
+
+Owner-side pricing edits live in **brighter-admin-panel**, not here.
+
 ### Testing
 
 Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in run mode).

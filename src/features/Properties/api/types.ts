@@ -133,8 +133,6 @@ export interface PropertyResponse {
   translations: TranslationResponse[];
   images: PropertyImageResponse[];
   unavailabilities: PropertyUnavailabilityResponse[];
-  weekday_prices: WeekdayPriceOut[];
-  date_price_overrides: DatePriceOverride[];
   /** How many days in advance this property can be booked. */
   booking_window_days: number;
 }
@@ -181,23 +179,15 @@ export interface PropertyUnavailabilityResponse {
 // Pricing
 // ---------------------------------------------------------------------------
 
-export interface WeekdayPriceOut {
+/** A single priced night — the calendar is the sole source of truth. */
+export interface DatePrice {
   id: string;
   property_id: string;
-  weekday: number;
+  date: string;
   price: string;
 }
 
-export interface DatePriceOverride {
-  id: string;
-  property_id: string;
-  start_date: string;
-  end_date: string;
-  price: string;
-  label?: string | null;
-}
-
-export type PriceSource = "base" | "weekday" | "date_override";
+export type PriceSource = "date" | "unpriced";
 
 export interface ResolvedNightPrice {
   date: string;

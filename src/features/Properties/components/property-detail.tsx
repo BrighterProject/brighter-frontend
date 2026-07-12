@@ -4,7 +4,11 @@ import { useMe } from "@Auth/api/hooks";
 import { useIntlayer } from "react-intlayer";
 import { DateRangePicker, isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
-import { usePropertyUnavailabilities, usePricingCoverage } from "../api/hooks";
+import {
+  usePropertyUnavailabilities,
+  usePricingCoverage,
+  useDatePrices,
+} from "../api/hooks";
 import { buildPricingMap, resolveTotal } from "../utils/pricing";
 
 import { type PropertyResponse, resolveTranslation } from "../api/types";
@@ -265,6 +269,12 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
     coverageRange.start,
     coverageRange.end,
   );
+  // Per-date prices over the same horizon — the sole source of night prices.
+  const { data: datePrices = [] } = useDatePrices(
+    property.id,
+    coverageRange.start,
+    coverageRange.end,
+  );
 
   // Real owner blocks + synthesized unpriced-day blocks, both consumed as
   // end-exclusive [start_date, end_date) windows by the date picker.
@@ -339,29 +349,13 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
     return d;
   }, [property.booking_window_days]);
 
-  const pricingMap = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const end = new Date(today.getFullYear(), today.getMonth() + 13, 1);
-    return buildPricingMap(
-      today,
-      end,
-      property.price_from ?? "0",
-      property.weekday_prices,
-      property.date_price_overrides,
-    );
-  }, [property.price_from, property.weekday_prices, property.date_price_overrides]);
+  const pricingMap = useMemo(() => buildPricingMap(datePrices), [datePrices]);
 
   const totalPrice = useMemo(() => {
     if (!dateRange.checkIn || !dateRange.checkOut || nights <= 0) return null;
-    return resolveTotal(
-      dateRange.checkIn,
-      dateRange.checkOut,
-      property.price_from ?? "0",
-      property.weekday_prices,
-      property.date_price_overrides,
-    ).toFixed(0);
-  }, [dateRange.checkIn, dateRange.checkOut, nights, property.price_from, property.weekday_prices, property.date_price_overrides]);
+    const total = resolveTotal(dateRange.checkIn, dateRange.checkOut, pricingMap);
+    return total === null ? null : total.toFixed(0);
+  }, [dateRange.checkIn, dateRange.checkOut, nights, pricingMap]);
 
   // Lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
