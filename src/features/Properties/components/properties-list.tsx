@@ -230,10 +230,10 @@ export function PropertiesList() {
     patchSearch({ sort: sort !== DEFAULT_SORT ? sort : undefined });
 
   const toggleArrayFilter = (
-    key: "propertyTypes" | "popularFilters",
+    key: "propertyTypes" | "popularFilters" | "amenities",
     value: string,
   ) => {
-    const arr = filters[key];
+    const arr = filters[key] as string[];
     applyFilters({
       ...filters,
       [key]: arr.includes(value)
@@ -252,6 +252,7 @@ export function PropertiesList() {
     filters.max_price < PRICE_MAX ||
     filters.propertyTypes.length > 0 ||
     filters.popularFilters.length > 0 ||
+    filters.amenities.length > 0 ||
     filters.minRating !== null ||
     filters.bedrooms !== null;
 
@@ -259,6 +260,7 @@ export function PropertiesList() {
     (filters.min_price > PRICE_MIN || filters.max_price < PRICE_MAX ? 1 : 0) +
     filters.propertyTypes.length +
     filters.popularFilters.length +
+    filters.amenities.length +
     (filters.minRating !== null ? 1 : 0) +
     (filters.bedrooms !== null ? 1 : 0);
 

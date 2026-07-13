@@ -44,23 +44,68 @@ export type PropertyType =
 
 export type CancellationPolicy = "free" | "moderate" | "strict";
 
+// Flat amenity taxonomy mirroring the backend `AmenityType` enum (BTR-53).
+// Category grouping for the filter UI lives in `components/amenity-taxonomy.ts`.
 export type AmenityType =
+  // Views & location
+  | "sea_view"
+  | "mountain_view"
+  | "lake_view"
+  | "beachfront"
+  | "ski_to_door"
+  | "city_center"
+  // Kitchen & dining
+  | "kitchen"
+  | "kitchenette"
+  | "coffee_machine"
+  | "dishwasher"
+  | "microwave"
+  | "oven"
+  | "restaurant"
+  // Comfort
   | "wifi"
   | "air_conditioning"
-  | "kitchen"
-  | "washing_machine"
+  | "heating"
   | "fireplace"
-  | "bbq"
-  | "mountain_view"
-  | "ski_storage"
-  | "breakfast_included"
-  | "reception_24h"
-  | "sea_view"
-  | "balcony"
+  | "washing_machine"
+  | "dryer"
+  | "iron"
+  | "tv"
+  | "workspace"
+  // Outdoors
   | "pool"
+  | "indoor_pool"
   | "garden"
+  | "bbq"
+  | "balcony"
+  | "terrace"
+  | "hot_tub"
+  // Family
   | "pet_friendly"
-  | "coffee_machine";
+  | "crib"
+  | "high_chair"
+  | "playground"
+  | "board_games"
+  // Wellness
+  | "sauna"
+  | "spa"
+  | "gym"
+  | "massage"
+  // Services
+  | "reception_24h"
+  | "breakfast_included"
+  | "airport_shuttle"
+  | "ev_charger"
+  | "luggage_storage"
+  | "daily_housekeeping"
+  | "ski_storage"
+  // Safety & accessibility
+  | "smoke_alarm"
+  | "fire_extinguisher"
+  | "first_aid_kit"
+  | "elevator"
+  | "ground_floor"
+  | "step_free_access";
 
 export interface TranslationResponse {
   id: string;

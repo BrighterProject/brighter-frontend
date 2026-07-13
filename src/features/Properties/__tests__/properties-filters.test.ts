@@ -7,6 +7,10 @@ import {
   buildParams,
   type Filters,
 } from "../components/properties-filters";
+import {
+  AMENITY_CATEGORIES,
+  ALL_AMENITIES,
+} from "../components/amenity-taxonomy";
 
 describe("sanitizeFilterSearch", () => {
   it("returns an empty object for no filter params", () => {
@@ -52,6 +56,16 @@ describe("sanitizeFilterSearch", () => {
     ).toEqual({ amenities: ["wifi", "pool"] });
   });
 
+  it("keeps only valid amenity slugs in the grouped `features` param", () => {
+    expect(
+      sanitizeFilterSearch({ features: ["sauna", "not_a_slug", "hot_tub"] }),
+    ).toEqual({ features: ["sauna", "hot_tub"] });
+  });
+
+  it("drops an all-junk features array", () => {
+    expect(sanitizeFilterSearch({ features: ["junk"] })).toEqual({});
+  });
+
   it("coerces a single string param into an array", () => {
     expect(sanitizeFilterSearch({ types: "hotel" })).toEqual({
       types: ["hotel"],
@@ -90,6 +104,7 @@ describe("filtersFromSearch", () => {
       maxPrice: 200,
       types: ["hotel"],
       amenities: ["wifi"],
+      features: ["sauna", "sea_view"],
       rating: 8,
       bedrooms: 2,
       sort: "price_desc",
@@ -103,6 +118,7 @@ describe("filtersFromSearch", () => {
       bedrooms: 2,
       min_guests: null,
       sort: "price_desc",
+      amenities: ["sauna", "sea_view"],
     });
   });
 });
@@ -117,6 +133,7 @@ describe("searchFromFilters", () => {
       rating: undefined,
       bedrooms: undefined,
       sort: undefined,
+      features: undefined,
     });
   });
 
@@ -130,6 +147,7 @@ describe("searchFromFilters", () => {
       bedrooms: 2,
       min_guests: null,
       sort: "price_asc",
+      amenities: ["sauna", "beachfront"],
     };
     const roundTripped = filtersFromSearch(
       sanitizeFilterSearch(searchFromFilters(filters) as Record<string, unknown>),
@@ -147,5 +165,46 @@ describe("buildParams order_by", () => {
   it("emits order_by for an explicit sort", () => {
     const params = buildParams({ ...INITIAL_FILTERS, sort: "price_asc" });
     expect(params.order_by).toBe("price_asc");
+  });
+});
+
+describe("buildParams amenities merge", () => {
+  it("merges popular-filter and grouped amenities, de-duplicated", () => {
+    const params = buildParams({
+      ...INITIAL_FILTERS,
+      popularFilters: ["wifi", "pool"],
+      amenities: ["pool", "sauna"],
+    });
+    expect(new Set(params.amenities as string[])).toEqual(
+      new Set(["wifi", "pool", "sauna"]),
+    );
+  });
+
+  it("sends only grouped amenities when no popular filters are set", () => {
+    const params = buildParams({
+      ...INITIAL_FILTERS,
+      amenities: ["sea_view", "hot_tub"],
+    });
+    expect(new Set(params.amenities as string[])).toEqual(
+      new Set(["sea_view", "hot_tub"]),
+    );
+  });
+
+  it("omits amenities entirely when nothing is selected", () => {
+    expect(buildParams(INITIAL_FILTERS).amenities).toBeUndefined();
+  });
+});
+
+describe("AMENITY_CATEGORIES taxonomy", () => {
+  it("exposes 8 categories with no duplicate slugs across groups", () => {
+    expect(AMENITY_CATEGORIES).toHaveLength(8);
+    const all = AMENITY_CATEGORIES.flatMap((cat) => cat.amenities);
+    expect(all).toHaveLength(new Set(all).size);
+  });
+
+  it("ALL_AMENITIES matches the flattened category slugs", () => {
+    const all = AMENITY_CATEGORIES.flatMap((cat) => cat.amenities);
+    expect(ALL_AMENITIES.size).toBe(all.length);
+    expect(all.every((slug) => ALL_AMENITIES.has(slug))).toBe(true);
   });
 });

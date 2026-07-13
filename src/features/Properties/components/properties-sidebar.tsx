@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { X } from "lucide-react";
 import { useIntlayer } from "react-intlayer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { CollapsibleSection } from "./collapsible-section";
+import {
+  AMENITY_CATEGORIES,
+  AMENITY_PREVIEW_COUNT,
+} from "./amenity-taxonomy";
 import {
   type Filters,
   PRICE_MIN,
@@ -19,7 +24,7 @@ interface PropertiesSidebarProps {
   onSet: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
   onPriceChange: (range: [number, number]) => void;
   onToggleArray: (
-    key: "propertyTypes" | "popularFilters",
+    key: "propertyTypes" | "popularFilters" | "amenities",
     value: string,
   ) => void;
   onClear: () => void;
@@ -36,6 +41,23 @@ export function PropertiesSidebar({
   const c = useIntlayer("properties-list");
   const propertyTypeLabels = c.filters.propertyType as Record<string, string>;
   const popularFilterLabels = c.filters.popularFilters as Record<string, string>;
+  const amenityContent = c.filters.amenities as {
+    label: string;
+    showMore: string;
+    showLess: string;
+    categories: Record<string, string>;
+    items: Record<string, string>;
+  };
+  const [expandedGroups, setExpandedGroups] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const toggleGroup = (key: string) =>
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   return (
     <div className="flex flex-col gap-4">
@@ -95,6 +117,52 @@ export function PropertiesSidebar({
               </span>
             </label>
           ))}
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title={amenityContent.label} defaultOpen={false}>
+        <div className="flex flex-col gap-4">
+          {AMENITY_CATEGORIES.map((category) => {
+            const isExpanded = expandedGroups.has(category.key);
+            const visible = isExpanded
+              ? category.amenities
+              : category.amenities.slice(0, AMENITY_PREVIEW_COUNT);
+            const hasMore = category.amenities.length > AMENITY_PREVIEW_COUNT;
+            return (
+              <div key={category.key} className="flex flex-col gap-2.5">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {amenityContent.categories[category.key]}
+                </h3>
+                {visible.map((amenity) => (
+                  <label
+                    key={amenity}
+                    className="flex cursor-pointer items-center gap-2.5"
+                  >
+                    <Checkbox
+                      checked={filters.amenities.includes(amenity)}
+                      onCheckedChange={() =>
+                        onToggleArray("amenities", amenity)
+                      }
+                    />
+                    <span className="text-sm text-foreground">
+                      {amenityContent.items[amenity]}
+                    </span>
+                  </label>
+                ))}
+                {hasMore && (
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(category.key)}
+                    className="self-start text-xs font-medium text-primary hover:underline"
+                  >
+                    {isExpanded
+                      ? amenityContent.showLess
+                      : amenityContent.showMore}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </CollapsibleSection>
 
