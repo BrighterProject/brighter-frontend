@@ -65,11 +65,12 @@ function propertyToOfferData(
               : (c.nights.value as string)
           }`
         : undefined,
-    price: `${Number(
+    price:
       property.stay_total != null
-        ? property.stay_total
-        : property.price_per_night,
-    ).toFixed(0)} ${property.currency}`,
+        ? `${Number(property.stay_total).toFixed(0)} ${property.currency}`
+        : property.price_from != null
+          ? `${c.priceFrom.value as string} ${Number(property.price_from).toFixed(0)} ${property.currency}`
+          : (c.priceOnRequest.value as string),
     priceNote: c.includedTaxes as string,
     cta: c.seeAvailability as string,
     image: property.thumbnail,

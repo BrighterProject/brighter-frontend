@@ -1,12 +1,12 @@
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient, useQueries } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
-  DatePriceOverride,
+  DatePrice,
   PriceResolutionResponse,
+  PricingCoverageResponse,
   PropertyListItem,
   PropertyResponse,
   PropertyUnavailabilityResponse,
-  WeekdayPriceOut,
 } from "./types";
 
 const PAGE_SIZE = 20;
@@ -147,15 +147,36 @@ export const usePropertyUnavailabilities = (propertyId: string) => {
   return useQuery({
     queryKey: ["properties", propertyId, "unavailabilities"],
     queryFn: async () => {
-      // include_price_gaps: days with no price set are returned as unavailable,
-      // so the date picker blocks them (unpriced day = not bookable).
+      // Real owner-set blocks only. Unpriced days come from the pricing-coverage
+      // endpoint (usePricingCoverage) and are merged in by the caller.
       const { data } = await apiClient.get<PropertyUnavailabilityResponse[]>(
         `/properties/${propertyId}/unavailabilities`,
-        { params: { include_price_gaps: true } },
       );
       return data;
     },
     enabled: !!propertyId,
+  });
+};
+
+/**
+ * Unpriced-day windows for a property over `[start, end)`. Used to disable
+ * unbookable days in the date picker (a day with no price cannot be booked).
+ */
+export const usePricingCoverage = (
+  propertyId: string,
+  start: string,
+  end: string,
+) => {
+  return useQuery({
+    queryKey: ["properties", propertyId, "coverage", start, end],
+    queryFn: async () => {
+      const { data } = await apiClient.get<PricingCoverageResponse>(
+        `/properties/${propertyId}/pricing/coverage`,
+        { params: { start, end } },
+      );
+      return data.unpriced_windows;
+    },
+    enabled: !!propertyId && !!start && !!end,
   });
 };
 
@@ -203,119 +224,29 @@ export const usePriceResolution = (
 };
 
 // ---------------------------------------------------------------------------
-// Pricing — owner weekday prices
+// Pricing — per-date rows
 // ---------------------------------------------------------------------------
 
-export const useWeekdayPrices = (propertyId: string) => {
+/**
+ * The property's priced nights over `[from, to]` (inclusive), one row per date.
+ * A date with no row is unpriced and therefore unavailable. Used to render the
+ * per-night price on the date picker and total up a selected stay.
+ */
+export const useDatePrices = (
+  propertyId: string,
+  from?: string,
+  to?: string,
+) => {
   return useQuery({
-    queryKey: ["properties", propertyId, "pricing", "weekdays"],
+    queryKey: ["properties", propertyId, "pricing", "dates", from, to],
     queryFn: async () => {
-      const { data } = await apiClient.get<WeekdayPriceOut[]>(
-        `/properties/${propertyId}/pricing/weekdays`,
+      const { data } = await apiClient.get<DatePrice[]>(
+        `/properties/${propertyId}/pricing/dates`,
+        { params: { from_date: from, to_date: to } },
       );
       return data;
     },
-    enabled: !!propertyId,
-  });
-};
-
-export const useUpsertWeekdayPrices = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (rules: { weekday: number; price: string }[]) => {
-      const { data } = await apiClient.put<WeekdayPriceOut[]>(
-        `/properties/${propertyId}/pricing/weekdays`,
-        rules,
-      );
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["properties", propertyId, "pricing"],
-      });
-    },
-  });
-};
-
-// ---------------------------------------------------------------------------
-// Pricing — owner date overrides
-// ---------------------------------------------------------------------------
-
-export const useDateOverrides = (propertyId: string) => {
-  return useQuery({
-    queryKey: ["properties", propertyId, "pricing", "overrides"],
-    queryFn: async () => {
-      const { data } = await apiClient.get<DatePriceOverride[]>(
-        `/properties/${propertyId}/pricing/overrides`,
-      );
-      return data;
-    },
-    enabled: !!propertyId,
-  });
-};
-
-export const useCreateDateOverride = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: {
-      start_date: string;
-      end_date: string;
-      price: string;
-      label?: string | null;
-    }) => {
-      const { data } = await apiClient.post<DatePriceOverride>(
-        `/properties/${propertyId}/pricing/overrides`,
-        payload,
-      );
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["properties", propertyId, "pricing"],
-      });
-    },
-  });
-};
-
-export const useUpdateDateOverride = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      overrideId,
-      ...payload
-    }: {
-      overrideId: string;
-      start_date?: string;
-      end_date?: string;
-      price?: string;
-      label?: string | null;
-    }) => {
-      const { data } = await apiClient.patch<DatePriceOverride>(
-        `/properties/${propertyId}/pricing/overrides/${overrideId}`,
-        payload,
-      );
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["properties", propertyId, "pricing"],
-      });
-    },
-  });
-};
-
-export const useDeleteDateOverride = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (overrideId: string) => {
-      await apiClient.delete(
-        `/properties/${propertyId}/pricing/overrides/${overrideId}`,
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["properties", propertyId, "pricing"],
-      });
-    },
+    enabled: !!propertyId && !!from && !!to,
+    staleTime: 30_000,
   });
 };

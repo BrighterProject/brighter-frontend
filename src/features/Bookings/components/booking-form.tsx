@@ -421,8 +421,11 @@ export function BookingForm({
                 {/* Pricing card */}
                 <div className="rounded-2xl border bg-card p-6 shadow-sm">
                   <div className="mb-4 flex items-baseline gap-1">
+                    <span className="text-sm text-muted-foreground">
+                      {c.summary.priceFrom}
+                    </span>
                     <span className="font-display text-2xl font-bold text-foreground">
-                      {Number(property.price_per_night).toFixed(0)}
+                      {Number(property.price_from ?? 0).toFixed(0)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {property.currency} {c.summary.perNight}
@@ -452,7 +455,7 @@ export function BookingForm({
                       propertyId={property.id}
                       startDate={isoDate(checkIn)}
                       endDate={isoDate(checkOut)}
-                      basePricePerNight={property.price_per_night}
+                      basePricePerNight={property.price_from ?? "0"}
                       currency={property.currency}
                     />
                   )}

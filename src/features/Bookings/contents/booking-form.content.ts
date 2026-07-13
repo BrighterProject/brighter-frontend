@@ -112,6 +112,7 @@ const bookingFormContent = {
     },
     summary: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
+      priceFrom: t({ en: "from", bg: "от" }),
       total: t({ en: "Total", bg: "Общо" }),
       minLabel: t({ en: "Min", bg: "Мин" }),
       maxLabel: t({ en: "Max", bg: "Макс" }),
