@@ -81,6 +81,14 @@ const propertiesListContent = {
       properties: t({ en: "properties", bg: "имоти" }),
       found: t({ en: "found", bg: "намерени" }),
     },
+    sort: {
+      label: t({ en: "Sort by", bg: "Подреди по" }),
+      recommended: t({ en: "Recommended", bg: "Препоръчани" }),
+      price_asc: t({ en: "Price: low to high", bg: "Цена: ниска към висока" }),
+      price_desc: t({ en: "Price: high to low", bg: "Цена: висока към ниска" }),
+      rating_desc: t({ en: "Top rated", bg: "Най-високо оценени" }),
+    },
+    showResults: t({ en: "Show results", bg: "Покажи резултати" }),
     empty: {
       title: t({ en: "No properties found", bg: "Няма намерени имоти" }),
       subtitle: t({

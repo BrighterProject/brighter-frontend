@@ -8,15 +8,36 @@ import { useFormatRooms } from "../utils/format-rooms";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Button } from "@/components/ui/button";
 import { SearchCard } from "@/components/ui/search-card";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { OfferCard, type OfferCardData } from "./offer-card";
 import { PropertiesSidebar } from "./properties-sidebar";
 import { PropertyMapModal } from "./property-map-modal";
 import {
   type Filters,
+  type FilterSearch,
+  type SortOption,
+  DEFAULT_SORT,
+  SORT_OPTIONS,
   INITIAL_FILTERS,
   PRICE_MIN,
   PRICE_MAX,
   buildParams,
+  filtersFromSearch,
+  searchFromFilters,
 } from "./properties-filters";
 import type { SearchParams } from "@/hooks/useSearchParams";
 
@@ -79,16 +100,17 @@ function propertyToOfferData(
 }
 
 export function PropertiesList() {
-  const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const navigate = useNavigate();
   const { locale } = useParams({ strict: false }) as { locale?: string };
   const c = useIntlayer("properties-list");
   const roomsC = useIntlayer("rooms");
   const formatRooms = useFormatRooms();
 
-  // Read search params from URL (city, settlement_ekatte, checkIn, checkOut, adults)
-  const searchParams = useSearch({ strict: false }) as SearchParams;
+  // Filters live in the URL (shareable, survive refresh/back-nav). The route's
+  // validateSearch has already sanitized them.
+  const searchParams = useSearch({ strict: false }) as SearchParams &
+    FilterSearch;
   const urlCity = searchParams.city ?? "";
   const urlSettlementEkatte = searchParams.settlement_ekatte;
   const urlRegionCode = searchParams.region_code;
@@ -98,13 +120,55 @@ export function PropertiesList() {
   const urlCheckIn = searchParams.checkIn;
   const urlCheckOut = searchParams.checkOut;
 
-  const debouncedMinPrice = useDebounce(filters.min_price, 400);
-  const debouncedMaxPrice = useDebounce(filters.max_price, 400);
+  const urlFilters = filtersFromSearch(searchParams);
 
+  // The price slider keeps local state and debounces before writing the URL, so
+  // dragging doesn't spam navigation/history. Everything else writes instantly.
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    urlFilters.min_price,
+    urlFilters.max_price,
+  ]);
+  useEffect(() => {
+    setPriceRange([urlFilters.min_price, urlFilters.max_price]);
+  }, [urlFilters.min_price, urlFilters.max_price]);
+  const debouncedPrice = useDebounce(priceRange, 400);
+
+  const patchSearch = useCallback(
+    (patch: Partial<FilterSearch>) =>
+      navigate({
+        search: ((prev: Record<string, unknown>) => ({
+          ...prev,
+          ...patch,
+        })) as any,
+        replace: true,
+      }),
+    [navigate],
+  );
+
+  // Commit the debounced slider position to the URL.
+  useEffect(() => {
+    if (
+      debouncedPrice[0] === urlFilters.min_price &&
+      debouncedPrice[1] === urlFilters.max_price
+    )
+      return;
+    patchSearch({
+      minPrice: debouncedPrice[0] > PRICE_MIN ? debouncedPrice[0] : undefined,
+      maxPrice: debouncedPrice[1] < PRICE_MAX ? debouncedPrice[1] : undefined,
+    });
+  }, [debouncedPrice, urlFilters.min_price, urlFilters.max_price, patchSearch]);
+
+  // Effective filters for the UI reflect the live slider; the query uses the
+  // debounced slider so cards don't refetch on every drag tick.
+  const filters: Filters = {
+    ...urlFilters,
+    min_price: priceRange[0],
+    max_price: priceRange[1],
+  };
   const queryFilters: Filters = {
-    ...filters,
-    min_price: debouncedMinPrice,
-    max_price: debouncedMaxPrice,
+    ...urlFilters,
+    min_price: debouncedPrice[0],
+    max_price: debouncedPrice[1],
   };
 
   const apiParams = buildParams(queryFilters, {
@@ -125,12 +189,15 @@ export function PropertiesList() {
     data,
     isLoading,
     isError,
+    isFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteProperties(apiParams);
 
-  const properties: PropertyListItem[] = data?.pages.flatMap((p) => p) ?? [];
+  const properties: PropertyListItem[] =
+    data?.pages.flatMap((p) => p.items) ?? [];
+  const total = data?.pages.at(-1)?.total ?? 0;
 
   const goToProperty = (propertyId: string) =>
     navigate({
@@ -144,22 +211,40 @@ export function PropertiesList() {
       } as any,
     });
 
+  // Apply an updated Filters set to the URL (defaults drop out → clean URL).
+  const applyFilters = (next: Filters) =>
+    navigate({
+      search: ((prev: Record<string, unknown>) => ({
+        ...prev,
+        ...searchFromFilters(next),
+      })) as any,
+      replace: true,
+    });
+
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) =>
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    applyFilters({ ...filters, [key]: value });
+
+  const setPrice = (range: [number, number]) => setPriceRange(range);
+
+  const setSort = (sort: SortOption) =>
+    patchSearch({ sort: sort !== DEFAULT_SORT ? sort : undefined });
 
   const toggleArrayFilter = (
     key: "propertyTypes" | "popularFilters",
     value: string,
   ) => {
-    setFilters((prev) => {
-      const arr = prev[key] as string[];
-      return {
-        ...prev,
-        [key]: arr.includes(value)
-          ? arr.filter((v) => v !== value)
-          : [...arr, value],
-      };
+    const arr = filters[key];
+    applyFilters({
+      ...filters,
+      [key]: arr.includes(value)
+        ? arr.filter((v) => v !== value)
+        : [...arr, value],
     });
+  };
+
+  const clearFilters = () => {
+    setPriceRange([PRICE_MIN, PRICE_MAX]);
+    applyFilters(INITIAL_FILTERS);
   };
 
   const hasActiveFilters =
@@ -176,6 +261,18 @@ export function PropertiesList() {
     filters.popularFilters.length +
     (filters.minRating !== null ? 1 : 0) +
     (filters.bedrooms !== null ? 1 : 0);
+
+  const sortLabels = c.sort as Record<string, unknown>;
+  const sidebar = (
+    <PropertiesSidebar
+      filters={filters}
+      hasActiveFilters={hasActiveFilters}
+      onSet={set}
+      onPriceChange={setPrice}
+      onToggleArray={toggleArrayFilter}
+      onClear={clearFilters}
+    />
+  );
 
   // Infinite scroll sentinel
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -231,55 +328,73 @@ export function PropertiesList() {
           <p className="mt-1 text-muted-foreground">{c.subtitle}</p>
         </div>
 
+        {/* Mobile filter sheet trigger */}
         <div className="mb-4 lg:hidden">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="gap-2"
-          >
-            <SlidersHorizontal className="size-4" />
-            {c.filters.heading}
-            {activeFilterCount > 0 && (
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <SlidersHorizontal className="size-4" />
+                {c.filters.heading}
+                {activeFilterCount > 0 && (
+                  <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[85vw] p-0 sm:max-w-sm">
+              <SheetHeader className="border-b border-border">
+                <SheetTitle>{c.filters.heading}</SheetTitle>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto p-4">{sidebar}</div>
+              <SheetFooter className="border-t border-border">
+                <Button className="w-full" onClick={() => setSheetOpen(false)}>
+                  {c.showResults} ({total})
+                </Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
 
         <div className="flex gap-6">
-          <aside
-            className={`w-full shrink-0 lg:block lg:w-64 ${
-              sidebarOpen ? "block" : "hidden"
-            }`}
-          >
+          <aside className="hidden w-64 shrink-0 lg:block">
             <div className="sticky top-24 rounded-lg border border-border bg-card p-4 shadow-sm">
-              <PropertiesSidebar
-                filters={filters}
-                hasActiveFilters={hasActiveFilters}
-                onSet={set}
-                onToggleArray={toggleArrayFilter}
-                onClear={() => setFilters(INITIAL_FILTERS)}
-              />
+              {sidebar}
             </div>
           </aside>
 
           <main className="min-w-0 flex-1">
-            {!isLoading && !isError && properties.length > 0 && (
-              <div className="mb-3 flex items-center justify-between gap-3">
+            {!isLoading && !isError && (
+              <div
+                className="mb-3 flex items-center justify-between gap-3"
+                aria-busy={isFetching}
+              >
                 <p className="text-sm text-muted-foreground">
-                  {properties.length}{" "}
-                  {properties.length === 1
-                    ? c.results.property
-                    : c.results.properties}{" "}
+                  {total}{" "}
+                  {total === 1 ? c.results.property : c.results.properties}{" "}
                   {c.results.found}
                 </p>
-                <PropertyMapModal
-                  properties={properties}
-                  locale={locale}
-                  onSelect={goToProperty}
-                />
+                <div className="flex items-center gap-2">
+                  <Select value={filters.sort} onValueChange={setSort}>
+                    <SelectTrigger size="sm" aria-label={c.sort.label as string}>
+                      <SelectValue placeholder={c.sort.label as string} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SORT_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={opt}>
+                          {sortLabels[opt] as string}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {properties.length > 0 && (
+                    <PropertyMapModal
+                      properties={properties}
+                      locale={locale}
+                      onSelect={goToProperty}
+                    />
+                  )}
+                </div>
               </div>
             )}
 

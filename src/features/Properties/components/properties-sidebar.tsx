@@ -17,6 +17,7 @@ interface PropertiesSidebarProps {
   filters: Filters;
   hasActiveFilters: boolean;
   onSet: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
+  onPriceChange: (range: [number, number]) => void;
   onToggleArray: (
     key: "propertyTypes" | "popularFilters",
     value: string,
@@ -28,6 +29,7 @@ export function PropertiesSidebar({
   filters,
   hasActiveFilters,
   onSet,
+  onPriceChange,
   onToggleArray,
   onClear,
 }: PropertiesSidebarProps) {
@@ -60,10 +62,7 @@ export function PropertiesSidebar({
             max={PRICE_MAX}
             step={10}
             value={[filters.min_price, filters.max_price]}
-            onValueChange={([min, max]) => {
-              onSet("min_price", min);
-              onSet("max_price", max);
-            }}
+            onValueChange={([min, max]) => onPriceChange([min, max])}
             className="mb-3"
           />
           <div className="flex items-center justify-between text-xs text-muted-foreground">

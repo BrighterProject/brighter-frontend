@@ -1,4 +1,9 @@
-import { useQuery, useInfiniteQuery, useQueries } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueries,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
 import type {
   DatePrice,
@@ -128,18 +133,45 @@ export const usePropertiesForBookings = (
   };
 };
 
+export interface PropertiesPage {
+  items: PropertyListItem[];
+  total: number;
+}
+
+/**
+ * Whether another page exists, derived from the real match total (X-Total-Count)
+ * rather than "was the last page full" — the latter fires a phantom empty
+ * request whenever the final page is exactly `page_size` long.
+ */
+export function nextInfinitePage(
+  loaded: number,
+  total: number,
+  lastPageParam: number,
+): number | undefined {
+  return loaded < total ? lastPageParam + 1 : undefined;
+}
+
 export const useInfiniteProperties = (params?: Record<string, any>) => {
   return useInfiniteQuery({
     queryKey: ["properties", "infinite", params],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await apiClient.get<PropertyListItem[]>("/properties/", {
+    queryFn: async ({ pageParam = 1 }): Promise<PropertiesPage> => {
+      const res = await apiClient.get<PropertyListItem[]>("/properties/", {
         params: { ...params, page: pageParam, page_size: PAGE_SIZE },
       });
-      return data;
+      const headerTotal = Number(res.headers["x-total-count"]);
+      return {
+        items: res.data,
+        total: Number.isFinite(headerTotal) ? headerTotal : res.data.length,
+      };
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, _allPages, lastPageParam) =>
-      lastPage.length === PAGE_SIZE ? (lastPageParam as number) + 1 : undefined,
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      const loaded = allPages.reduce((n, page) => n + page.items.length, 0);
+      return nextInfinitePage(loaded, lastPage.total, lastPageParam as number);
+    },
+    // Keep the previous result mounted during a filter-triggered refetch so
+    // cards don't unmount/flash while the user drags the price slider.
+    placeholderData: keepPreviousData,
   });
 };
 

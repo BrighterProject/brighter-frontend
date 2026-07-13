@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getIntlayer } from "intlayer";
 import { PropertiesList } from "@/features/Properties/components/properties-list";
+import { sanitizeFilterSearch } from "@/features/Properties/components/properties-filters";
 
 export const Route = createFileRoute("/{-$locale}/properties/")({
   component: PropertiesList,
@@ -13,6 +14,9 @@ export const Route = createFileRoute("/{-$locale}/properties/")({
     checkOut: typeof search.checkOut === "string" ? search.checkOut : undefined,
     adults: search.adults !== undefined ? Number(search.adults) || undefined : undefined,
     children: search.children !== undefined ? Number(search.children) || undefined : undefined,
+    // Sidebar filter state (URL-persisted). sanitizeFilterSearch never throws —
+    // it clamps/strips junk so a hand-edited URL renders a result, not an error.
+    ...sanitizeFilterSearch(search),
   }),
   head: ({ params }) => {
     const { locale } = params;
