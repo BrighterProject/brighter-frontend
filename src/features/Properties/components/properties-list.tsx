@@ -360,7 +360,7 @@ export function PropertiesList() {
 
         <div className="flex gap-6">
           <aside className="hidden w-64 shrink-0 lg:block">
-            <div className="sticky top-24 rounded-lg border border-border bg-card p-4 shadow-sm">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-4 shadow-sm">
               {sidebar}
             </div>
           </aside>
