@@ -12,7 +12,7 @@ export interface GuestRosterSlot {
 
 export interface GuestRosterResponse {
   property_name: string;
-  property_city: string;
+  property_city: string | null;
   start_date: string;
   end_date: string;
   total_slots: number;
