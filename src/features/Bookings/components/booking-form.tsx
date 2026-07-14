@@ -199,6 +199,17 @@ export function BookingForm({
         })
       : "—";
 
+  const idleLabel = (() => {
+    switch (paymentMethod) {
+      case "bank_transfer":
+        return c.submit.idleBankTransfer;
+      case "cash":
+        return c.submit.idleCash;
+      default:
+        return c.submit.idleCard;
+    }
+  })();
+
   const guestsLabel = (() => {
     const adultStr = `${adults} ${adults === 1 ? (c.labels.adult.value as string) : (c.labels.adults.value as string)}`;
     if (children === 0) return adultStr;
@@ -410,8 +421,11 @@ export function BookingForm({
                 {/* Pricing card */}
                 <div className="rounded-2xl border bg-card p-6 shadow-sm">
                   <div className="mb-4 flex items-baseline gap-1">
+                    <span className="text-sm text-muted-foreground">
+                      {c.summary.priceFrom}
+                    </span>
                     <span className="font-display text-2xl font-bold text-foreground">
-                      {Number(property.price_per_night).toFixed(0)}
+                      {Number(property.price_from ?? 0).toFixed(0)}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       {property.currency} {c.summary.perNight}
@@ -441,12 +455,12 @@ export function BookingForm({
                       propertyId={property.id}
                       startDate={isoDate(checkIn)}
                       endDate={isoDate(checkOut)}
-                      basePricePerNight={property.price_per_night}
+                      basePricePerNight={property.price_from ?? "0"}
                       currency={property.currency}
                     />
                   )}
 
-                  {acceptedMethods.length > 1 && (
+                  {acceptedMethods.length > 0 && (
                     <div className="mt-4 space-y-2">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         {c.sections.paymentMethod}
@@ -530,7 +544,7 @@ export function BookingForm({
                       ? c.submit.submitting
                       : createCheckout.isPending || createBankTransferIntent.isPending
                         ? c.submit.redirecting
-                        : c.submit.idle}
+                        : idleLabel}
                   </Button>
 
                   {property.cancellation_policy && (

@@ -12,6 +12,8 @@ vi.mock('@/features/Bookings/api/hooks', () => ({
 }));
 vi.mock('../api/hooks', () => ({
   usePropertyUnavailabilities: () => ({ data: [] }),
+  usePricingCoverage: () => ({ data: [] }),
+  useDatePrices: () => ({ data: [] }),
 }));
 vi.mock('react-intlayer', () => ({
   useIntlayer: () => ({
@@ -25,6 +27,7 @@ vi.mock('react-intlayer', () => ({
     checkInOut: 'Check-in/out',
     upTo: 'Up to',
     people: 'people',
+    cancellationPolicy: { title: 'Cancellation policy', labels: {}, descriptions: {} },
     bookingCard: {
       perNight: '/ night',
       bookNow: 'Book now',
@@ -60,7 +63,7 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   city: 'Sofia',
   latitude: null,
   longitude: null,
-  price_per_night: '150.00',
+  price_from: '150.00',
   currency: 'EUR',
   bedrooms: 2,
   bathrooms: 1,
@@ -82,8 +85,6 @@ const makeProperty = (ownerId: string): PropertyResponse => ({
   translations: [
     { id: 't1', property_id: 'prop-1', locale: 'bg', name: 'Test Villa', description: 'Desc', address: 'Sofia' },
   ],
-  weekday_prices: [],
-  date_price_overrides: [],
   booking_window_days: 180,
 });
 

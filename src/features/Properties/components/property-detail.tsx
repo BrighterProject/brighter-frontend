@@ -4,7 +4,11 @@ import { useMe } from "@Auth/api/hooks";
 import { useIntlayer } from "react-intlayer";
 import { DateRangePicker, isoDate, parseDateParam } from "@/components/ui/date-range-picker";
 import { useOccupiedSlots } from "@/features/Bookings/api/hooks";
-import { usePropertyUnavailabilities } from "../api/hooks";
+import {
+  usePropertyUnavailabilities,
+  usePricingCoverage,
+  useDatePrices,
+} from "../api/hooks";
 import { buildPricingMap, resolveTotal } from "../utils/pricing";
 
 import { type PropertyResponse, resolveTranslation } from "../api/types";
@@ -24,6 +28,7 @@ import {
   CalendarCheck,
   X,
   Expand,
+  ExternalLink,
 } from "lucide-react";
 
 const STATUS_VARIANT: Record<
@@ -251,6 +256,41 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
 
   const { data: unavailabilities = [] } = usePropertyUnavailabilities(property.id);
   const { data: occupiedSlots = [] } = useOccupiedSlots(property.id);
+
+  // Unpriced days are unbookable — fetch them and block them in the picker.
+  const coverageRange = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start.getFullYear(), start.getMonth() + 13, 1);
+    return { start: isoDate(start), end: isoDate(end) };
+  }, []);
+  const { data: unpricedWindows = [] } = usePricingCoverage(
+    property.id,
+    coverageRange.start,
+    coverageRange.end,
+  );
+  // Per-date prices over the same horizon — the sole source of night prices.
+  const { data: datePrices = [] } = useDatePrices(
+    property.id,
+    coverageRange.start,
+    coverageRange.end,
+  );
+
+  // Real owner blocks + synthesized unpriced-day blocks, both consumed as
+  // end-exclusive [start_date, end_date) windows by the date picker.
+  const blockedWindows = useMemo(
+    () => [
+      ...unavailabilities,
+      ...unpricedWindows.map((w) => ({
+        id: `price-gap-${w.start_date}`,
+        property_id: property.id,
+        start_date: w.start_date,
+        end_date: w.end_date,
+        reason: "unpriced",
+      })),
+    ],
+    [unavailabilities, unpricedWindows, property.id],
+  );
   const { data: me } = useMe();
   const isAdmin = !!me?.scopes?.some((s: string) => s.startsWith("admin:"));
   const isOwner = !!me && String(me.id) === property.owner_id;
@@ -309,29 +349,13 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
     return d;
   }, [property.booking_window_days]);
 
-  const pricingMap = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const end = new Date(today.getFullYear(), today.getMonth() + 13, 1);
-    return buildPricingMap(
-      today,
-      end,
-      property.price_per_night,
-      property.weekday_prices,
-      property.date_price_overrides,
-    );
-  }, [property.price_per_night, property.weekday_prices, property.date_price_overrides]);
+  const pricingMap = useMemo(() => buildPricingMap(datePrices), [datePrices]);
 
   const totalPrice = useMemo(() => {
     if (!dateRange.checkIn || !dateRange.checkOut || nights <= 0) return null;
-    return resolveTotal(
-      dateRange.checkIn,
-      dateRange.checkOut,
-      property.price_per_night,
-      property.weekday_prices,
-      property.date_price_overrides,
-    ).toFixed(0);
-  }, [dateRange.checkIn, dateRange.checkOut, nights, property.price_per_night, property.weekday_prices, property.date_price_overrides]);
+    const total = resolveTotal(dateRange.checkIn, dateRange.checkOut, pricingMap);
+    return total === null ? null : total.toFixed(0);
+  }, [dateRange.checkIn, dateRange.checkOut, nights, pricingMap]);
 
   // Lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -477,6 +501,17 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                     <MapPin className="size-3.5" />
                     {address}, {property.city}
                   </span>
+                  {property.latitude != null && property.longitude != null && (
+                    <a
+                      href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-primary hover:underline"
+                    >
+                      <ExternalLink className="size-3.5" />
+                      {c.openInMaps}
+                    </a>
+                  )}
                   <span className="flex items-center gap-1.5">
                     <Star className="size-3.5 fill-yellow-500 text-yellow-500" />
                     {Number(property.rating).toFixed(1)}
@@ -498,7 +533,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                 <h2 className="font-display text-lg font-semibold text-foreground">
                   {c.sections.about}
                 </h2>
-                <p className="mt-2 whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                <p className="mt-2 whitespace-pre-wrap break-words leading-relaxed text-muted-foreground">
                   {description}
                 </p>
               </div>
@@ -651,12 +686,23 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
               <div className="sticky top-20 space-y-5 rounded-2xl border bg-card p-6 shadow-sm">
                 {/* Price */}
                 <div className="flex items-baseline gap-1.5">
-                  <span className="font-display text-3xl font-bold text-foreground">
-                    {Number(property.price_per_night).toFixed(0)}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {property.currency} {c.bookingCard.perNight}
-                  </span>
+                  {property.price_from != null ? (
+                    <>
+                      <span className="text-sm text-muted-foreground">
+                        {c.bookingCard.priceFrom}
+                      </span>
+                      <span className="font-display text-3xl font-bold text-foreground">
+                        {Number(property.price_from).toFixed(0)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {property.currency} {c.bookingCard.perNight}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      {c.bookingCard.priceOnRequest}
+                    </span>
+                  )}
                 </div>
 
                 <hr className="border-border" />
@@ -667,7 +713,7 @@ export function PropertyDetail({ property, checkIn: initCheckIn, checkOut: initC
                     <DateRangePicker
                       value={dateRange}
                       onChange={setDateRange}
-                      unavailabilities={unavailabilities}
+                      unavailabilities={blockedWindows}
                       occupiedSlots={occupiedSlots}
                       propertyId={property.id}
                       minNights={property.min_nights}

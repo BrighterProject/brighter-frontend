@@ -141,6 +141,16 @@ Content declarations (`*.content.ts`) live next to the components they belong to
 
 After Stripe Checkout, Stripe redirects to `/en/bookings?payment=success` or `/en/bookings?payment=cancelled`. The `my-bookings` page reads this query param to show a toast/banner. payments-ms injects the locale prefix into the return URLs dynamically.
 
+### Pricing (guest-facing, per-date calendar)
+
+properties-ms prices the calendar **day by day** — there are no recurring weekday rules and no base-price fallback. The guest UI reflects that:
+
+- **"From X" price** (`property.price_from`, nullable): the cheapest priced night within the booking horizon. Shown on cards, the map, landing, and the detail header (`properties-list.tsx`, `property-map.tsx`, `property-detail.tsx`). When `null`, no price is shown.
+- **Per-night prices**: `useDatePrices(propertyId, from, to)` fetches `GET /pricing/dates` (one row per priced night). `buildPricingMap()` (`features/Properties/utils/pricing.ts`) turns those rows into an ISO-date → price map for the `DateRangePicker`; `resolveTotal()` sums the selected stay and returns `null` if any night is unpriced. A date absent from the map is unpriced — there is no weekday/base computation.
+- **Unpriced days are blocked**: `usePricingCoverage` (`GET /pricing/coverage`) returns `unpriced_windows` that the picker disables alongside real owner blocks. `PriceBreakdown` (`Bookings/`) lists each resolved night from `GET /pricing/resolve` (every night has `source: "date"`).
+
+Owner-side pricing edits live in **brighter-admin-panel**, not here.
+
 ### Testing
 
 Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in run mode).
@@ -162,6 +172,7 @@ Tests use vitest + `@testing-library/react`. Run with `bun run test` (vitest in 
 - **Figma asset URLs**: Temporary (7 days) — replace with permanent URLs before production
 - **intlayer summary labels**: When building dynamic strings (e.g. "2 adults"), use `.value` on intlayer nodes — they are objects, not strings
 - **Properties filters — no city field**: `Filters` (in `properties-filters.ts`) no longer has a `city` key. City comes from URL search params and is passed to `buildParams(filters, { city })` as the second argument. Do not add city back into `Filters`.
+- **Two amenity surfaces (BTR-53)**: the curated "Popular filters" keys live in `Filters.popularFilters` (URL param `amenities`); the grouped-amenity section uses raw backend slugs in `Filters.amenities` (URL param `features`). `buildParams` merges both into the single backend `amenities` query param (de-duplicated). Category→slug grouping lives in `components/amenity-taxonomy.ts` (`AMENITY_CATEGORIES`); labels are intlayer keys under `properties-list` → `filters.amenities.categories`/`.items`. Keep the taxonomy in sync with the backend enum and the admin panel's copy.
 - **Booking guest info**: `BookingForm` sends `guest_name`, `guest_email`, `guest_phone`, `special_requests` as top-level fields in `BookingCreate` — these are proper columns on the `Booking` model.
 - **Infinite scroll query key**: `useInfiniteProperties` uses `["properties", "infinite", params]`. When filters change the params object changes, which resets to page 1 automatically. Keep `buildParams()` output stable (don't create new object references unnecessarily inside render).
 - **`useOccupiedSlots` on property detail**: Called unconditionally — unauthenticated users get a 401 which the hook handles gracefully (returns empty array, no retry). Only authenticated users see booking-occupied dates.

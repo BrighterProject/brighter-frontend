@@ -14,6 +14,7 @@ const propertyDetailContent = {
       }),
     },
     back: t({ en: "Browse properties", bg: "Разгледайте имоти" }),
+    openInMaps: t({ en: "Open in Maps", bg: "Отвори в Maps" }),
     noImages: t({ en: "No images", bg: "Няма снимки" }),
     upTo: t({ en: "Up to", bg: "До" }),
     people: t({ en: "people", bg: "човека" }),
@@ -102,6 +103,8 @@ const propertyDetailContent = {
     },
     bookingCard: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
+      priceFrom: t({ en: "from", bg: "от" }),
+      priceOnRequest: t({ en: "Price on request", bg: "Цена при запитване" }),
       today: t({ en: "Today", bg: "Днес" }),
       capacity: t({ en: "Capacity", bg: "Капацитет" }),
       people: t({ en: "people", bg: "човека" }),

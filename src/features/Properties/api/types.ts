@@ -44,23 +44,68 @@ export type PropertyType =
 
 export type CancellationPolicy = "free" | "moderate" | "strict";
 
+// Flat amenity taxonomy mirroring the backend `AmenityType` enum (BTR-53).
+// Category grouping for the filter UI lives in `components/amenity-taxonomy.ts`.
 export type AmenityType =
+  // Views & location
+  | "sea_view"
+  | "mountain_view"
+  | "lake_view"
+  | "beachfront"
+  | "ski_to_door"
+  | "city_center"
+  // Kitchen & dining
+  | "kitchen"
+  | "kitchenette"
+  | "coffee_machine"
+  | "dishwasher"
+  | "microwave"
+  | "oven"
+  | "restaurant"
+  // Comfort
   | "wifi"
   | "air_conditioning"
-  | "kitchen"
-  | "washing_machine"
+  | "heating"
   | "fireplace"
-  | "bbq"
-  | "mountain_view"
-  | "ski_storage"
-  | "breakfast_included"
-  | "reception_24h"
-  | "sea_view"
-  | "balcony"
+  | "washing_machine"
+  | "dryer"
+  | "iron"
+  | "tv"
+  | "workspace"
+  // Outdoors
   | "pool"
+  | "indoor_pool"
   | "garden"
+  | "bbq"
+  | "balcony"
+  | "terrace"
+  | "hot_tub"
+  // Family
   | "pet_friendly"
-  | "coffee_machine";
+  | "crib"
+  | "high_chair"
+  | "playground"
+  | "board_games"
+  // Wellness
+  | "sauna"
+  | "spa"
+  | "gym"
+  | "massage"
+  // Services
+  | "reception_24h"
+  | "breakfast_included"
+  | "airport_shuttle"
+  | "ev_charger"
+  | "luggage_storage"
+  | "daily_housekeeping"
+  | "ski_storage"
+  // Safety & accessibility
+  | "smoke_alarm"
+  | "fire_extinguisher"
+  | "first_aid_kit"
+  | "elevator"
+  | "ground_floor"
+  | "step_free_access";
 
 export interface TranslationResponse {
   id: string;
@@ -81,7 +126,8 @@ export interface PropertyListItem {
   longitude?: string | null;
   property_type: PropertyType;
   status: PropertyStatus;
-  price_per_night: string;
+  /** Derived cheapest nightly rate ("from X"); null when no pricing is set. */
+  price_from: string | null;
   currency: string;
   max_guests: number;
   bedrooms: number;
@@ -111,7 +157,8 @@ export interface PropertyResponse {
   city: string;
   latitude?: string | null;
   longitude?: string | null;
-  price_per_night: string;
+  /** Derived cheapest nightly rate ("from X"); null when no pricing is set. */
+  price_from: string | null;
   currency: string;
   max_guests: number;
   bedrooms: number;
@@ -131,10 +178,18 @@ export interface PropertyResponse {
   translations: TranslationResponse[];
   images: PropertyImageResponse[];
   unavailabilities: PropertyUnavailabilityResponse[];
-  weekday_prices: WeekdayPriceOut[];
-  date_price_overrides: DatePriceOverride[];
   /** How many days in advance this property can be booked. */
   booking_window_days: number;
+}
+
+/** A contiguous run of days with no price set (`[start_date, end_date)`, end-exclusive). */
+export interface UnpricedWindow {
+  start_date: string;
+  end_date: string;
+}
+
+export interface PricingCoverageResponse {
+  unpriced_windows: UnpricedWindow[];
 }
 
 /**
@@ -169,23 +224,15 @@ export interface PropertyUnavailabilityResponse {
 // Pricing
 // ---------------------------------------------------------------------------
 
-export interface WeekdayPriceOut {
+/** A single priced night — the calendar is the sole source of truth. */
+export interface DatePrice {
   id: string;
   property_id: string;
-  weekday: number;
+  date: string;
   price: string;
 }
 
-export interface DatePriceOverride {
-  id: string;
-  property_id: string;
-  start_date: string;
-  end_date: string;
-  price: string;
-  label?: string | null;
-}
-
-export type PriceSource = "base" | "weekday" | "date_override";
+export type PriceSource = "date" | "unpriced";
 
 export interface ResolvedNightPrice {
   date: string;

@@ -42,6 +42,8 @@ const landingContent = {
       }),
     },
     offerCard: {
+      priceFrom: t({ en: "from", bg: "от" }),
+      priceOnRequest: t({ en: "Price on request", bg: "Цена при запитване" }),
       priceNote: t({
         en: "Includes taxes and fees",
         bg: "Включва данъци и такси",

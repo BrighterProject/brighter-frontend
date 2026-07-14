@@ -112,12 +112,25 @@ const bookingFormContent = {
     },
     summary: {
       perNight: t({ en: "/ night", bg: "/ нощ" }),
+      priceFrom: t({ en: "from", bg: "от" }),
       total: t({ en: "Total", bg: "Общо" }),
       minLabel: t({ en: "Min", bg: "Мин" }),
       maxLabel: t({ en: "Max", bg: "Макс" }),
     },
     submit: {
       idle: t({ en: "Confirm & Pay", bg: "Потвърди и плати" }),
+      idleCard: t({
+        en: "Confirm & Pay by Card",
+        bg: "Потвърди и плати с карта",
+      }),
+      idleBankTransfer: t({
+        en: "Confirm & Get Bank Details",
+        bg: "Потвърди и виж банкова информация",
+      }),
+      idleCash: t({
+        en: "Confirm & Pay on Arrival",
+        bg: "Потвърди и плати при пристигане",
+      }),
       submitting: t({ en: "Booking...", bg: "Резервиране..." }),
       redirecting: t({
         en: "Redirecting to payment...",

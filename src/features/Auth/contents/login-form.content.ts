@@ -55,6 +55,11 @@ const loginFormContent = {
       en: "Terms and Conditions",
       bg: "Общи условия",
     }),
+    termsAnd: t({ en: "and", bg: "и" }),
+    privacyLink: t({
+      en: "Privacy Policy",
+      bg: "Политика за поверителност",
+    }),
     orSeparator: t({
       en: "Or",
       bg: "Или",
@@ -83,6 +88,10 @@ const loginFormContent = {
       invalidCredentials: t({
         en: "Incorrect email or password.",
         bg: "Грешен имейл или парола.",
+      }),
+      googleFailed: t({
+        en: "Google sign-in failed. Please try again or use email and password.",
+        bg: "Влизането с Google не бе успешно. Моля, опитайте отново или използвайте имейл и парола.",
       }),
       generic: t({
         en: "Something went wrong. Please try again.",

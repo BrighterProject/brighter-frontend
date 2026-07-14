@@ -26,7 +26,9 @@ function formatPrice(amount: string, currency: string): string {
 function pinPrice(p: PropertyListItem): string {
   return p.stay_total != null
     ? formatPrice(p.stay_total, p.currency)
-    : formatPrice(p.price_per_night, p.currency);
+    : p.price_from != null
+      ? formatPrice(p.price_from, p.currency)
+      : "—";
 }
 
 function escapeHtml(value: string): string {

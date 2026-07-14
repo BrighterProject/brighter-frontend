@@ -45,7 +45,13 @@ export const useMyBookings = () =>
   useQuery({
     queryKey: ["bookings", "mine"],
     queryFn: async () => {
-      const { data } = await apiClient.get<BookingResponse[]>("/bookings/");
+      // view=guest disambiguates this guest-facing "My Bookings" call from
+      // property owners' bookings:manage scope, which would otherwise route
+      // them to bookings made ON their properties instead of bookings THEY
+      // made as a guest elsewhere.
+      const { data } = await apiClient.get<BookingResponse[]>("/bookings/", {
+        params: { view: "guest" },
+      });
       return data;
     },
   });

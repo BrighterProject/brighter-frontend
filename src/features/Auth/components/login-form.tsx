@@ -33,6 +33,8 @@ export function LoginForm({ className }: { className?: string }) {
     loginButton,
     termsText,
     termsLink,
+    termsAnd,
+    privacyLink,
     orSeparator,
     signupButton,
     googleButton,
@@ -185,11 +187,12 @@ export function LoginForm({ className }: { className?: string }) {
         <Field>
           <span className="text-center text-xs underline-offset-4 -mt-5 text-muted-foreground">
             {termsText}&nbsp;
-            <Link
-              to={"/terms-and-conditions" as any}
-              className="underline hover:text-primary"
-            >
+            <Link to="/terms-and-conditions" className="underline hover:text-primary">
               {termsLink}
+            </Link>
+            &nbsp;{termsAnd}&nbsp;
+            <Link to="/privacy-policy" className="underline hover:text-primary">
+              {privacyLink}
             </Link>
           </span>
         </Field>
@@ -200,6 +203,7 @@ export function LoginForm({ className }: { className?: string }) {
           <GoogleLogin
             onSuccess={({ credential }) => {
               if (!credential) return;
+              setServerError(null);
               googleLoginMutation.mutate(credential, {
                 onSuccess: () => {
                   if (search.redirect) {
@@ -208,9 +212,14 @@ export function LoginForm({ className }: { className?: string }) {
                     navigate({ to: "/" });
                   }
                 },
+                onError: () => {
+                  setServerError(e.googleFailed.value as string);
+                },
               });
             }}
-            onError={() => {}}
+            onError={() => {
+              setServerError(e.googleFailed.value as string);
+            }}
           />
         </div>
 

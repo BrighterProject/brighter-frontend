@@ -60,6 +60,8 @@ const signupContent = {
         bg: "Продължавайки, вие се съгласявате с нашите ",
       }),
       link: t({ en: "Terms and Conditions", bg: "Общи условия" }),
+      and: t({ en: " and ", bg: " и " }),
+      privacyLink: t({ en: "Privacy Policy", bg: "Политика за поверителност" }),
     },
     separator: t({ en: "Or", bg: "Или" }),
     googleButton: t({
@@ -98,6 +100,10 @@ const signupContent = {
       emailExists: t({
         en: "An account with this email already exists.",
         bg: "Акаунт с този имейл вече съществува.",
+      }),
+      googleFailed: t({
+        en: "Google sign-in failed. Please try again or sign up with email and password.",
+        bg: "Влизането с Google не бе успешно. Моля, опитайте отново или се регистрирайте с имейл и парола.",
       }),
       generic: t({
         en: "Something went wrong. Please try again.",
