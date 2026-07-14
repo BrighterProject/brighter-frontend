@@ -1,4 +1,5 @@
 import type { AmenityType } from "@Properties/api/types";
+import { ALL_AMENITIES } from "./amenity-taxonomy";
 
 export type SortOption =
   | "recommended"
@@ -24,6 +25,9 @@ export interface Filters {
   bedrooms: number | null;
   min_guests: number | null;
   sort: SortOption;
+  // Grouped-amenity selection (raw backend slugs), distinct from the curated
+  // `popularFilters` keys. AND semantics — a property must have all selected.
+  amenities: AmenityType[];
 }
 
 export const PRICE_MIN = 0;
@@ -38,6 +42,7 @@ export const INITIAL_FILTERS: Filters = {
   bedrooms: null,
   min_guests: null,
   sort: DEFAULT_SORT,
+  amenities: [],
 };
 
 export const PROPERTY_TYPE_KEYS = [
@@ -77,7 +82,11 @@ export interface FilterSearch {
   minPrice?: number;
   maxPrice?: number;
   types?: string[];
+  // Curated "popular filter" keys (freeCancellation, wifi, ...).
   amenities?: string[];
+  // Grouped-amenity raw backend slugs (BTR-53), kept on a separate param so
+  // the two selection surfaces never collide.
+  features?: string[];
   rating?: number;
   bedrooms?: number;
   sort?: SortOption;
@@ -132,6 +141,11 @@ export function sanitizeFilterSearch(
   );
   if (amenities.length > 0) out.amenities = amenities;
 
+  const features = toStringArray(raw.features).filter((f) =>
+    ALL_AMENITIES.has(f as AmenityType),
+  );
+  if (features.length > 0) out.features = features;
+
   const rating = toNumber(raw.rating);
   if (rating !== undefined && rating >= 0 && rating <= 10) out.rating = rating;
 
@@ -160,6 +174,7 @@ export function filtersFromSearch(search: FilterSearch): Filters {
     bedrooms: search.bedrooms ?? null,
     min_guests: null,
     sort: search.sort ?? DEFAULT_SORT,
+    amenities: (search.features ?? []) as AmenityType[],
   };
 }
 
@@ -177,6 +192,7 @@ export function searchFromFilters(filters: Filters): FilterSearch {
     rating: filters.minRating ?? undefined,
     bedrooms: filters.bedrooms ?? undefined,
     sort: filters.sort !== DEFAULT_SORT ? filters.sort : undefined,
+    features: filters.amenities.length > 0 ? filters.amenities : undefined,
   };
 }
 
@@ -223,9 +239,16 @@ export function buildParams(
     params.free_cancellation = true;
   if (filters.popularFilters.includes("parking")) params.has_parking = true;
 
-  const amenities = filters.popularFilters
-    .filter((k) => k in POPULAR_FILTER_TO_AMENITY)
-    .map((k) => POPULAR_FILTER_TO_AMENITY[k]);
+  // Merge popular-filter-derived amenity slugs with the grouped-amenity
+  // selection (AND semantics on the backend), de-duplicated.
+  const amenities = [
+    ...new Set<AmenityType>([
+      ...filters.popularFilters
+        .filter((k) => k in POPULAR_FILTER_TO_AMENITY)
+        .map((k) => POPULAR_FILTER_TO_AMENITY[k]),
+      ...filters.amenities,
+    ]),
+  ];
   if (amenities.length > 0) params.amenities = amenities;
 
   if (filters.sort !== DEFAULT_SORT) params.order_by = filters.sort;
