@@ -27,18 +27,16 @@ Base URL comes from a `VITE_SITE_URL` env var — never hardcoded.
 
 ---
 
-## Phase 0 — Domain migration (HIGH PRIORITY — run first/alongside Phase 1)
+## Phase 0 — Measurement setup (run FIRST — prerequisite for judging every later phase)
 
-`pochivka-na-moreto.bg` **replaces an older domain that already has indexed pages** (the `площадка.бг` / Ploshtadka origin). Migrating without preserving that authority throws away accrued ranking — often the single biggest quick win. Confirm the exact old host + whether it has live Search Console history before starting.
+No prior indexed domain, so **no redirect migration is needed** (the `площадка.бг` strings were just leftover fork values, already removed in §1.2). Instead, stand up measurement before shipping anything else — without it we can't tell whether the later phases actually improve indexing/ranking.
 
-- **301 redirect map, old → new**, path-for-path where equivalents exist (listings, static pages, any indexed landing pages). Never blanket-301 everything to the homepage — that's read as soft-404s and loses per-URL authority. Unmatched old URLs → closest relevant page or a proper 410.
-- Redirects served at the edge/gateway (Traefik) or Nitro, whichever owns the old host.
-- **Search Console Change of Address** from old to new property once 301s are live.
-- Keep the **old sitemap reachable** temporarily so Google recrawls and follows the 301s faster.
-- Ensure old→new **canonical/hreflang point only at the new domain** (no lingering `площадка.бг` references — already fixed in §1.2).
-- Verify both domains in Search Console; monitor the migration in the Coverage/Indexing report.
+- **Google Search Console** — verify the `pochivka-na-moreto.bg` property (DNS or the `public/` HTML-file method; the file is served by Nitro static assets). Submit `sitemap.xml` once Phase 1 ships.
+- **Bing Webmaster Tools** — verify (can import from GSC).
+- **Analytics** — GA4 or a privacy-friendly alternative wired in `__root.tsx` (respecting the existing cookie-consent banner).
+- **Guard staging from indexing** — ensure the staging deployment sends `X-Robots-Tag: noindex` / `robots.txt` disallow so it never competes with prod. Verify prod does **not**.
 
-*Dependency:* the exact old-domain URL inventory (from its sitemap or a Search Console export) is needed to build the redirect map.
+*No external dependency — can start immediately.*
 
 ---
 
@@ -145,7 +143,6 @@ Legitimate ranking factors intentionally **not** built in Phases 0–3. Sequence
 
 - **Core Web Vitals / performance:** image optimization (responsive `srcset`, AVIF/WebP, lazy-loading), Leaflet map load cost, bundle/`framer-motion` weight. LCP/CLS/INP are ranking signals.
 - **Image SEO:** localized `alt` text on property photos; image sitemap.
-- **Measurement (do early — prerequisite for judging everything else):** Google Search Console + Bing Webmaster verification, GA4 (or privacy-friendly analytics). Confirm staging is `noindex` so it never competes with prod.
 - **Site-wide schema:** `Organization` + `WebSite` (sitelinks searchbox) in the root head; global breadcrumbs.
 - **Static-page meta coverage:** confirm `about-us`, `contacts`, `pricing`, `become-owner`, `privacy-policy`, `terms` all route through `buildSeo()` with real localized titles (not just the dynamic routes).
 - **Content depth on programmatic pages:** area/destination guide copy so region/city pages aren't thin.
@@ -168,4 +165,4 @@ Backlinks / domain authority, real review volume (gates `AggregateRating` stars)
 - Manual: validate a sample listing against Google Rich Results Test; verify sitemap.xml + robots.txt.
 
 ## Rollout order
-Phase 0 (domain migration — start first, run alongside Phase 1) → Phase 1 → Phase 2 → (backend taxonomy endpoint) → Phase 3 → Phase 4 follow-ups. Set up Search Console verification before Phase 0 so the migration is measurable. Each phase is independently shippable.
+Phase 0 (measurement — first) → Phase 1 → Phase 2 → (backend taxonomy endpoint) → Phase 3 → Phase 4 follow-ups. Each phase is independently shippable and measurable in Search Console once Phase 0 is live.
