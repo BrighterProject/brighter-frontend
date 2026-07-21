@@ -19,7 +19,9 @@ import appCss from "../styles.css?url";
 import Header from "@/components/templates/header";
 import Footer from "@/components/templates/footer";
 import { CookieConsentBanner } from "@/components/templates/cookie-consent-banner";
+import { Analytics } from "@/components/templates/analytics";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { rootMetaExtras } from "@/lib/site-meta";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,6 +36,7 @@ export const Route = createRootRoute({
       {
         title: "TanStack Start Starter",
       },
+      ...rootMetaExtras(),
     ],
     links: [
       {
@@ -71,6 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               </ErrorBoundary>
               <Toaster richColors position="top-right" />
               <CookieConsentBanner />
+              <Analytics />
               <ReactQueryDevtools
                 initialIsOpen={false}
                 buttonPosition="bottom-left"
