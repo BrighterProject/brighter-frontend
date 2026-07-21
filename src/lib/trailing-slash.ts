@@ -19,6 +19,10 @@ export function trailingSlashRedirect(
   hash = "",
 ): string | null {
   if (pathname.length <= 1 || !pathname.endsWith("/")) return null;
-  const stripped = pathname.replace(/\/+$/, "") || "/";
-  return `${stripped}${searchStr}${hash}`;
+  const stripped = pathname.replace(/\/+$/, "");
+  // Force a single-slash, same-origin path. Collapsing leading `/` and `\`
+  // prevents a crafted pathname (`//evil.com/`, `/\evil.com/`) from producing a
+  // protocol-relative target that would redirect off-site (open redirect).
+  const safePath = `/${stripped.replace(/^[/\\]+/, "")}`;
+  return `${safePath}${searchStr}${hash}`;
 }

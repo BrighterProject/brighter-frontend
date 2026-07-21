@@ -19,4 +19,11 @@ describe("trailingSlashRedirect", () => {
     expect(trailingSlashRedirect("/bg///")).toBe("/bg");
     expect(trailingSlashRedirect("//")).toBe("/");
   });
+
+  it("never produces an off-site target (open-redirect guard)", () => {
+    // Protocol-relative and backslash tricks must collapse to a same-origin path.
+    expect(trailingSlashRedirect("//evil.com/")).toBe("/evil.com");
+    expect(trailingSlashRedirect("/\\evil.com/")).toBe("/evil.com");
+    expect(trailingSlashRedirect("///evil.com/", "?a=1")).toBe("/evil.com?a=1");
+  });
 });
