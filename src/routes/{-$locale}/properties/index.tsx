@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getIntlayer } from "intlayer";
+import { defaultLocale, getIntlayer } from "intlayer";
 import { PropertiesList } from "@/features/Properties/components/properties-list";
 import { sanitizeFilterSearch } from "@/features/Properties/components/properties-filters";
+import { buildSeo, type SeoLocale } from "@/lib/seo";
 
 export const Route = createFileRoute("/{-$locale}/properties/")({
   component: PropertiesList,
@@ -19,13 +20,15 @@ export const Route = createFileRoute("/{-$locale}/properties/")({
     ...sanitizeFilterSearch(search),
   }),
   head: ({ params }) => {
-    const { locale } = params;
+    const locale = (params.locale ?? defaultLocale) as SeoLocale;
     const meta = getIntlayer("properties-list", locale).meta;
-    return {
-      meta: [
-        { title: meta.title },
-        { content: meta.description, name: "description" },
-      ],
-    };
+    // Canonicalize to the param-less locale URL so every ?city/?checkIn/filter
+    // permutation consolidates onto a single indexable page (1.4).
+    return buildSeo({
+      locale,
+      path: "/properties",
+      title: meta.title,
+      description: meta.description,
+    });
   },
 });

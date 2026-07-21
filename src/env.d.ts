@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  /** Absolute site origin (e.g. https://pochivka-na-moreto.bg) for canonical/OG URLs. */
+  readonly VITE_SITE_URL?: string;
   /** Set to "true" only on the production deploy to allow search indexing. */
   readonly VITE_SEO_INDEXABLE?: string;
   /** Google Search Console meta-tag verification token. */
