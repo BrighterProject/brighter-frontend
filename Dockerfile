@@ -22,6 +22,10 @@ ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 ARG VITE_TURNSTILE_SITE_KEY
 ENV VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
 
+# SEO: absolute origin for canonical/hreflang/OG URLs (never hardcoded in code).
+ARG VITE_SITE_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
+
 # SEO: "true" only on the prod build allows search indexing; unset otherwise
 # emits robots noindex (fail-safe so non-prod images never leak).
 ARG VITE_SEO_INDEXABLE

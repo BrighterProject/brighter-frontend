@@ -45,6 +45,7 @@ jobs:
           build-args: |
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             VITE_TURNSTILE_SITE_KEY=${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+            VITE_SITE_URL=${{ vars.VITE_SITE_URL || 'https://pochivka-na-moreto.bg' }}
             VITE_SEO_INDEXABLE=${{ github.ref == 'refs/heads/main' && 'true' || '' }}
             VITE_UMAMI_SRC=${{ vars.VITE_UMAMI_SRC }}
             VITE_UMAMI_WEBSITE_ID=${{ vars.VITE_UMAMI_WEBSITE_ID }}
