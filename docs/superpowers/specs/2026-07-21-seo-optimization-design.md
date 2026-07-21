@@ -27,6 +27,21 @@ Base URL comes from a `VITE_SITE_URL` env var — never hardcoded.
 
 ---
 
+## Phase 0 — Domain migration (HIGH PRIORITY — run first/alongside Phase 1)
+
+`pochivka-na-moreto.bg` **replaces an older domain that already has indexed pages** (the `площадка.бг` / Ploshtadka origin). Migrating without preserving that authority throws away accrued ranking — often the single biggest quick win. Confirm the exact old host + whether it has live Search Console history before starting.
+
+- **301 redirect map, old → new**, path-for-path where equivalents exist (listings, static pages, any indexed landing pages). Never blanket-301 everything to the homepage — that's read as soft-404s and loses per-URL authority. Unmatched old URLs → closest relevant page or a proper 410.
+- Redirects served at the edge/gateway (Traefik) or Nitro, whichever owns the old host.
+- **Search Console Change of Address** from old to new property once 301s are live.
+- Keep the **old sitemap reachable** temporarily so Google recrawls and follows the 301s faster.
+- Ensure old→new **canonical/hreflang point only at the new domain** (no lingering `площадка.бг` references — already fixed in §1.2).
+- Verify both domains in Search Console; monitor the migration in the Coverage/Indexing report.
+
+*Dependency:* the exact old-domain URL inventory (from its sitemap or a Search Console export) is needed to build the redirect map.
+
+---
+
 ## Phase 1 — Technical fundamentals
 
 ### 1.1 `src/lib/seo.ts` — `buildSeo()`
@@ -124,6 +139,20 @@ New/extended **public** endpoint returning the **region → city taxonomy with a
 
 ---
 
+## Phase 4 — Follow-ups (captured, deprioritized)
+
+Legitimate ranking factors intentionally **not** built in Phases 0–3. Sequence after the foundation ships and Search Console shows indexing working.
+
+- **Core Web Vitals / performance:** image optimization (responsive `srcset`, AVIF/WebP, lazy-loading), Leaflet map load cost, bundle/`framer-motion` weight. LCP/CLS/INP are ranking signals.
+- **Image SEO:** localized `alt` text on property photos; image sitemap.
+- **Measurement (do early — prerequisite for judging everything else):** Google Search Console + Bing Webmaster verification, GA4 (or privacy-friendly analytics). Confirm staging is `noindex` so it never competes with prod.
+- **Site-wide schema:** `Organization` + `WebSite` (sitelinks searchbox) in the root head; global breadcrumbs.
+- **Static-page meta coverage:** confirm `about-us`, `contacts`, `pricing`, `become-owner`, `privacy-policy`, `terms` all route through `buildSeo()` with real localized titles (not just the dynamic routes).
+- **Content depth on programmatic pages:** area/destination guide copy so region/city pages aren't thin.
+
+### Outside code (product/marketing, not this spec)
+Backlinks / domain authority, real review volume (gates `AggregateRating` stars), ongoing content. No frontend change substitutes for these against Booking/Airbnb.
+
 ## Non-goals / YAGNI
 - `ru` locale (not configured in intlayer; out of scope).
 - AMP.
@@ -139,4 +168,4 @@ New/extended **public** endpoint returning the **region → city taxonomy with a
 - Manual: validate a sample listing against Google Rich Results Test; verify sitemap.xml + robots.txt.
 
 ## Rollout order
-Phase 1 → Phase 2 → (backend taxonomy endpoint) → Phase 3. Each phase is independently shippable and measurable via Search Console indexing.
+Phase 0 (domain migration — start first, run alongside Phase 1) → Phase 1 → Phase 2 → (backend taxonomy endpoint) → Phase 3 → Phase 4 follow-ups. Set up Search Console verification before Phase 0 so the migration is measurable. Each phase is independently shippable.
